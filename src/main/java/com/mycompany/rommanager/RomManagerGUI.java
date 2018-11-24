@@ -227,6 +227,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jButtonExtract.setEnabled(enable);
 		jButtonList.setEnabled(enable);
 		jButtonOptionSelectFolder.setEnabled(enable);
+		jTextFieldName.setEditable(enable);
 	}
 	
     private void jButtonListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListActionPerformed
@@ -236,6 +237,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 @Override
                 public void run() {
 					disableGUI("Listing: ");
+					jTableRom.setAutoCreateRowSorter(false);
+					jTableRom.setRowSorter(null);
 			        romDevice.list(tableModel);
 					
 					//Enable filter
@@ -368,7 +371,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JScrollPane jScrollPaneCheckTags1;
     private javax.swing.JSplitPane jSplitPane1;
     private static javax.swing.JTable jTableRom;
-    private javax.swing.JTextField jTextFieldName;
+    private static javax.swing.JTextField jTextFieldName;
     private static javax.swing.JTextField jTextFieldPath;
     // End of variables declaration//GEN-END:variables
 }
