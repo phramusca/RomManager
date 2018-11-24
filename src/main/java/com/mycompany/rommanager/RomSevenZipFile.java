@@ -47,7 +47,7 @@ public class RomSevenZipFile {
 	}
 	
 	public void setVersions() throws IOException {
-        docFile = new File(FilenameUtils.concat(path+"/..", FilenameUtils.getBaseName(filename)).concat(".ods"));
+        docFile = new File(FilenameUtils.concat(path, FilenameUtils.getBaseName(filename)).concat(".ods"));
         if(docFile.exists()) {
             readFromDoc();
 			setScore(true);
