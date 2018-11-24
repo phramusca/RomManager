@@ -76,7 +76,9 @@ public class RomVersion {
 			setScore(countries, "U", 10); // (U) - USA
 			setScore(countries, "UK", 10);
 			setScore(countries, "PD", 5); // Public domain, free software and freeware
-			setScore(countries, "Unl", -50); // Unlicensed //FIXME: Keep those if no other available (F, U,...)
+			setScore(countries, "Unl", -50); // Unlicensed //FIXME 5 Manage Unlicensed
+												// Keep those if no other available (F, U,...)
+												// OR Extract "special" games to a "special" folders(s)
 			
 			if(score>0) {
 				setScore(standards, "!", 50); // The ROM is an exact copy of the original game; it has not had any hacks or modifications. 
@@ -123,7 +125,7 @@ public class RomVersion {
             else if(attributes.startsWith("[")) {
                 end = attributes.indexOf("]");
 				
-				//FIXME: Manage attribute standard code "values" (attributes.substring(2, end) )
+				//FIXME 4 Manage attribute standard code "values" (attributes.substring(2, end) )
 				// - (VX.X) 	Version number (1.0 is earliest) 
 				// - [fX] et autres avec un X qui peux etre une version surtout
                 standards.add(attributes.substring(1, 2));

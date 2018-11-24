@@ -29,7 +29,11 @@ public class RomSevenZipFile {
     private final String path;
     private String filename;
     private final List<RomVersion> versions;
+	
+	//FIXME 1 Replace exportVersions list by a flag in RomVersion, to be written (and read) in ods export
 	private List<RomVersion> exportVersions;
+	
+	//FIXME 2 Remove docFile from RomSevenZipFile and use the global one for extraction instead as a cache
     private File docFile;
 	
 	//For 7z files including versions
@@ -80,7 +84,7 @@ public class RomSevenZipFile {
 	public void addVersion(RomVersion version) {
 		versions.add(version);
 		
-		//FIXME: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
+		//FIXME 3 Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
 		if(version.getErrorLevel()==0) {
 			exportVersions.add(version);
 		}
