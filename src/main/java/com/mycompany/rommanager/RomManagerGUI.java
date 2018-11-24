@@ -91,6 +91,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
         });
 
         jTextFieldPath.setEditable(false);
+        jTextFieldPath.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldPathActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Name: ");
 
@@ -132,7 +137,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jSplitPane1.setRightComponent(jScrollPane1);
 
-        jLabelAction.setText("jLabel2");
+        jLabelAction.setText("Action: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,46 +146,44 @@ public class RomManagerGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSplitPane1)
+                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1358, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonExtract)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabelAction)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonList))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextFieldName))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldPath)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButtonExtract)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                                .addComponent(jLabelAction)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 1134, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextFieldPath)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButtonList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButtonOptionSelectFolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jButtonOptionSelectFolder)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonOptionSelectFolder))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonExtract, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButtonList)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabelAction)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextFieldName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonList)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelAction)
+                    .addComponent(jButtonExtract))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -196,7 +199,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonOptionSelectFolderActionPerformed
 
     private void jButtonExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtractActionPerformed
-        RomDevice romDevice = getRomDevice("Extract");
+        RomDevice romDevice = getRomDevice();
         if(romDevice!=null) {
             int n = JOptionPane.showConfirmDialog(
                 this, "Extract ?\n\nName: \""+romDevice.getName()+"\" ?\nPath: "+romDevice.getPath(),  //NOI18N
@@ -205,8 +208,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             if (n == JOptionPane.YES_OPTION) {
 				disableGUI("Extraction: ");
                 romDevice.extract();
-				Popup.info("Extraction complete.");
-				enableGUI();
+				
             } 
             
         }   
@@ -217,24 +219,26 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		enableGUI(false);
 	}
 	
-	private void enableGUI() {
+	public static void enableGUI() {
 		enableGUI(true);
 	}
 	
-	private void enableGUI(boolean enable) {
+	private static void enableGUI(boolean enable) {
 		jButtonExtract.setEnabled(enable);
 		jButtonList.setEnabled(enable);
 		jButtonOptionSelectFolder.setEnabled(enable);
 	}
 	
     private void jButtonListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListActionPerformed
-		final RomDevice romDevice = getRomDevice("List");
+		final RomDevice romDevice = getRomDevice();
         if(romDevice!=null) {
             Thread t = new Thread("Thread.RomDevice.List") {
                 @Override
                 public void run() {
 					disableGUI("Listing: ");
 			        romDevice.list(tableModel);
+					
+					//Enable filter
 					if(tableModel.getRowCount()>0) {
 						jTableRom.setAutoCreateRowSorter(true);
 						TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
@@ -279,7 +283,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
     }//GEN-LAST:event_jTableRomMouseClicked
 
-    private RomDevice getRomDevice(String action) {
+    private void jTextFieldPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPathActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldPathActionPerformed
+
+    private RomDevice getRomDevice() {
 
         String name = jTextFieldName.getText();
         String path = jTextFieldPath.getText();
@@ -349,9 +357,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonExtract;
-    private javax.swing.JButton jButtonList;
-    private javax.swing.JButton jButtonOptionSelectFolder;
+    private static javax.swing.JButton jButtonExtract;
+    private static javax.swing.JButton jButtonList;
+    private static javax.swing.JButton jButtonOptionSelectFolder;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelAction;
     private javax.swing.JList<String> jListVersions;

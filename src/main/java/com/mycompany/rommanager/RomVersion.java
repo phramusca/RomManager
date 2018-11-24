@@ -98,6 +98,10 @@ public class RomVersion {
             Popup.error(ex);
         }
     }
+
+	public int getErrorLevel() {
+		return errorLevel;
+	}
 	
 	private void setScore(ArrayList<String> list, String value, int score) {
 		if(list.contains(value)) {
@@ -159,7 +163,7 @@ public class RomVersion {
 	
 	/**
 	 * Color text HTML based on errorLevel
-	 * if html param is false, do not enclose within <html> tags
+	 * if html param is false, do not enclose within html tags
 	 * @param text
 	 * @param errorLevel
 	 * @param html
