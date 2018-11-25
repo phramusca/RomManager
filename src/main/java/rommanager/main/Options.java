@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycompany.rommanager;
+package rommanager.main;
 
 import rommanager.utils.Popup;
 import java.io.FileInputStream;

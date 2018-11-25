@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.rommanager;
+package rommanager.main;
 
 import rommanager.utils.Row;
 import java.io.File;
