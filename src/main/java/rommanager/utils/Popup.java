@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycompany.rommanager;
+package rommanager.utils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

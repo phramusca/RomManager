@@ -16,6 +16,7 @@
  */
 package com.mycompany.rommanager;
 
+import rommanager.utils.TableModelGeneric;
 import java.util.ArrayList;
 import java.util.List;
 

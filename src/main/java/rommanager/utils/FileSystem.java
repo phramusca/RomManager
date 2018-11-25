@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycompany.rommanager;
+package rommanager.utils;
 
 import java.io.File;
 import java.io.IOException;
