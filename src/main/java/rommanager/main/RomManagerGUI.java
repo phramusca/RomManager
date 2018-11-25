@@ -23,6 +23,9 @@ import javax.swing.table.TableRowSorter;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import rommanager.gamelist.Game;
+import rommanager.gamelist.ProcessList;
+import rommanager.utils.XML;
 
 /**
  *
@@ -83,7 +86,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jListVersions = new javax.swing.JList<>();
         jLabelAction = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jButtonRead = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -96,11 +99,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
         });
 
         jTextFieldPath.setEditable(false);
-        jTextFieldPath.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldPathActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("Name: ");
 
@@ -144,10 +142,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jLabelAction.setText("Action: ");
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonRead.setText("Read");
+        jButtonRead.setEnabled(false);
+        jButtonRead.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonReadActionPerformed(evt);
             }
         });
 
@@ -164,11 +163,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabelAction)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 993, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonList)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonRead))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -196,7 +195,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabelAction)
                     .addComponent(jButtonExtract)
-                    .addComponent(jButton1))
+                    .addComponent(jButtonRead))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addContainerGap())
@@ -301,33 +300,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
     }//GEN-LAST:event_jTableRomMouseClicked
 
-    private void jTextFieldPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPathActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldPathActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        Document doc = XML.open(file.getAbsolutePath());
-//					if(doc==null) {
-//						break;
-//					}
-//					String uniqueId;
-//					ArrayList<Element> elements = XML.getElements(doc, "collection");
-//					for(Element element : elements) {
-//						if(XML.getAttribute(XML.getElement(element, "Type"), "value").equals("0")) {
-//							uniqueId=XML.getAttribute(XML.getElement(element, "UniqueId"), "value");
-//							String rootPath=XML.getAttribute(XML.getElement(element, "Path0"), "value");
-//							String locationFilePath="~/.guayadeque/Collections/"+uniqueId+"/guayadeque.db";
-//							locationFilePath=FileSystem.replaceHome(locationFilePath).getAbsolutePath();
-//							list.add(new Locations(rootPath, locationFilePath, uniqueId+" : "+rootPath));
-//						} 
-//						// Jamendo, Magnatunes not supported external sources
-////						else {
-////							uniqueId=rootPath=XML.getAttribute(XML.getElement(element, "Type"), "value");
-////							locationFilePath=XML.getAttribute(XML.getElement(element, "UniqueId"), "value");
-////							list.add(new Locations(rootPath, locationFilePath, uniqueId+" : "+locationFilePath));
-////						}
-//					}
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void jButtonReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadActionPerformed
+        
+		String rootPath = "/media/raph/SHARE/roms/snes";
+		
+		ProcessList processList = new ProcessList(rootPath, "gamelist.xml", progressBar);
+		processList.start();
+		
+		for(Game game : processList.getGames()) {
+			if(!game.isFavorite()) {
+				System.out.println("Delating non-favorite: "+game.getName());
+//				game.delete(rootPath);
+			}
+		}
+    }//GEN-LAST:event_jButtonReadActionPerformed
 
     private RomDevice getRomDevice() {
 
@@ -399,10 +385,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private static javax.swing.JButton jButtonExtract;
     private static javax.swing.JButton jButtonList;
     private static javax.swing.JButton jButtonOptionSelectFolder;
+    private javax.swing.JButton jButtonRead;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelAction;
     private javax.swing.JList<String> jListVersions;

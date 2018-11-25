@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package rommanager.main;
+package rommanager.utils;
 
 /**
  * A process abstract class.

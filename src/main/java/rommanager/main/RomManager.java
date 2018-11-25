@@ -5,6 +5,8 @@
  */
 package rommanager.main;
 
+import rommanager.utils.Options;
+
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )

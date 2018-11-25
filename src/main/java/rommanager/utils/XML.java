@@ -33,12 +33,13 @@ import org.xml.sax.SAXException;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class XML {
+	
 	public static Document open(String filename) {
 		try {
 			File file = new File(filename);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-			org.w3c.dom.Document doc = documentBuilder.parse(file);
+			Document doc = documentBuilder.parse(file);
 			doc.getDocumentElement().normalize();
 			return doc;
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
@@ -51,19 +52,15 @@ public class XML {
 	public static String getNodeValue(Document doc, String TagNameLev1, String TagNameLev2) {
 		NodeList nodeLst = doc.getElementsByTagName(TagNameLev1);
 		Node fstNode = nodeLst.item(0);
-
 		Element myElement = (Element) fstNode;
 		NodeList myElementList = myElement.getElementsByTagName(TagNameLev2);
 		Element mySubElement = (Element) myElementList.item(0);
-		NodeList mySubElementList = mySubElement.getChildNodes();
-		return ((Node) mySubElementList.item(0)).getNodeValue();
+		return getElementValue(mySubElement);
 	}
-	
+
 	public static ArrayList<Element> getElements(Document doc, String tagName) {
 		ArrayList<Element> elements=new ArrayList<>();
 		NodeList nodeList = doc.getElementsByTagName(tagName);
-		System.out.println(nodeList.getLength());
-		
 		for(int i=0; i<nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			elements.add((Element) node);
@@ -77,9 +74,23 @@ public class XML {
 		return (Element) node;
 	}
 	
+	public static String getElementValue(Element element, String tagName) {
+		return XML.getElementValue(XML.getElement(element, tagName));
+	}
+	
 	public static String getAttribute(Element element, String attribute) {
 		return element.getAttribute(attribute);
 	}
-			
 	
+	private static String getElementValue(Element element) {
+		if(element==null) {
+			return "";
+		}
+		NodeList mySubElementList = element.getChildNodes();
+		Node node = (Node) mySubElementList.item(0);
+		if(node==null) {
+			return "";
+		}
+		return node.getNodeValue();
+	}
 }
