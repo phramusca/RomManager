@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
@@ -31,9 +32,6 @@ public class RomSevenZipFile {
     private String filename;
     private final List<RomVersion> versions;
 	
-	//FIXME 1 Replace exportVersions list by a flag in RomVersion, to be written (and read) in ods export
-	private List<RomVersion> exportVersions;
-	
 	//FIXME 2 Remove docFile from RomSevenZipFile and use the global one for extraction instead as a cache
     private File docFile;
 	
@@ -48,7 +46,6 @@ public class RomSevenZipFile {
 	public RomSevenZipFile(File file, String filename) throws IOException {
 		this(file);
 		this.filename=filename;
-		exportVersions=new ArrayList<>();
 	}
 	
 	public void setVersions() throws IOException {
@@ -67,14 +64,15 @@ public class RomSevenZipFile {
 	
 	public final void setScore(boolean addBestForExport) {
 		int bestScore=Integer.MIN_VALUE;
+		RomVersion bestVersion=null;
 		for(RomVersion version : versions) {
 			if(version.getScore()>bestScore) {
-				if(addBestForExport) {
-					exportVersions=new ArrayList<>();
-					exportVersions.add(version);
-				}
+				bestVersion=version;
 				bestScore=version.getScore();
 			} 
+		}
+		if(addBestForExport && bestVersion!=null) {
+			bestVersion.setSelected(true);
 		}
 	}
 	
@@ -82,17 +80,20 @@ public class RomSevenZipFile {
         return versions;
     }
 
+	//Amstrad only
 	public void addVersion(RomVersion version) {
 		versions.add(version);
 		
 		//FIXME 3 Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
 		if(version.getErrorLevel()==0) {
-			exportVersions.add(version);
+			version.setSelected(true);
 		}
 	}
 	
 	public List<RomVersion> getExportVersions() {
-		return exportVersions;
+		return versions.stream().filter(v -> v.isSelected())
+				.sorted()
+				.collect(Collectors.toList());
 	}
     
     public String getFilename() {
@@ -155,12 +156,10 @@ public class RomSevenZipFile {
 
     @Override
     public String toString() {
-        return exportVersions==null
-				?RomVersion.colorField("NO GOOD VERSION FOUND", 2, true)
-				:exportVersions.size()==1
-					?exportVersions.get(0).toString()
-					:exportVersions.isEmpty()
+        return getExportVersions().size()==1
+					?getExportVersions().get(0).toString()
+					:getExportVersions().isEmpty()
 						?RomVersion.colorField("NO files to export.", 2, true)
-						:RomVersion.colorField(exportVersions.size()+" files to export.", 3, true);
+						:RomVersion.colorField(getExportVersions().size()+" files to export.", 3, true);
     }
 }

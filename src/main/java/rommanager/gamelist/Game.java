@@ -18,7 +18,7 @@ public class Game {
 	private final String name;
 	private final String desc;
 	private final String image;
-	private final String thumbnail;
+	private final String thumbnail; //Not used
 	private final float rating;
 	private final String releaseDate;
 	private final String developer;

@@ -19,6 +19,7 @@ public class RomVersion {
     private ArrayList<String> standards;
 	private int score=0;
 	private int errorLevel;
+	private boolean selected;
     /**
      *
      * @param name
@@ -205,6 +206,14 @@ public class RomVersion {
 
 	public int getScore() {
 		return score;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 
 }
