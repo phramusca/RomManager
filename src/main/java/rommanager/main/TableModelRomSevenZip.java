@@ -36,6 +36,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
+	private String rootPath;
     
     /**
 	 * Create the table model
@@ -54,7 +55,6 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 			"Developer",
 			"Publisher"
         });
-
 		this.fireTableStructureChanged();
 	}
 
@@ -114,9 +114,6 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     public Object getValueAt(int rowIndex, int columnIndex) {
         RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
 
-		//FIXME: Parametrize !!!!
-		String rootPath = "/media/raph/SHARE/roms/snes";
-		
 		ImageIcon icon = IconBuffer.getCoverIcon(fileInfoRomSevenZip.getGame().getName(), 
 				FilenameUtils.concat(
 						rootPath, 
@@ -198,5 +195,8 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		roms.remove(file.getFilename());
 		this.fireTableDataChanged();
     }
-    
+
+	public void setRootPath(String rootPath) {
+		this.rootPath = rootPath;
+	}
 }

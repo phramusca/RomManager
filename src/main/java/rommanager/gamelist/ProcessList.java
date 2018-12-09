@@ -8,7 +8,6 @@ package rommanager.gamelist;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,15 +36,13 @@ import rommanager.utils.XML;
 public class ProcessList extends ProcessAbstract {
 
 	private final String rootPath;
-	private final String path;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
 	private final TableModelRomSevenZip tableModel;
 	
-	public ProcessList(String rootPath, String path, ProgressBar progressBar, TableModelRomSevenZip tableModel) {
+	public ProcessList(String rootPath, ProgressBar progressBar, TableModelRomSevenZip tableModel) {
 		super("Thread.gamelist.ProcessList");
 		this.rootPath = rootPath;
-		this.path = path;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;
 	}
@@ -54,18 +51,19 @@ public class ProcessList extends ProcessAbstract {
 	public void run() {
 		try {
 			read(true);
-			RomManagerGUI.enableGUI();
 			Popup.info("Reading complete.");
 //			progressBar.reset();
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
-		} 
+		} finally {
+			RomManagerGUI.enableGUI();
+		}
 	}
 
 	private void read(boolean clean) throws InterruptedException {
 		try {
 			games = new HashMap<>();
-			Document doc = XML.open(path);
+			Document doc = XML.open(FilenameUtils.concat(rootPath, "gamelist.xml"));
 			if(doc==null) {
 				Popup.warning("File open failed.");
 			}
