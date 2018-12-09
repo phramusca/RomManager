@@ -286,7 +286,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         int selectedRow = jTableRom.getSelectedRow(); 		
 		if(selectedRow>=0) { 			
 			selectedRow = jTableRom.convertRowIndexToModel(selectedRow);
-			RomSevenZipFile romSevenZipFile = tableModel.getFiles().get(selectedRow);
+			
+			RomSevenZipFile romSevenZipFile = tableModel.getRom(selectedRow);
 			DefaultListModel versionsModel = new DefaultListModel();
 			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 				versionsModel.addElement(romVersion);

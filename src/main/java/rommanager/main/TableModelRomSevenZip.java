@@ -16,9 +16,12 @@
  */
 package rommanager.main;
 
+import java.io.File;
+import java.io.IOException;
 import rommanager.utils.TableModelGeneric;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -27,7 +30,7 @@ import java.util.List;
 
 public class TableModelRomSevenZip extends TableModelGeneric {
 
-    private List<RomSevenZipFile> files;
+	Map<String, RomSevenZipFile> roms;
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
@@ -36,8 +39,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * Create the table model
 	 */
 	public TableModelRomSevenZip() {
-        this.files = new ArrayList<>();
-        
+        this.roms = new LinkedHashMap<>();
         //Set column names
         this.setColumnNames(new String [] {
             "FileName", //NOI18N
@@ -69,18 +71,14 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * Return list of files
 	 * @return
 	 */
-	public List<RomSevenZipFile> getFiles() {
-		return files;
+	public Map<String, RomSevenZipFile> getRoms() {
+		return roms;
 	}
+	
 
-    /**
-     * get list of files
-     * @param index
-     * @return
-     */
-    public RomSevenZipFile getFile(int index) {
-        return this.files.get(index);
-    }
+	public RomSevenZipFile getRom(int index) {
+		return (new ArrayList<>(roms.values())).get(index);
+	}
 
     /**
      * Return selected file's length
@@ -100,12 +98,12 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     
     @Override
     public int getRowCount() {
-        return this.files.size();
+        return this.roms.values().size();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        RomSevenZipFile fileInfoRomSevenZip = files.get(rowIndex);
+        RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
 
         switch (columnIndex) {
             case 0: return fileInfoRomSevenZip.getFilename();
@@ -122,7 +120,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 */
     @Override
     public void setValueAt(Object value, int row, int col) {
-		RomSevenZipFile file = files.get(row);
+		RomSevenZipFile file = getRom(row);
 
 //        switch (col) {
 //            case 0: 
@@ -150,7 +148,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * Clears the table
 	 */
 	public void clear() {
-        this.files = new ArrayList<>();
+		this.roms = new LinkedHashMap<>();
         this.lengthSelected=0;
         this.nbSelected=0;
         //Update table
@@ -162,12 +160,18 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * @param file
     */
     public void addRow(RomSevenZipFile file){
-		this.files.add(file);
+		this.roms.put(file.getFilename(), file);
 		this.fireTableDataChanged();
     }
 
+	public void addRow(String filename) throws IOException {
+		if(!roms.containsKey(filename)) {
+			roms.put(filename, new RomSevenZipFile(new File(filename)));
+		}
+	}
+	
     public void removeRow(RomSevenZipFile file){
-		this.files.remove(file);
+		roms.remove(file.getFilename());
 		this.fireTableDataChanged();
     }
     

@@ -86,7 +86,6 @@ public class RomDevice {
 						.toLowerCase();
 				return ext.equals("7z")
 						|| ext.equals("dsk")
-						|| ext.equals("ods")
 						|| pathname.isDirectory();
 			});
             if (files != null) {
@@ -132,10 +131,6 @@ public class RomDevice {
 									} catch (IOException ex) {
 										Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
 									}	break;
-								case "ods":
-									//FIXME: Remove this when all sets are cleaned
-									file.delete();
-									break;
 								default:
 									break;
 							}
@@ -146,18 +141,19 @@ public class RomDevice {
         }
     }
 	
+	//FIXME: Remove amstradRoms: model should be enough
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
     
     private void createFile() {
         int nbColumns=8;
         int nbRows=0;
-        for(RomSevenZipFile sevenZipRomFile : this.model.getFiles()) {
+        for(RomSevenZipFile sevenZipRomFile : this.model.getRoms().values()) {
             nbRows+=sevenZipRomFile.getVersions().size();
         }
         final Object[][] data = new Object[nbRows][nbColumns];
         
         int i=0; 
-        for(RomSevenZipFile sevenZipRomFile : this.model.getFiles()) {
+        for(RomSevenZipFile sevenZipRomFile : this.model.getRoms().values()) {
             for (RomVersion romVersion : sevenZipRomFile.getVersions()) {
                 data[i++] = new Object[] { 
 					sevenZipRomFile.getFilename(), 
@@ -200,10 +196,7 @@ public class RomDevice {
 			SpreadSheet spreadSheet = SpreadSheet.createFromFile(docFile);
 			Sheet sheet = spreadSheet.getSheet("List");
 			int nRowCount = sheet.getRowCount();
-			progressBar.setup(nRowCount*2);	
-			
-			//FIXME 2 Move roms to model, and use it for export instead of reading ods
-			Map<String, RomSevenZipFile> roms = new HashMap<>();
+			progressBar.setup(nRowCount);	
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
 				String filename = row.getValue(0);
@@ -215,23 +208,12 @@ public class RomDevice {
 				int score = Integer.valueOf(row.getValue(5));
 				int errorLevel = Integer.valueOf(row.getValue(6));
 				boolean isBest = Boolean.getBoolean(row.getValue(7));
-
-				if(!roms.containsKey(filename)) {
-					roms.put(filename, new RomSevenZipFile(new File(filename)));
-				}
-
+				model.addRow(filename);
 				RomVersion romVersion = new RomVersion(version, 
 						alternativeName, 
 						countries, standards, 
 						score, errorLevel, isBest);
-
-				roms.get(filename).addVersion(romVersion);
-			}
-
-			for(RomSevenZipFile romSevenZipFile : roms.values()) {
-				progressBar.progress(romSevenZipFile.getFilename());
-				romSevenZipFile.setScore(true);
-				model.addRow(romSevenZipFile);
+				model.getRoms().get(filename).addVersion(romVersion);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(RomDevice.class.getName())
@@ -244,6 +226,7 @@ public class RomDevice {
             @Override
             public void run() {
                 try {
+					//FIXME 2 use table model instead of reading ods 
                     SpreadSheet spreadSheet = SpreadSheet.createFromFile(docFile);
                     Sheet sheet = spreadSheet.getSheet("List");
                     int nRowCount = sheet.getRowCount();
