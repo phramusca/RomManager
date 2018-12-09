@@ -66,7 +66,7 @@ public class RomSevenZipFile {
     }
 
 	//Amstrad only
-	public void addVersion(RomVersion version) {
+	public void addAmstradVersion(RomVersion version) {
 		versions.add(version);
 		
 		//FIXME 3 Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version

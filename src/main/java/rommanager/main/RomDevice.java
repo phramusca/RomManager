@@ -15,9 +15,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.table.DefaultTableModel;
@@ -38,6 +40,7 @@ public class RomDevice {
     private final File docFile;
     private final TableModelRomSevenZip model;
     private final ProgressBar progressBar;
+	
     /**
      *
      * @param name
@@ -125,7 +128,7 @@ public class RomDevice {
 										}
 										String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
 										
-										romSevenZipFile.addVersion(new RomVersion(
+										romSevenZipFile.addAmstradVersion(new RomVersion(
 												romName,
 												versionPath));
 									} catch (IOException ex) {
@@ -207,13 +210,13 @@ public class RomDevice {
 				String standards = row.getValue(4);
 				int score = Integer.valueOf(row.getValue(5));
 				int errorLevel = Integer.valueOf(row.getValue(6));
-				boolean isBest = Boolean.getBoolean(row.getValue(7));
+				boolean isBest = Boolean.parseBoolean(row.getValue(7));
 				model.addRow(filename);
 				RomVersion romVersion = new RomVersion(version, 
 						alternativeName, 
 						countries, standards, 
 						score, errorLevel, isBest);
-				model.getRoms().get(filename).addVersion(romVersion);
+				model.getRoms().get(filename).getVersions().add(romVersion);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(RomDevice.class.getName())
@@ -226,12 +229,8 @@ public class RomDevice {
             @Override
             public void run() {
                 try {
-					//FIXME 2 use table model instead of reading ods 
-                    SpreadSheet spreadSheet = SpreadSheet.createFromFile(docFile);
-                    Sheet sheet = spreadSheet.getSheet("List");
-                    int nRowCount = sheet.getRowCount();
-        //        int nColCount = sheet.getColumnCount();
-                    progressBar.setup(nRowCount);
+					
+					progressBar.setup(model.getRowCount());
 					
 					String extractPath = FilenameUtils.concat(path, "../Extract--"+name+"--"
 							.concat(DateTime.getCurrentLocal(DateTime.DateTimeFormat.FILE)));
@@ -239,23 +238,20 @@ public class RomDevice {
 						new File(extractPath).mkdirs();
 					}
 					
-                    for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
-                        Row row = new Row(sheet, nRowIndex);
-                        String filename = row.getValue(0);
-                        progressBar.progress(filename);
-						String version = row.getValue(1);
-						String country = row.getValue(2); //TODO: Use this
-						String standard = row.getValue(3); //TODO: Use this
-						int score = Integer.valueOf(row.getValue(4));
-						boolean isSelected = Boolean.getBoolean(row.getValue(5));
-						if(isSelected && score>0) {
+					for(RomSevenZipFile romSevenZipFile : model.roms.values()) {
+						String filename = romSevenZipFile.getFilename();
+						for(RomVersion romVersion : 
+								romSevenZipFile.getVersions().stream()
+									.filter(r -> r.isBest())
+									.collect(Collectors.toList())) {
+							progressBar.progress(filename);
 							if(FilenameUtils.getExtension(filename).equals("7z")) {
 								try (SevenZFile sevenZFile = new SevenZFile(new File(
 									FilenameUtils.concat(path, filename)))) {
 									SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 									while(entry!=null){
 										// version does not include extension => startsWith
-										if(entry.getName().startsWith(version)) { 
+										if(entry.getName().startsWith(romVersion.getVersion())) { 
 											File unzippedFile=new File(FilenameUtils.concat(
 															extractPath,
 															entry.getName()));
@@ -266,7 +262,7 @@ public class RomDevice {
 											}
 											if(zipFile(unzippedFile, FilenameUtils.concat(
 															extractPath, 
-															version.concat(".zip")))) {
+															romVersion.getVersion().concat(".zip")))) {
 												unzippedFile.delete();
 											}
 											break;
@@ -276,8 +272,8 @@ public class RomDevice {
 								}
 							} else if(FilenameUtils.getExtension(filename).equals("dsk")) {
 								FileSystem.copyFile(
-										new File(FilenameUtils.concat(path, version)), 
-										new File(FilenameUtils.concat(extractPath, version)));
+										new File(FilenameUtils.concat(path, romVersion.getVersion())), 
+										new File(FilenameUtils.concat(extractPath, romVersion.getVersion())));
 							}
 						}
 					}

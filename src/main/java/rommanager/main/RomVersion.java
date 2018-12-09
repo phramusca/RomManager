@@ -237,5 +237,4 @@ public class RomVersion {
 	public void setBest(boolean selected) {
 		this.best = selected;
 	}
-
 }
