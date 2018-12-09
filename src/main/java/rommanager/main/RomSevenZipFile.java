@@ -34,7 +34,7 @@ public class RomSevenZipFile {
     }
 	
 	//For dsk (Amstrad) files that are not groupped in 7z
-	//FIXME: Split from there
+	//FIXME 6 Split from there
 	public RomSevenZipFile(File file, String filename) throws IOException {
 		this(file);
 		this.filename=filename;
@@ -85,7 +85,7 @@ public class RomSevenZipFile {
 			while(entry!=null){
 				versions.add(new RomVersion(
 						FilenameUtils.getBaseName(filename), 
-						FilenameUtils.getBaseName(entry.getName())));
+						entry.getName()));
 				entry = sevenZFile.getNextEntry();
 			}
 		}

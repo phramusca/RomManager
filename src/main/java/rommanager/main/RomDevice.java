@@ -144,7 +144,7 @@ public class RomDevice {
         }
     }
 	
-	//FIXME: Remove amstradRoms: model should be enough
+	//FIXME 6 Remove amstradRoms: model should be enough + TEST/fix Amstrad (list & extract)
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
     
     private void createFile() {
@@ -160,7 +160,7 @@ public class RomDevice {
             for (RomVersion romVersion : sevenZipRomFile.getVersions()) {
                 data[i++] = new Object[] { 
 					sevenZipRomFile.getFilename(), 
-					romVersion.getVersion(), 
+					romVersion.getFilename(), 
 					romVersion.getAlternativeName(),
 					romVersion.getCountries(), 
 					romVersion.getStandards(), 
@@ -242,7 +242,7 @@ public class RomDevice {
 						String filename = romSevenZipFile.getFilename();
 						for(RomVersion romVersion : 
 								romSevenZipFile.getVersions().stream()
-									.filter(r -> r.isBest())
+									.filter(r -> r.isBest() && r.getScore()>0)
 									.collect(Collectors.toList())) {
 							progressBar.progress(filename);
 							if(FilenameUtils.getExtension(filename).equals("7z")) {
@@ -250,8 +250,7 @@ public class RomDevice {
 									FilenameUtils.concat(path, filename)))) {
 									SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 									while(entry!=null){
-										// version does not include extension => startsWith
-										if(entry.getName().startsWith(romVersion.getVersion())) { 
+										if(entry.getName().equals(romVersion.getFilename())) { 
 											File unzippedFile=new File(FilenameUtils.concat(
 															extractPath,
 															entry.getName()));
@@ -262,7 +261,7 @@ public class RomDevice {
 											}
 											if(zipFile(unzippedFile, FilenameUtils.concat(
 															extractPath, 
-															romVersion.getVersion().concat(".zip")))) {
+															FilenameUtils.getBaseName(romVersion.getFilename()).concat(".zip")))) {
 												unzippedFile.delete();
 											}
 											break;
@@ -272,8 +271,8 @@ public class RomDevice {
 								}
 							} else if(FilenameUtils.getExtension(filename).equals("dsk")) {
 								FileSystem.copyFile(
-										new File(FilenameUtils.concat(path, romVersion.getVersion())), 
-										new File(FilenameUtils.concat(extractPath, romVersion.getVersion())));
+										new File(FilenameUtils.concat(path, romVersion.getFilename())), 
+										new File(FilenameUtils.concat(extractPath, romVersion.getFilename())));
 							}
 						}
 					}

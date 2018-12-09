@@ -75,7 +75,7 @@ public class XML {
 	}
 	
 	public static String getElementValue(Element element, String tagName) {
-		return XML.getElementValue(XML.getElement(element, tagName));
+		return getElementValue(getElement(element, tagName));
 	}
 	
 	public static String getAttribute(Element element, String attribute) {

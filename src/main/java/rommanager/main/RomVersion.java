@@ -15,7 +15,7 @@ import java.util.List;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class RomVersion {
-    private final String version;
+    private final String filename;
     private String alternativeName;
     private List<String> countries;
     private List<String> standards;
@@ -26,20 +26,20 @@ public class RomVersion {
     /**
      *
      * @param name
-     * @param version
+     * @param filename
      */
-    public RomVersion(String name, String version) {
-        this.version = version;
+    public RomVersion(String name, String filename) {
+        this.filename = filename;
         System.out.println("name="+name);
-        System.out.println("version="+version);
+        System.out.println("version="+filename);
         countries = new ArrayList<>();
         standards = new ArrayList<>();
         alternativeName = "";
         try {
             String attributes = "";
-            if(!version.startsWith(name)) {
-                int posPar = version.indexOf("(");
-                int posBra = version.indexOf("[");
+            if(!filename.startsWith(name)) {
+                int posPar = filename.indexOf("(");
+                int posBra = filename.indexOf("[");
                 System.out.println("posPar="+posPar);
                 System.out.println("posBra="+posBra);
                 
@@ -53,15 +53,15 @@ public class RomVersion {
                     }
                     
                     System.out.println("pos="+pos);
-                    alternativeName = version.substring(0, pos).trim();
-                    attributes = version.substring(pos);
+                    alternativeName = filename.substring(0, pos).trim();
+                    attributes = filename.substring(pos);
                 }
                 else {
-                    alternativeName = version;
+                    alternativeName = filename;
                 }
             }
             else {
-                attributes = version.substring(name.length()).trim();
+                attributes = filename.substring(name.length()).trim();
             }
             System.out.println("attributes="+attributes);
             System.out.println("alternativeName="+alternativeName);
@@ -106,13 +106,13 @@ public class RomVersion {
         }
     }
 
-	public RomVersion(String version, String alternativeName, 
+	public RomVersion(String filename, String alternativeName, 
 			String countries, 
 			String standards, 
 			int score, 
 			int errorLevel, 
 			boolean best) {
-		this.version = version;
+		this.filename = filename;
 		this.alternativeName = alternativeName;
 		this.countries = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
         this.standards = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
@@ -147,15 +147,15 @@ public class RomVersion {
 				
 				//FIXME 4 Manage attribute standard code "values" (attributes.substring(2, end) )
 				// - (VX.X) 	Version number (1.0 is earliest) 
-				// - [fX] et autres avec un X qui peux etre une version surtout
+				// - [fX] et autres avec un X qui peux etre une filename surtout
                 standards.add(attributes.substring(1, 2));
             }
             attributes = attributes.substring(end+1).trim();
         }
     }
     
-    public String getVersion() {
-        return version;
+    public String getFilename() {
+        return filename;
     }
     
     public List<String> getCountries() {
