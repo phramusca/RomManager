@@ -7,6 +7,8 @@ package rommanager.main;
 
 import rommanager.utils.Popup;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -15,11 +17,12 @@ import java.util.ArrayList;
 public class RomVersion {
     private final String version;
     private String alternativeName;
-    private ArrayList<String> countries;
-    private ArrayList<String> standards;
-	private int score=0;
+    private List<String> countries;
+    private List<String> standards;
+	private int score;
 	private int errorLevel;
-	private boolean selected;
+	private boolean best;
+	
     /**
      *
      * @param name
@@ -103,11 +106,26 @@ public class RomVersion {
         }
     }
 
+	public RomVersion(String version, String alternativeName, 
+			String countries, 
+			String standards, 
+			int score, 
+			int errorLevel, 
+			boolean best) {
+		this.version = version;
+		this.alternativeName = alternativeName;
+		this.countries = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
+        this.standards = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
+		this.score = score;
+		this.errorLevel = errorLevel;
+		this.best = best;
+	}
+
 	public int getErrorLevel() {
 		return errorLevel;
 	}
 	
-	private void setScore(ArrayList<String> list, String value, int score) {
+	private void setScore(List<String> list, String value, int score) {
 		if(list.contains(value)) {
 			this.score+=score;
 		}
@@ -140,14 +158,18 @@ public class RomVersion {
         return version;
     }
     
-    public ArrayList<String> getCountries() {
+    public List<String> getCountries() {
         return countries;
     }
 
-    public ArrayList<String> getStandards() {
+    public List<String> getStandards() {
         return standards;
     }
-    
+
+	public String getAlternativeName() {
+		return alternativeName;
+	}
+	
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
@@ -208,12 +230,12 @@ public class RomVersion {
 		return score;
 	}
 
-	public boolean isSelected() {
-		return selected;
+	public boolean isBest() {
+		return best;
 	}
 
-	public void setSelected(boolean selected) {
-		this.selected = selected;
+	public void setBest(boolean selected) {
+		this.best = selected;
 	}
 
 }

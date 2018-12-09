@@ -11,7 +11,6 @@ import rommanager.utils.Popup;
 import rommanager.utils.DateTime;
 import rommanager.utils.Row;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,7 +45,8 @@ public class RomDevice {
      * @param progressBar
      * @param model
      */
-    public RomDevice(String name, String path, ProgressBar progressBar, TableModelRomSevenZip model) {
+    public RomDevice(String name, String path, 
+			ProgressBar progressBar, TableModelRomSevenZip model) {
         this.name = name;
         this.path = path;
         this.model = model;
@@ -64,25 +64,30 @@ public class RomDevice {
 
     public void list(TableModelRomSevenZip model) {
         model.clear();
-        browseFoldersFS(path, new File(path), progressBar, model);
-		for(RomSevenZipFile file : amstradRoms.values()) {
-			file.setScore(false);
-			model.addRow(file);
+		if(docFile.exists()) {
+			readFile();
+		} else {
+			browseFoldersFS(path, new File(path), progressBar, model);
+			for(RomSevenZipFile file : amstradRoms.values()) {
+				file.setScore(false);
+				model.addRow(file);
+			}
+			progressBar.setIndeterminate("Creating output file ... ");
+			createFile();
 		}
-        progressBar.setIndeterminate("Creating output file ... ");
-        createFile();
         progressBar.reset();
     }
     
-    private void browseFoldersFS(String rootPath, File path, ProgressBar progressBar, TableModelRomSevenZip model) {
+    private void browseFoldersFS(String rootPath, File path, 
+			ProgressBar progressBar, TableModelRomSevenZip model) {
         if (path.isDirectory()) {
-            File[] files = path.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					String ext = FilenameUtils.getExtension(pathname.getAbsolutePath())
-							.toLowerCase();
-                    return ext.equals("7z") || ext.equals("dsk") || pathname.isDirectory();
-				}
+            File[] files = path.listFiles((File pathname) -> {
+				String ext = FilenameUtils.getExtension(pathname.getAbsolutePath())
+						.toLowerCase();
+				return ext.equals("7z")
+						|| ext.equals("dsk")
+						|| ext.equals("ods")
+						|| pathname.isDirectory();
 			});
             if (files != null) {
                 if(files.length>0) {
@@ -93,39 +98,46 @@ public class RomDevice {
                             browseFoldersFS(rootPath, file, progressBar, model);
                         }
                         else {
-							if(FilenameUtils.getExtension(file.getAbsolutePath()).equals("7z")) {
-								RomSevenZipFile sevenZipRomFile;
-								try {
-									sevenZipRomFile = new RomSevenZipFile(file);
-									sevenZipRomFile.setVersions();
-									model.addRow(sevenZipRomFile);
-								} catch (IOException ex) {
-									Logger.getLogger(RomManager.class.getName()).log(Level.SEVERE, null, ex);
-								}
-							} else if(FilenameUtils.getExtension(file.getAbsolutePath()).equals("dsk")) {
-								try {
-									String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
-									int pos = romName.indexOf("(");
-									if(pos>=0) {
-										romName=romName.substring(0, pos).trim();
-									}							
-									romName=romName.concat(".dsk");
-																	
-									RomSevenZipFile romSevenZipFile;
-									if(amstradRoms.containsKey(romName)) {
-										romSevenZipFile = amstradRoms.get(romName);
-									} else {							
-										romSevenZipFile = new RomSevenZipFile(file, romName);
-										amstradRoms.put(romName, romSevenZipFile);
-									}
-									String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
-									
-									romSevenZipFile.addVersion(new RomVersion(
-											romName,
-											versionPath));
-								} catch (IOException ex) {
-									Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
-								}
+							switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+								case "7z":
+									RomSevenZipFile sevenZipRomFile;
+									try {
+										sevenZipRomFile = new RomSevenZipFile(file);
+										sevenZipRomFile.setVersions();
+										model.addRow(sevenZipRomFile);
+									} catch (IOException ex) {
+										Logger.getLogger(RomManager.class.getName()).log(Level.SEVERE, null, ex);
+									}	break;
+								case "dsk":
+									try {
+										String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
+										int pos = romName.indexOf("(");
+										if(pos>=0) {
+											romName=romName.substring(0, pos).trim();
+										}
+										romName=romName.concat(".dsk");
+										
+										RomSevenZipFile romSevenZipFile;
+										if(amstradRoms.containsKey(romName)) {
+											romSevenZipFile = amstradRoms.get(romName);
+										} else {
+											romSevenZipFile = new RomSevenZipFile(file, romName);
+											amstradRoms.put(romName, romSevenZipFile);
+										}
+										String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
+										
+										romSevenZipFile.addVersion(new RomVersion(
+												romName,
+												versionPath));
+									} catch (IOException ex) {
+										Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
+									}	break;
+								case "ods":
+									//FIXME: Remove this when all sets are cleaned
+									file.delete();
+									break;
+								default:
+									break;
 							}
                         }
                     }
@@ -137,31 +149,38 @@ public class RomDevice {
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
     
     private void createFile() {
-        int nbColumns=5;
+        int nbColumns=8;
         int nbRows=0;
         for(RomSevenZipFile sevenZipRomFile : this.model.getFiles()) {
-            nbRows+=sevenZipRomFile.getExportVersions().size();
+            nbRows+=sevenZipRomFile.getVersions().size();
         }
         final Object[][] data = new Object[nbRows][nbColumns];
         
         int i=0; 
         for(RomSevenZipFile sevenZipRomFile : this.model.getFiles()) {
-            for (RomVersion romVersion : sevenZipRomFile.getExportVersions()) {
+            for (RomVersion romVersion : sevenZipRomFile.getVersions()) {
                 data[i++] = new Object[] { 
 					sevenZipRomFile.getFilename(), 
 					romVersion.getVersion(), 
+					romVersion.getAlternativeName(),
 					romVersion.getCountries(), 
 					romVersion.getStandards(), 
-					romVersion.getScore() };
+					romVersion.getScore(),
+					romVersion.getErrorLevel(),
+					romVersion.isBest() 
+				};
             }
         }
         i=0;
         String[] columns = new String[nbColumns];
-        columns[i++] = "File";
+        columns[i++] = "FileName";
         columns[i++] = "Version";
-        columns[i++] = "Country";
-        columns[i++] = "Standard";
+		columns[i++] = "Alternative Name";
+        columns[i++] = "Countries";
+        columns[i++] = "Standards";
         columns[i++] = "Score";
+		columns[i++] = "Error Level";
+		columns[i++] = "Best";
         TableModel docModel = new DefaultTableModel(data, columns);
         if(docFile.exists()) {
             docFile.delete();
@@ -176,6 +195,50 @@ public class RomDevice {
         }
     }
     
+	public void readFile() {
+        try {
+			SpreadSheet spreadSheet = SpreadSheet.createFromFile(docFile);
+			Sheet sheet = spreadSheet.getSheet("List");
+			int nRowCount = sheet.getRowCount();
+			progressBar.setup(nRowCount*2);	
+			
+			//FIXME 2 Move roms to model, and use it for export instead of reading ods
+			Map<String, RomSevenZipFile> roms = new HashMap<>();
+			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
+				Row row = new Row(sheet, nRowIndex);
+				String filename = row.getValue(0);
+				progressBar.progress(filename);
+				String version = row.getValue(1);
+				String alternativeName = row.getValue(2);
+				String countries = row.getValue(3);
+				String standards = row.getValue(4);
+				int score = Integer.valueOf(row.getValue(5));
+				int errorLevel = Integer.valueOf(row.getValue(6));
+				boolean isBest = Boolean.getBoolean(row.getValue(7));
+
+				if(!roms.containsKey(filename)) {
+					roms.put(filename, new RomSevenZipFile(new File(filename)));
+				}
+
+				RomVersion romVersion = new RomVersion(version, 
+						alternativeName, 
+						countries, standards, 
+						score, errorLevel, isBest);
+
+				roms.get(filename).addVersion(romVersion);
+			}
+
+			for(RomSevenZipFile romSevenZipFile : roms.values()) {
+				progressBar.progress(romSevenZipFile.getFilename());
+				romSevenZipFile.setScore(true);
+				model.addRow(romSevenZipFile);
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(RomDevice.class.getName())
+					.log(Level.SEVERE, null, ex);
+		} 
+    }
+	
     public void extract() {
         Thread t = new Thread("Thread.RomDevice.Extract") {
             @Override
@@ -200,8 +263,9 @@ public class RomDevice {
 						String version = row.getValue(1);
 						String country = row.getValue(2); //TODO: Use this
 						String standard = row.getValue(3); //TODO: Use this
-						int score = Integer.valueOf(row.getValue(4));  //TODO: Use this
-						if(score>0) {
+						int score = Integer.valueOf(row.getValue(4));
+						boolean isSelected = Boolean.getBoolean(row.getValue(5));
+						if(isSelected && score>0) {
 							if(FilenameUtils.getExtension(filename).equals("7z")) {
 								try (SevenZFile sevenZFile = new SevenZFile(new File(
 									FilenameUtils.concat(path, filename)))) {
@@ -248,8 +312,6 @@ public class RomDevice {
 	
 	public static boolean zipFile(File inputFile, String zipFilePath) {
         try {
-
-
 			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 
 					ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
 				

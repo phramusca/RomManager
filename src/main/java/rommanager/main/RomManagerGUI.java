@@ -21,11 +21,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import rommanager.gamelist.Game;
 import rommanager.gamelist.ProcessList;
-import rommanager.utils.XML;
 
 /**
  *
@@ -222,9 +219,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             if (n == JOptionPane.YES_OPTION) {
 				disableGUI("Extraction: ");
                 romDevice.extract();
-				
             } 
-            
         }   
     }//GEN-LAST:event_jButtonExtractActionPerformed
 
@@ -373,15 +368,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
 					.log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-				RomManagerGUI panel = new RomManagerGUI();
-				panel.setLocationRelativeTo(null);
-//				panel.setExtendedState(RomManagerGUI.MAXIMIZED_BOTH);
-				panel.setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> {
+			RomManagerGUI panel = new RomManagerGUI();
+			panel.setLocationRelativeTo(null);
+			//				panel.setExtendedState(RomManagerGUI.MAXIMIZED_BOTH);
+			panel.setVisible(true);
+		});
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
