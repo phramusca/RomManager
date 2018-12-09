@@ -29,7 +29,10 @@ public class Game {
 	private final String lastplayed;
 	private final boolean favorite;
 
-	public Game(String path, String name, String desc, String image, String thumbnail, float rating, String releaseDate, String developer, String publisher, String genre, String players, int playcount, String lastplayed, boolean favorite) {
+	public Game(String path, String name, String desc, String image, 
+			String thumbnail, float rating, String releaseDate, 
+			String developer, String publisher, String genre, String players, 
+			int playcount, String lastplayed, boolean favorite) {
 		this.path = path;
 		this.name = name;
 		this.desc = desc;
@@ -110,5 +113,11 @@ public class Game {
 				+ '}';
 	}
 
-	
+	String getPath() {
+		return path;
+	}
+
+	public String getImage() {
+		return image;
+	}
 }

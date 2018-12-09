@@ -238,7 +238,7 @@ public class RomDevice {
 						new File(extractPath).mkdirs();
 					}
 					
-					for(RomSevenZipFile romSevenZipFile : model.roms.values()) {
+					for(RomSevenZipFile romSevenZipFile : model.getRoms().values()) {
 						String filename = romSevenZipFile.getFilename();
 						for(RomVersion romVersion : 
 								romSevenZipFile.getVersions().stream()

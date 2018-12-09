@@ -22,6 +22,8 @@ import rommanager.utils.TableModelGeneric;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.ImageIcon;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -30,7 +32,7 @@ import java.util.Map;
 
 public class TableModelRomSevenZip extends TableModelGeneric {
 
-	Map<String, RomSevenZipFile> roms;
+	private Map<String, RomSevenZipFile> roms;
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
@@ -42,8 +44,15 @@ public class TableModelRomSevenZip extends TableModelGeneric {
         this.roms = new LinkedHashMap<>();
         //Set column names
         this.setColumnNames(new String [] {
-            "FileName", //NOI18N
-            "Best Version" //NOI18N
+            "FileName", 
+            "Best Version",
+			"Name",
+			"",
+			"Genre",
+			"Rating",
+			"Players",
+			"Developer",
+			"Publisher"
         });
 
 		this.fireTableStructureChanged();
@@ -105,9 +114,24 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     public Object getValueAt(int rowIndex, int columnIndex) {
         RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
 
+		//FIXME: Parametrize !!!!
+		String rootPath = "/media/raph/SHARE/roms/snes";
+		
+		ImageIcon icon = IconBuffer.getCoverIcon(fileInfoRomSevenZip.getGame().getName(), 
+				FilenameUtils.concat(
+						rootPath, 
+						fileInfoRomSevenZip.getGame().getImage()), false);
+		
         switch (columnIndex) {
             case 0: return fileInfoRomSevenZip.getFilename();
             case 1: return fileInfoRomSevenZip.toString();
+			case 2: return fileInfoRomSevenZip.getGame().getName();
+			case 3: return icon!= null ? icon: new ImageIcon();
+			case 4: return fileInfoRomSevenZip.getGame().getGenre();
+			case 5: return fileInfoRomSevenZip.getGame().getRating();
+			case 6: return fileInfoRomSevenZip.getGame().getPlayers();
+			case 7: return fileInfoRomSevenZip.getGame().getDeveloper();
+			case 8: return fileInfoRomSevenZip.getGame().getPublisher();
 		}
         return null;
     }

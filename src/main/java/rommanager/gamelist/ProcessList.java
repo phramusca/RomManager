@@ -7,7 +7,9 @@ package rommanager.gamelist;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.Transformer;
@@ -15,8 +17,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import rommanager.main.IconBuffer;
+import rommanager.main.RomManagerGUI;
+import rommanager.main.RomSevenZipFile;
+import rommanager.main.RomVersion;
+import rommanager.main.TableModelRomSevenZip;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -31,19 +39,23 @@ public class ProcessList extends ProcessAbstract {
 	private final String rootPath;
 	private final String path;
 	private final ProgressBar progressBar;
-	private List<Game> games;
+	private Map<String, Game> games;
+	private final TableModelRomSevenZip tableModel;
 	
-	public ProcessList(String rootPath, String path, ProgressBar progressBar) {
+	public ProcessList(String rootPath, String path, ProgressBar progressBar, TableModelRomSevenZip tableModel) {
 		super("Thread.gamelist.ProcessList");
 		this.rootPath = rootPath;
 		this.path = path;
 		this.progressBar = progressBar;
+		this.tableModel = tableModel;
 	}
 
 	@Override
 	public void run() {
 		try {
 			read(true);
+			RomManagerGUI.enableGUI();
+			Popup.info("Reading complete.");
 //			progressBar.reset();
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
@@ -52,7 +64,7 @@ public class ProcessList extends ProcessAbstract {
 
 	private void read(boolean clean) throws InterruptedException {
 		try {
-			games = new ArrayList<>();
+			games = new HashMap<>();
 			Document doc = XML.open(path);
 			if(doc==null) {
 				Popup.warning("File open failed.");
@@ -81,16 +93,17 @@ public class ProcessList extends ProcessAbstract {
 						XML.getElementValue(element, "genre"),
 						XML.getElementValue(element, "players"),
 						playCounter,
-						XML.getElementValue(element, "path"),
+						XML.getElementValue(element, "lastplayed"),
 						Boolean.parseBoolean(XML.getElementValue(element, "favorite")));
 
-				if(clean && !game.exists(rootPath)) {
-					//FIXME: How to remove the node ?
-//					doc.removeChild(element);
-//					doc.getElementsByTagName("game").item(0).removeChild(element);
-				} else {
-					games.add(game);
-				}
+//				if(clean && !game.exists(rootPath)) {
+//					//FIXME: How to remove the node ?
+////					doc.removeChild(element);
+////					doc.getElementsByTagName("game").item(0).removeChild(element);
+//				} else {
+//					games.put(FilenameUtils.getName(game.getPath()), game);
+//				}
+				games.put(FilenameUtils.getBaseName(game.getPath()), game);
 				progressBar.progress(game.getName());
 			}
 			
@@ -106,14 +119,28 @@ public class ProcessList extends ProcessAbstract {
 				StreamResult consoleResult = new StreamResult(System.out);
 				transformer.transform(source, consoleResult);
 			}
+			
+			progressBar.setup(tableModel.getRoms().size());
+			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
+				for(RomVersion romVersion : romSevenZipFile.getVersions()) {
+					String key = FilenameUtils.getBaseName(romVersion.getFilename());
+					if(games.containsKey(key)) {
+						Game game= games.get(key);
+						IconBuffer.getCoverIcon(game.getName(), 
+						FilenameUtils.concat(rootPath, 
+								game.getImage()), true);
+						romSevenZipFile.setGame(game);
+					}
+				}
+				progressBar.progress(romSevenZipFile.getFilename());
+			}
+			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {
 			Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
 		} 
 	}
 
-	public List<Game> getGames() {
+	public Map<String, Game> getGames() {
 		return games;
-	}
-	
-	
+	}	
 }

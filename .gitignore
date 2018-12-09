@@ -27,3 +27,5 @@ RomManager\.properties
 gamelist-purged\.xml
 
 gamelist\.xml
+
+cache/

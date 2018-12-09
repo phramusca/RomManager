@@ -11,7 +11,10 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -45,6 +48,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         
         progressBar = (ProgressBar)jProgressBar1;
         
+		jTableRom.setRowHeight(IconBuffer.ICON_HEIGHT);
+		
         tableModel = (TableModelRomSevenZip) jTableRom.getModel();
         jTableRom.setRowSorter(null);
 		//Adding columns from tableModel. Cannot be done automatically on properties
@@ -53,6 +58,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
 		setColumn(0, 100, 600);
         setColumn(1, 100, 400);
+		setColumn(2, 100, 600);
+		
+		setColumn(3, 100, 200);
+		setColumn(4, 100, 200);
+		setColumn(5, 100, 200);
+		setColumn(6, 100, 200);
+		setColumn(7, 100, 200);
     }
 
     private void setColumn(int index, int min, int pref) {
@@ -140,7 +152,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jLabelAction.setText("Action: ");
 
         jButtonRead.setText("Read");
-        jButtonRead.setEnabled(false);
         jButtonRead.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonReadActionPerformed(evt);
@@ -235,6 +246,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private static void enableGUI(boolean enable) {
 		jButtonExtract.setEnabled(enable);
 		jButtonList.setEnabled(enable);
+		jButtonRead.setEnabled(enable);
 		jButtonOptionSelectFolder.setEnabled(enable);
 		jTextFieldName.setEditable(enable);
 	}
@@ -289,26 +301,31 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			
 			RomSevenZipFile romSevenZipFile = tableModel.getRom(selectedRow);
 			DefaultListModel versionsModel = new DefaultListModel();
+			int i=0;
+			List<Integer> indices=new ArrayList();
 			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 				versionsModel.addElement(romVersion);
+				if(romVersion.isBest()) {
+					indices.add(i);
+				}
+				i++;
 			}
 			jListVersions.setModel(versionsModel);
+			
+			int[] indicesArray = new int[indices.size()];
+			for(i = 0; i < indices.size(); i++) { indicesArray[i] = indices.get(i); }
+			
+			jListVersions.setSelectedIndices(indicesArray);
 		}
     }//GEN-LAST:event_jTableRomMouseClicked
 
     private void jButtonReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadActionPerformed
-        
+
+		disableGUI("Reading gamelist.xml: ");
+		//FIXME: Parametrize !!!!!
 		String rootPath = "/media/raph/SHARE/roms/snes";
-		
-		ProcessList processList = new ProcessList(rootPath, "gamelist.xml", progressBar);
+		ProcessList processList = new ProcessList(rootPath, "gamelist.xml", progressBar, tableModel);
 		processList.start();
-		
-		for(Game game : processList.getGames()) {
-			if(!game.isFavorite()) {
-				System.out.println("Delating non-favorite: "+game.getName());
-//				game.delete(rootPath);
-			}
-		}
     }//GEN-LAST:event_jButtonReadActionPerformed
 
     private RomDevice getRomDevice() {
@@ -381,7 +398,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonExtract;
     private static javax.swing.JButton jButtonList;
     private static javax.swing.JButton jButtonOptionSelectFolder;
-    private javax.swing.JButton jButtonRead;
+    private static javax.swing.JButton jButtonRead;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelAction;
     private javax.swing.JList<String> jListVersions;

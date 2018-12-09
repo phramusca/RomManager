@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
+import rommanager.gamelist.Game;
 
 /**
  *
@@ -25,6 +26,7 @@ public class RomSevenZipFile {
     private final String path;
     private String filename;
     private final List<RomVersion> versions;
+	private Game game=new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false);
 	
 	//For 7z files including versions
     public RomSevenZipFile(File file) throws IOException {
@@ -102,4 +104,12 @@ public class RomSevenZipFile {
 						?RomVersion.colorField("NO files to export.", 2, true)
 						:RomVersion.colorField(export.size()+" files to export.", 3, true);
     }
+
+	public void setGame(Game game) {
+		this.game=game;
+	}
+
+	Game getGame() {
+		return game;
+	}
 }
