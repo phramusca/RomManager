@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import rommanager.main.Console;
 import rommanager.main.IconBuffer;
 import rommanager.main.RomManagerGUI;
 import rommanager.main.RomSevenZipFile;
@@ -50,7 +51,12 @@ public class ProcessList extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
-			read(true);
+			
+			for(Console console : Console.values()) {
+				read(FilenameUtils.concat(rootPath, console.name()), true);
+			}
+			
+			
 			Popup.info("Reading complete.");
 //			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -60,12 +66,14 @@ public class ProcessList extends ProcessAbstract {
 		}
 	}
 
-	private void read(boolean clean) throws InterruptedException {
+	private void read(String consolePath, boolean clean) throws InterruptedException {
 		try {
 			games = new HashMap<>();
-			Document doc = XML.open(FilenameUtils.concat(rootPath, "gamelist.xml"));
+			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
+			Document doc = XML.open(filename);
 			if(doc==null) {
-				Popup.warning("File open failed.");
+				Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, "File not found: "+filename);
+				return;
 			}
 			ArrayList<Element> elements = XML.getElements(doc, "game");
 			progressBar.setup(elements.size());
@@ -125,7 +133,7 @@ public class ProcessList extends ProcessAbstract {
 					if(games.containsKey(key)) {
 						Game game= games.get(key);
 						IconBuffer.getCoverIcon(game.getName(), 
-						FilenameUtils.concat(rootPath, 
+						FilenameUtils.concat(consolePath, 
 								game.getImage()), true);
 						romSevenZipFile.setGame(game);
 					}
@@ -134,7 +142,7 @@ public class ProcessList extends ProcessAbstract {
 			}
 			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {
-			Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
 		} 
 	}
 

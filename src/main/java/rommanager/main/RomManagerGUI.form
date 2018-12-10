@@ -27,66 +27,46 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jSplitPane1" pref="1350" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jTextFieldName" max="32767" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jTextFieldPathExport" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButtonOptionSelectFolderExport" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonRead" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jTextFieldPath" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButtonOptionSelectFolder" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonRead" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabelAction" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jProgressBar1" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButtonList" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonOptionSelectFolder" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="jSplitPane1" alignment="0" pref="1350" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButtonOptionSelectFolder" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldPath" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldName" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jProgressBar1" alignment="3" max="32767" attributes="0"/>
-                  <Component id="jButtonList" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelAction" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jProgressBar1" alignment="3" max="32767" attributes="0"/>
+                  <Component id="jButtonExtract" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonOptionSelectFolder" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jTextFieldPathExport" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButtonOptionSelectFolderExport" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButtonRead" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonExtract" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldPathExport" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jSplitPane1" pref="466" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" pref="536" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -95,7 +75,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="jButtonOptionSelectFolder">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="Add" noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOptionSelectFolderActionPerformed"/>
@@ -104,41 +84,12 @@
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextFieldPath">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JTextField" name="jTextFieldName">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Name: "/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="jButtonExtract">
       <Properties>
         <Property name="text" type="java.lang.String" value="Extract"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExtractActionPerformed"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JButton" name="jButtonList">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="List"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonListActionPerformed"/>
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>

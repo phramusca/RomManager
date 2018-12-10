@@ -44,7 +44,7 @@ public class XML {
 			return doc;
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
 			//Proper error handling. filename is displayed in ex, so no need to add it again
-			Popup.error(ex); 
+//			Popup.error(ex); 
 			return null;
         }
 	}
