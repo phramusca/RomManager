@@ -17,7 +17,9 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import org.apache.commons.io.FilenameUtils;
@@ -51,17 +53,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		// as done, in initComponents, before setColumnModel which removes the columns ...
 		jTableRom.createDefaultColumnsFromModel();
 
-		setColumn(0, 100, 600);
-        setColumn(1, 100, 400);
-		setColumn(2, 100, 600);
-		
+		setColumn(0, 220, 220);
+        setColumn(1, 100, 300);
+		setColumn(2, 100, 800);
 		setColumn(3, 100, 200);
-		setColumn(4, 100, 200);
-		setColumn(5, 100, 200);
-		setColumn(6, 100, 200);
-		setColumn(7, 100, 200);
+		setColumn(4, 100, 150);
+		setColumn(5, 100, 50);
+		setColumn(6, 100, 100);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setVerticalAlignment(SwingConstants.TOP);
+        jTableRom.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		
 		RomManagerOds.readFile(tableModel, progressBar);
+		enableFilter();
     }
 
     private void setColumn(int index, int min, int pref) {
@@ -83,10 +88,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonExtract = new javax.swing.JButton();
         jProgressBar1 = new ProgressBar();
         jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
-        jTableRom = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListVersions = new javax.swing.JList<>();
+        jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
+        jTableRom = new javax.swing.JTable();
         jLabelAction = new javax.swing.JLabel();
         jButtonRead = new javax.swing.JButton();
         jTextFieldPathExport = new javax.swing.JTextField();
@@ -112,7 +117,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jProgressBar1.setString(""); // NOI18N
         jProgressBar1.setStringPainted(true);
 
-        jSplitPane1.setDividerLocation(800);
+        jSplitPane1.setDividerLocation(150);
+
+        jScrollPane1.setViewportView(jListVersions);
+
+        jSplitPane1.setLeftComponent(jScrollPane1);
 
         jTableRom.setAutoCreateColumnsFromModel(false);
         jTableRom.setModel(new TableModelRomSevenZip());
@@ -127,11 +136,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         });
         jScrollPaneCheckTags1.setViewportView(jTableRom);
 
-        jSplitPane1.setLeftComponent(jScrollPaneCheckTags1);
-
-        jScrollPane1.setViewportView(jListVersions);
-
-        jSplitPane1.setRightComponent(jScrollPane1);
+        jSplitPane1.setRightComponent(jScrollPaneCheckTags1);
 
         jLabelAction.setText("Action: ");
 
@@ -155,24 +160,24 @@ public class RomManagerGUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSplitPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jTextFieldPathExport)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonOptionSelectFolderExport)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonRead))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelAction)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1196, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonOptionAddConsole)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonExtract))
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1350, Short.MAX_VALUE))
+                        .addComponent(jButtonExtract)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -220,20 +225,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 							progressBar.setIndeterminate("Saving ods file");
 							RomManagerOds.createFile(tableModel, progressBar);
 							progressBar.reset();
-							//Enable filter
-							if(tableModel.getRowCount()>0) {
-								jTableRom.setAutoCreateRowSorter(true);
-								TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
-								jTableRom.setRowSorter(tableSorter);
-								List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-
-								//   "FileName", "Versions"
-								sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-								tableSorter.setSortKeys(sortKeys);
-							}
-							else {
-								jTableRom.setAutoCreateRowSorter(false);
-							}
+							enableFilter();
 							Popup.info("Listing complete.");
 							enableGUI();
 						}
@@ -246,6 +238,23 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonOptionAddConsoleActionPerformed
 
+	private void enableFilter() {
+		//Enable filter
+		if(tableModel.getRowCount()>0) {
+			jTableRom.setAutoCreateRowSorter(true);
+			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
+			jTableRom.setRowSorter(tableSorter);
+			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
+
+			//   "FileName", "Versions"
+			sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+			tableSorter.setSortKeys(sortKeys);
+		}
+		else {
+			jTableRom.setAutoCreateRowSorter(false);
+		}
+	}
+	
     private void jButtonExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtractActionPerformed
 //        RomDevice romDevice = getRomDevice("");
 //        if(romDevice!=null) {
@@ -390,7 +399,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
 			RomManagerGUI panel = new RomManagerGUI();
 			panel.setLocationRelativeTo(null);
-			//				panel.setExtendedState(RomManagerGUI.MAXIMIZED_BOTH);
+			panel.setExtendedState(RomManagerGUI.MAXIMIZED_BOTH);
 			panel.setVisible(true);
 		});
     }

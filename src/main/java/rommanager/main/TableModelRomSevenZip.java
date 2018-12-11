@@ -48,16 +48,13 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 
 	private void setColumns() {
 		this.setColumnNames(new String [] {
-            "FileName", 
-            "Best Version",
-			"Console",
+            "",
 			"Name",
-			"",
+			"Description",
+			"Console",
 			"Genre",
 			"Rating",
-			"Players",
-			"Developer",
-			"Publisher"
+			"Best Version"
         });
 		this.fireTableStructureChanged();
 	}
@@ -88,7 +85,11 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		return roms;
 	}
 	
-
+	/**
+	 *
+	 * @param index
+	 * @return
+	 */
 	public RomSevenZipFile getRom(int index) {
 		return (new ArrayList<>(roms.values())).get(index);
 	}
@@ -125,16 +126,25 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 				false);
 		
         switch (columnIndex) {
-            case 0: return fileInfoRomSevenZip.getFilename();
-            case 1: return fileInfoRomSevenZip.toString();
-			case 2: return fileInfoRomSevenZip.getConsoleStr();
-			case 3: return fileInfoRomSevenZip.getGame().getName();
-			case 4: return icon!= null ? icon: new ImageIcon();
-			case 5: return fileInfoRomSevenZip.getGame().getGenre();
-			case 6: return fileInfoRomSevenZip.getGame().getRating();
-			case 7: return fileInfoRomSevenZip.getGame().getPlayers();
-			case 8: return fileInfoRomSevenZip.getGame().getDeveloper();
-			case 9: return fileInfoRomSevenZip.getGame().getPublisher();
+			case 0: return icon!= null ? icon: new ImageIcon();
+			case 1: return "<html>"+fileInfoRomSevenZip.getGame().getName()+"</html>";
+			case 2: 
+				StringBuilder builder = new StringBuilder();
+				builder.append("<html>")
+						.append(fileInfoRomSevenZip.getFilename())
+							.append("<BR/>")
+						.append(fileInfoRomSevenZip.getGame().getPlayers()).append(" ")
+						.append(fileInfoRomSevenZip.getGame().getDeveloper()).append(" / ")
+						.append(fileInfoRomSevenZip.getGame().getPublisher())
+							.append("<BR/>").append("<BR/>")
+						.append(fileInfoRomSevenZip.getGame().getDesc())
+						.append("</html>");
+				return builder.toString();
+			case 3: return fileInfoRomSevenZip.getConsoleStr();
+			case 4: return fileInfoRomSevenZip.getGame().getGenre();
+			case 5: return fileInfoRomSevenZip.getGame().getRating();
+			case 6: return fileInfoRomSevenZip.toString();
+			
 		}
         return null;
     }
@@ -191,17 +201,31 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		this.fireTableDataChanged();
     }
 
+	/**
+	 *
+	 * @param console
+	 * @param filename
+	 * @throws IOException
+	 */
 	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
 			roms.put(filename, new RomSevenZipFile(console, new File(filename)));
 		}
 	}
 	
-    public void removeRow(RomSevenZipFile file){
+	/**
+	 *
+	 * @param file
+	 */
+	public void removeRow(RomSevenZipFile file){
 		roms.remove(file.getFilename());
 		this.fireTableDataChanged();
     }
 
+	/**
+	 *
+	 * @param rootPath
+	 */
 	public void setRootPath(String rootPath) {
 		this.rootPath = rootPath;
 	}
