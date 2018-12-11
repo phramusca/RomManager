@@ -51,17 +51,14 @@ public class ProcessList extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
-			
 			for(Console console : Console.values()) {
 				read(FilenameUtils.concat(rootPath, console.name()), true);
 			}
-			
-			
 			Popup.info("Reading complete.");
-//			progressBar.reset();
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
 		} finally {
+			progressBar.reset();
 			RomManagerGUI.enableGUI();
 		}
 	}

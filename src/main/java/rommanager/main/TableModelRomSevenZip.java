@@ -43,10 +43,14 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 */
 	public TableModelRomSevenZip() {
         this.roms = new LinkedHashMap<>();
-        //Set column names
-        this.setColumnNames(new String [] {
+        setColumns();
+	}
+
+	private void setColumns() {
+		this.setColumnNames(new String [] {
             "FileName", 
             "Best Version",
+			"Console",
 			"Name",
 			"",
 			"Genre",
@@ -57,7 +61,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
         });
 		this.fireTableStructureChanged();
 	}
-
+	
     @Override
     public boolean isCellEditable(int row, int col){
 //		if(col==0) { //Selected checkbox
@@ -77,7 +81,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     }
     
 	/**
-	 * Return list of files
+	 * Return list of roms
 	 * @return
 	 */
 	public Map<String, RomSevenZipFile> getRoms() {
@@ -114,21 +118,23 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     public Object getValueAt(int rowIndex, int columnIndex) {
         RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
 
-		ImageIcon icon = IconBuffer.getCoverIcon(fileInfoRomSevenZip.getGame().getName(), 
-				FilenameUtils.concat(
-						rootPath, 
-						fileInfoRomSevenZip.getGame().getImage()), false);
+		ImageIcon icon = IconBuffer.getCoverIcon(
+				fileInfoRomSevenZip.getGame().getName(), 
+				FilenameUtils.concat(rootPath, 
+						fileInfoRomSevenZip.getGame().getImage()), 
+				false);
 		
         switch (columnIndex) {
             case 0: return fileInfoRomSevenZip.getFilename();
             case 1: return fileInfoRomSevenZip.toString();
-			case 2: return fileInfoRomSevenZip.getGame().getName();
-			case 3: return icon!= null ? icon: new ImageIcon();
-			case 4: return fileInfoRomSevenZip.getGame().getGenre();
-			case 5: return fileInfoRomSevenZip.getGame().getRating();
-			case 6: return fileInfoRomSevenZip.getGame().getPlayers();
-			case 7: return fileInfoRomSevenZip.getGame().getDeveloper();
-			case 8: return fileInfoRomSevenZip.getGame().getPublisher();
+			case 2: return fileInfoRomSevenZip.getConsoleStr();
+			case 3: return fileInfoRomSevenZip.getGame().getName();
+			case 4: return icon!= null ? icon: new ImageIcon();
+			case 5: return fileInfoRomSevenZip.getGame().getGenre();
+			case 6: return fileInfoRomSevenZip.getGame().getRating();
+			case 7: return fileInfoRomSevenZip.getGame().getPlayers();
+			case 8: return fileInfoRomSevenZip.getGame().getDeveloper();
+			case 9: return fileInfoRomSevenZip.getGame().getPublisher();
 		}
         return null;
     }
@@ -185,9 +191,9 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		this.fireTableDataChanged();
     }
 
-	public void addRow(String filename) throws IOException {
+	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
-			roms.put(filename, new RomSevenZipFile(new File(filename)));
+			roms.put(filename, new RomSevenZipFile(console, new File(filename)));
 		}
 	}
 	

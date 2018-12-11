@@ -208,7 +208,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				RomManager.options.set("romset.path", selectedFolder);
 				RomManager.options.save();
 
-				final RomDevice romDevice = getRomDevice(console.toString());
+				final RomDevice romDevice = getRomDevice(console);
 				if(romDevice!=null) {
 					Thread t = new Thread("Thread.RomDevice.List") {
 						@Override
@@ -247,18 +247,18 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonOptionSelectFolderActionPerformed
 
     private void jButtonExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtractActionPerformed
-        RomDevice romDevice = getRomDevice("");
-        if(romDevice!=null) {
-            int n = JOptionPane.showConfirmDialog(
-                this, "Extract ?\n\nName: \""+romDevice.getName()+"\" ?\nPath: "+romDevice.getPath(),  //NOI18N
-                "Please Confirm",  //NOI18N
-                JOptionPane.YES_NO_OPTION);
-            if (n == JOptionPane.YES_OPTION) {
-				disableGUI("Extraction: ");
+//        RomDevice romDevice = getRomDevice("");
+//        if(romDevice!=null) {
+//            int n = JOptionPane.showConfirmDialog(
+//                this, "Extract ?\n\nName: \""+romDevice.getName()+"\" ?\nPath: "+romDevice.getPath(),  //NOI18N
+//                "Please Confirm",  //NOI18N
+//                JOptionPane.YES_NO_OPTION);
+//            if (n == JOptionPane.YES_OPTION) {
+//				disableGUI("Extraction: ");
 				Popup.warning("Disabled for now!");enableGUI();
 //                romDevice.extract();
-            } 
-        }   
+//            } 
+//        }   
     }//GEN-LAST:event_jButtonExtractActionPerformed
 
 	private void disableGUI(String text) {
@@ -313,19 +313,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableRomMouseClicked
 
     private void jButtonReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadActionPerformed
-		RomDevice romDevice = getRomDevice("");
-        if(romDevice!=null) {
-			disableGUI("Reading gamelist.xml: ");
-			String exportPath = jTextFieldPathExport.getText();
-			File file = new File(exportPath);
-			if(!file.exists()) {
-				Popup.warning("Export path does not exist.");
-				return;
-			}
-			tableModel.setRootPath(exportPath);
-			ProcessList processList = new ProcessList(exportPath, progressBar, tableModel);
-			processList.start();
-        }  
+		disableGUI("Reading gamelist.xml: ");
+		String exportPath = jTextFieldPathExport.getText();
+		File file = new File(exportPath);
+		if(!file.exists()) {
+			Popup.warning("Export path does not exist.");
+			return;
+		}
+		tableModel.setRootPath(exportPath);
+		ProcessList processList = new ProcessList(exportPath, progressBar, tableModel);
+		processList.start();
     }//GEN-LAST:event_jButtonReadActionPerformed
 
     private void jButtonOptionSelectFolderExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderExportActionPerformed
@@ -337,7 +334,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonOptionSelectFolderExportActionPerformed
 
-    private RomDevice getRomDevice(String name) {
+    private RomDevice getRomDevice(Console console) {
 
         String path = RomManager.options.get("romset.path");
         
@@ -347,12 +344,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
             return null;
         }
         
-        if(name.trim().equals("CHANGEME")) {
+        if(console.toString().trim().equals("CHANGEME")) {
             Popup.warning("Unsupported console type :(");
             return null;
         }
 		
-        return new RomDevice(name, path);
+        return new RomDevice(console, path);
     }
     
     public static String selectFolder(String defaultFolder) {

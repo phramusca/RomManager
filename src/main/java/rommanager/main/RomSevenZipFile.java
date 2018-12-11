@@ -21,24 +21,35 @@ import rommanager.gamelist.Game;
  */
 public class RomSevenZipFile {
     
-//    private final File file;
-    
     private final String path;
     private String filename;
     private final List<RomVersion> versions;
 	private Game game=new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false);
+	private Console console;
 	
-	//For 7z files including versions
-    public RomSevenZipFile(File file) throws IOException {
+	/**
+	 * For 7z files including rom versions
+	 * @param console
+	 * @param file
+	 * @throws IOException
+	 */
+    public RomSevenZipFile(Console console, File file) throws IOException {
         this.path = FilenameUtils.getFullPath(file.getAbsolutePath());
         this.filename = FilenameUtils.getName(file.getAbsolutePath());
-		versions = new ArrayList<>();
+		this.versions = new ArrayList<>();
+		this.console = console;
     }
 	
-	//For dsk (Amstrad) files that are not groupped in 7z
-	//FIXME 6 Split from there
-	public RomSevenZipFile(File file, String filename) throws IOException {
-		this(file);
+	//FIXME 6 Remove Amstrad support from here => move to a sub-class or something
+	/**
+	 * For dsk (Amstrad) files that are not groupped in 7z
+	 * @param console
+	 * @param file
+	 * @param filename
+	 * @throws IOException
+	 */
+	public RomSevenZipFile(Console console, File file, String filename) throws IOException {
+		this(console, file);
 		this.filename=filename;
 	}
 	
@@ -111,5 +122,13 @@ public class RomSevenZipFile {
 
 	Game getGame() {
 		return game;
+	}
+
+	public Console getConsole() {
+		return console;
+	}
+	
+	public String getConsoleStr() {
+		return console==null?"Unknown":console.toString();
 	}
 }

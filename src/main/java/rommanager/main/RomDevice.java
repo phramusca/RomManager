@@ -23,21 +23,22 @@ import org.apache.commons.io.FilenameUtils;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class RomDevice {
-    private final String name;
+
+	private final Console console;
     private final String path;
 
     /**
      *
-     * @param name
+	 * @param console
      * @param path
      */
-    public RomDevice(String name, String path) {
-        this.name = name;
+    public RomDevice(Console console, String path) {
+		this.console = console;
         this.path = path;
     }
 
     public String getName() {
-        return name;
+        return console.toString();
     }
 
     public String getPath() {
@@ -77,7 +78,7 @@ public class RomDevice {
 								case "7z":
 									RomSevenZipFile sevenZipRomFile;
 									try {
-										sevenZipRomFile = new RomSevenZipFile(file);
+										sevenZipRomFile = new RomSevenZipFile(console, file);
 										sevenZipRomFile.setVersions();
 										model.addRow(sevenZipRomFile);
 									} catch (IOException ex) {
@@ -96,7 +97,7 @@ public class RomDevice {
 										if(amstradRoms.containsKey(romName)) {
 											romSevenZipFile = amstradRoms.get(romName);
 										} else {
-											romSevenZipFile = new RomSevenZipFile(file, romName);
+											romSevenZipFile = new RomSevenZipFile(console, file, romName);
 											amstradRoms.put(romName, romSevenZipFile);
 										}
 										String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
