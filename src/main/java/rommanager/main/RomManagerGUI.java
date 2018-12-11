@@ -79,7 +79,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButtonOptionSelectFolder = new javax.swing.JButton();
+        jButtonOptionAddConsole = new javax.swing.JButton();
         jButtonExtract = new javax.swing.JButton();
         jProgressBar1 = new ProgressBar();
         jSplitPane1 = new javax.swing.JSplitPane();
@@ -95,10 +95,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
 
-        jButtonOptionSelectFolder.setText("Add"); // NOI18N
-        jButtonOptionSelectFolder.addActionListener(new java.awt.event.ActionListener() {
+        jButtonOptionAddConsole.setText("Add"); // NOI18N
+        jButtonOptionAddConsole.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOptionSelectFolderActionPerformed(evt);
+                jButtonOptionAddConsoleActionPerformed(evt);
             }
         });
 
@@ -169,7 +169,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonOptionSelectFolder)
+                        .addComponent(jButtonOptionAddConsole)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonExtract))
                     .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1350, Short.MAX_VALUE))
@@ -183,7 +183,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jLabelAction)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonExtract)
-                    .addComponent(jButtonOptionSelectFolder))
+                    .addComponent(jButtonOptionAddConsole))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldPathExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -197,7 +197,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonOptionSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderActionPerformed
+    private void jButtonOptionAddConsoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionAddConsoleActionPerformed
         
 		String selectedFolder=selectFolder(RomManager.options.get("romset.path"));
         if(!selectedFolder.equals("")) {  //NOI18N
@@ -244,7 +244,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				Popup.warning("Unknown console: "+consolePath);
 			}
         }
-    }//GEN-LAST:event_jButtonOptionSelectFolderActionPerformed
+    }//GEN-LAST:event_jButtonOptionAddConsoleActionPerformed
 
     private void jButtonExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtractActionPerformed
 //        RomDevice romDevice = getRomDevice("");
@@ -273,7 +273,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private static void enableGUI(boolean enable) {
 		jButtonExtract.setEnabled(enable);
 		jButtonRead.setEnabled(enable);
-		jButtonOptionSelectFolder.setEnabled(enable);
+		jButtonOptionAddConsole.setEnabled(enable);
 		jButtonOptionSelectFolderExport.setEnabled(enable);
 	}
 	
@@ -397,7 +397,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JButton jButtonExtract;
-    private static javax.swing.JButton jButtonOptionSelectFolder;
+    private static javax.swing.JButton jButtonOptionAddConsole;
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonRead;
     private javax.swing.JLabel jLabelAction;

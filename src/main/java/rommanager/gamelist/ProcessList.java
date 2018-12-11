@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 import rommanager.main.Console;
 import rommanager.main.IconBuffer;
 import rommanager.main.RomManagerGUI;
+import rommanager.main.RomManagerOds;
 import rommanager.main.RomSevenZipFile;
 import rommanager.main.RomVersion;
 import rommanager.main.TableModelRomSevenZip;
@@ -54,6 +55,9 @@ public class ProcessList extends ProcessAbstract {
 			for(Console console : Console.values()) {
 				read(FilenameUtils.concat(rootPath, console.name()), true);
 			}
+			progressBar.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBar);
+			
 			Popup.info("Reading complete.");
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
@@ -128,11 +132,13 @@ public class ProcessList extends ProcessAbstract {
 				for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 					String key = FilenameUtils.getBaseName(romVersion.getFilename());
 					if(games.containsKey(key)) {
-						Game game= games.get(key);
-						IconBuffer.getCoverIcon(game.getName(), 
-						FilenameUtils.concat(consolePath, 
-								game.getImage()), true);
-						romSevenZipFile.setGame(game);
+						Game game = games.get(key);
+						IconBuffer.getCoverIcon(
+								game.getName(), 
+								FilenameUtils.concat(consolePath, 
+										game.getImage()), 
+								true);
+						romVersion.setGame(game);
 					}
 				}
 				progressBar.progress(romSevenZipFile.getFilename());

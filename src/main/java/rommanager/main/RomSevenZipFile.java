@@ -24,7 +24,6 @@ public class RomSevenZipFile {
     private final String path;
     private String filename;
     private final List<RomVersion> versions;
-	private Game game=new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false);
 	private Console console;
 	
 	/**
@@ -116,19 +115,27 @@ public class RomSevenZipFile {
 						:RomVersion.colorField(export.size()+" files to export.", 3, true);
     }
 
-	public void setGame(Game game) {
-		this.game=game;
-	}
-
-	Game getGame() {
-		return game;
-	}
-
 	public Console getConsole() {
 		return console;
 	}
 	
 	public String getConsoleStr() {
 		return console==null?"Unknown":console.toString();
+	}
+
+	private Game game = null;
+	
+	public Game getGame() {
+		if(game==null) {
+			List<Game> games = versions.stream()
+				.filter(v -> v.isBest() && v.getGame()!=null && !v.getGame().getName().equals(""))
+				.map(v -> v.getGame())
+				.collect(Collectors.toList());
+		
+			if(games.size()>0) {
+				game = games.get(0);
+			}
+		}
+		return game==null?new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false):game;
 	}
 }

@@ -39,7 +39,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jProgressBar1" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButtonOptionSelectFolder" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonOptionAddConsole" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -57,7 +57,7 @@
                   <Component id="jLabelAction" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jProgressBar1" alignment="3" max="32767" attributes="0"/>
                   <Component id="jButtonExtract" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonOptionSelectFolder" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonOptionAddConsole" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -73,12 +73,12 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="jButtonOptionSelectFolder">
+    <Component class="javax.swing.JButton" name="jButtonOptionAddConsole">
       <Properties>
         <Property name="text" type="java.lang.String" value="Add" noResource="true"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOptionSelectFolderActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOptionAddConsoleActionPerformed"/>
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>

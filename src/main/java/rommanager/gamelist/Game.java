@@ -88,6 +88,22 @@ public class Game {
 	public boolean isFavorite() {
 		return favorite;
 	}
+
+	public String getThumbnail() {
+		return thumbnail;
+	}
+
+	public String getReleaseDate() {
+		return releaseDate;
+	}
+
+	public int getPlaycount() {
+		return playcount;
+	}
+
+	public String getLastplayed() {
+		return lastplayed;
+	}
 	
 	private File getFile(String rootPath) {
 		return new File(FilenameUtils.concat(rootPath, path));
@@ -113,7 +129,7 @@ public class Game {
 				+ '}';
 	}
 
-	String getPath() {
+	public String getPath() {
 		return path;
 	}
 

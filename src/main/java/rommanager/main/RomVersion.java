@@ -9,6 +9,7 @@ import rommanager.utils.Popup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import rommanager.gamelist.Game;
 
 /**
  *
@@ -22,6 +23,7 @@ public class RomVersion {
 	private int score;
 	private int errorLevel;
 	private boolean best;
+	private Game game;
 	
     /**
      *
@@ -236,5 +238,13 @@ public class RomVersion {
 
 	public void setBest(boolean selected) {
 		this.best = selected;
+	}
+	
+	public void setGame(Game game) {
+		this.game=game;
+	}
+
+	public Game getGame() {
+		return game;
 	}
 }
