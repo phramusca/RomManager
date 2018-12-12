@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import rommanager.main.Console;
+import rommanager.main.ICallBackProcess;
 import rommanager.main.IconBuffer;
 import rommanager.main.RomManagerGUI;
 import rommanager.main.RomManagerOds;
@@ -35,35 +36,37 @@ import rommanager.utils.XML;
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
-public class ProcessList extends ProcessAbstract {
+public class ProcessRead extends ProcessAbstract {
 
 	private final String rootPath;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
 	private final TableModelRomSevenZip tableModel;
+	private final ICallBackProcess callBack;
 	
-	public ProcessList(String rootPath, ProgressBar progressBar, TableModelRomSevenZip tableModel) {
+	public ProcessRead(String rootPath, ProgressBar progressBar, TableModelRomSevenZip tableModel, ICallBackProcess callBack) {
 		super("Thread.gamelist.ProcessList");
 		this.rootPath = rootPath;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;
+		this.callBack = callBack;
 	}
 
 	@Override
 	public void run() {
 		try {
 			for(Console console : Console.values()) {
+				checkAbort();
 				read(FilenameUtils.concat(rootPath, console.name()), true);
 			}
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
-			
 			Popup.info("Reading complete.");
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
 		} finally {
 			progressBar.reset();
-			RomManagerGUI.enableGUI();
+			callBack.completed();
 		}
 	}
 
@@ -73,7 +76,7 @@ public class ProcessList extends ProcessAbstract {
 			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
 			Document doc = XML.open(filename);
 			if(doc==null) {
-				Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, "File not found: {0}", filename);
+				Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, "File not found: {0}", filename);
 				return;
 			}
 			ArrayList<Element> elements = XML.getElements(doc, "game");
@@ -129,7 +132,9 @@ public class ProcessList extends ProcessAbstract {
 			
 			progressBar.setup(tableModel.getRoms().size());
 			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
+				checkAbort();
 				for(RomVersion romVersion : romSevenZipFile.getVersions()) {
+					checkAbort();
 					String key = FilenameUtils.getBaseName(romVersion.getFilename());
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
@@ -145,7 +150,7 @@ public class ProcessList extends ProcessAbstract {
 			}
 			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {
-			Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
 		} 
 	}
 

@@ -5,126 +5,62 @@
  */
 package rommanager.main;
 
-import rommanager.utils.ProgressBar;
+import rommanager.gamelist.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FilenameUtils;
+import rommanager.utils.Popup;
+import rommanager.utils.ProcessAbstract;
+import rommanager.utils.ProgressBar;
 
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
-public class RomDevice {
+public class ProcessExport extends ProcessAbstract {
 
-	private final Console console;
-    private final String path;
+	private final String rootPath;
+	private final ProgressBar progressBar;
+	private Map<String, Game> games;
+	private final TableModelRomSevenZip tableModel;
+	private final ICallBackProcess callBack;
+	
+	public ProcessExport(String rootPath, 
+			ProgressBar progressBar, 
+			TableModelRomSevenZip tableModel, 
+			ICallBackProcess callBack) {
+		super("Thread.gamelist.ProcessList");
+		this.rootPath = rootPath;
+		this.progressBar = progressBar;
+		this.tableModel = tableModel;
+		this.callBack = callBack;
+	}
 
-    /**
-     *
-	 * @param console
-     * @param path
-     */
-    public RomDevice(Console console, String path) {
-		this.console = console;
-        this.path = path;
-    }
-
-    public String getName() {
-        return console.toString();
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void list(TableModelRomSevenZip model, ProgressBar progressBar) {
-//        model.clear();
-		browseFoldersFS(path, new File(path), progressBar, model);
-		for(RomSevenZipFile file : amstradRoms.values()) {
-			file.setScore(false);
-			model.addRow(file);
+	@Override
+	public void run() {
+		try {
+			for(Console console : Console.values()) {
+				checkAbort();
+//				extract(FilenameUtils.concat(rootPath, console.name()));
+			}
+			progressBar.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBar);
+			Popup.info("Export complete.");
+		} catch (InterruptedException ex) {
+			Popup.info("Aborted by user");
+		} finally {
+			progressBar.reset();
+			callBack.completed();
 		}
-		progressBar.reset();        
-    }
-    
-    private void browseFoldersFS(String rootPath, File path, 
-			ProgressBar progressBar, TableModelRomSevenZip model) {
-        if (path.isDirectory()) {
-            File[] files = path.listFiles((File pathname) -> {
-				String ext = FilenameUtils.getExtension(pathname.getAbsolutePath())
-						.toLowerCase();
-				return ext.equals("7z")
-						|| ext.equals("dsk")
-						|| pathname.isDirectory();
-			});
-            if (files != null) {
-                if(files.length>0) {
-                    progressBar.setup(files.length);
-                    for (File file : files) {
-                        progressBar.progress(FilenameUtils.getName(file.getAbsolutePath()));
-                        if (file.isDirectory()) {
-                            browseFoldersFS(rootPath, file, progressBar, model);
-                        }
-                        else {
-							switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
-								case "7z":
-									RomSevenZipFile sevenZipRomFile;
-									try {
-										sevenZipRomFile = new RomSevenZipFile(console, file);
-										sevenZipRomFile.setVersions();
-										model.addRow(sevenZipRomFile);
-									} catch (IOException ex) {
-										Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
-									}	break;
-								case "dsk":
-									try {
-										String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
-										int pos = romName.indexOf("(");
-										if(pos>=0) {
-											romName=romName.substring(0, pos).trim();
-										}
-										romName=romName.concat(".dsk");
-										
-										RomSevenZipFile romSevenZipFile;
-										if(amstradRoms.containsKey(romName)) {
-											romSevenZipFile = amstradRoms.get(romName);
-										} else {
-											romSevenZipFile = new RomSevenZipFile(console, file, romName);
-											amstradRoms.put(romName, romSevenZipFile);
-										}
-										String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
-										
-										romSevenZipFile.addAmstradVersion(new RomVersion(
-												romName,
-												versionPath));
-									} catch (IOException ex) {
-										Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
-									}	break;
-								default:
-									break;
-							}
-                        }
-                    }
-                }
-            } 
-        }
-    }
-	
-	//FIXME 3 Amstrad: Remove amstradRoms: model should be enough + TEST/fix Amstrad (list & extract)
-	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
-    
-	//FIXME 1 Read all recursively
-	// - Add a source text filed  as for export path
-	// - make a nice gui for setting all this
-	
+	}
+
 	//FIXME 2 Rehabiliter extract() et changer en export()
 	// Warning: isBest OR a new isSelected ?? Think of amstrad (or if we want to export several versions) !
 	
@@ -210,7 +146,7 @@ public class RomDevice {
             System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath);
 			return true;
         } catch (IOException ex) {
-            Logger.getLogger(RomDevice.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
 			return false;
         }
     }

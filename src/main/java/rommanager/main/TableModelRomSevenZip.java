@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -36,7 +35,6 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
-	private String rootPath;
     
     /**
 	 * Create the table model
@@ -120,9 +118,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
         RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
 
 		ImageIcon icon = IconBuffer.getCoverIcon(
-				fileInfoRomSevenZip.getGame().getName(), 
-				FilenameUtils.concat(rootPath, 
-						fileInfoRomSevenZip.getGame().getImage()), 
+				fileInfoRomSevenZip.getGame().getName(), "", 
 				false);
 		
         switch (columnIndex) {
@@ -221,12 +217,4 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		roms.remove(file.getFilename());
 		this.fireTableDataChanged();
     }
-
-	/**
-	 *
-	 * @param rootPath
-	 */
-	public void setRootPath(String rootPath) {
-		this.rootPath = rootPath;
-	}
 }
