@@ -73,7 +73,7 @@ public class ProcessList extends ProcessAbstract {
 			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
 			Document doc = XML.open(filename);
 			if(doc==null) {
-				Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, "File not found: "+filename);
+				Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, "File not found: {0}", filename);
 				return;
 			}
 			ArrayList<Element> elements = XML.getElements(doc, "game");

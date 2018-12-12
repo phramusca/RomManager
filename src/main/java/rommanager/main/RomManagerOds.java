@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import org.apache.commons.io.FilenameUtils;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
@@ -27,7 +26,7 @@ import rommanager.utils.Row;
 public class RomManagerOds {
 	
 	private final static File DOC_FILE = new File("RomManager.ods");
-	private final static String sheetName = "List";
+	private final static String SHEET_NAME = "List";
 	
 	public RomManagerOds() {
 	}
@@ -117,7 +116,7 @@ public class RomManagerOds {
             DOC_FILE.delete();
         }
         SpreadSheet spreadSheet = SpreadSheet.createEmpty(docModel);
-        spreadSheet.getFirstSheet().setName(sheetName);
+        spreadSheet.getFirstSheet().setName(SHEET_NAME);
         try {
             spreadSheet.saveAs(DOC_FILE);
 			if(open) {
@@ -139,7 +138,7 @@ public class RomManagerOds {
 		}
         try {
 			SpreadSheet spreadSheet = SpreadSheet.createFromFile(DOC_FILE);
-			Sheet sheet = spreadSheet.getSheet(sheetName);
+			Sheet sheet = spreadSheet.getSheet(SHEET_NAME);
 			int nRowCount = sheet.getRowCount();
 			progressBar.setup(nRowCount-1);	
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {

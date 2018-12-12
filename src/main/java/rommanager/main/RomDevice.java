@@ -118,10 +118,15 @@ public class RomDevice {
         }
     }
 	
-	//FIXME 6 Remove amstradRoms: model should be enough + TEST/fix Amstrad (list & extract)
+	//FIXME 3 Amstrad: Remove amstradRoms: model should be enough + TEST/fix Amstrad (list & extract)
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
     
-   
+	//FIXME 1 Read all recursively
+	// - Add a source text filed  as for export path
+	// - make a nice gui for setting all this
+	
+	//FIXME 2 Rehabiliter extract() et changer en export()
+	// Warning: isBest OR a new isSelected ?? Think of amstrad (or if we want to export several versions) !
 	
 //    public void extract() {
 //        Thread t = new Thread("Thread.RomDevice.Extract") {
