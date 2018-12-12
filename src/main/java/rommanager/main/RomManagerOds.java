@@ -14,7 +14,6 @@ import javax.swing.table.TableModel;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
-import rommanager.gamelist.Game;
 import rommanager.utils.Popup;
 import rommanager.utils.ProgressBar;
 import rommanager.utils.Row;
@@ -190,6 +189,7 @@ public class RomManagerOds {
 				model.getRoms().get(filename).getVersions().add(romVersion);
 				progressBar.progress(filename);
 			}
+			progressBar.reset();
 		} catch (IOException ex) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.SEVERE, null, ex);

@@ -8,7 +8,6 @@ package rommanager.main;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import rommanager.gamelist.*;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,11 +46,11 @@ public class ProcessList extends ProcessAbstract {
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
 			Popup.info("Listing complete.");
+			progressBar.reset();
 			
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
 		} finally {
-			progressBar.reset();
 			callBack.completed();
 		}
 	}
@@ -79,10 +78,8 @@ public class ProcessList extends ProcessAbstract {
 		progressBar.reset();   
 	}
 	
-	//FIXME 3 Amstrad: Remove amstradRoms: model should be enough + TEST/fix Amstrad (list & extract)
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
-
-    
+  
     private void browseFoldersFS(Console console, String rootPath, File path, 
 			ProgressBar progressBar, TableModelRomSevenZip model) throws InterruptedException {
         if (path.isDirectory()) {
@@ -105,11 +102,13 @@ public class ProcessList extends ProcessAbstract {
                         else {
 							switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
 								case "7z":
-									RomSevenZipFile sevenZipRomFile;
 									try {
-										sevenZipRomFile = new RomSevenZipFile(console, file);
-										sevenZipRomFile.setVersions();
-										model.addRow(sevenZipRomFile);
+										RomSevenZipFile romSevenZipFile;
+										if(!tableModel.getRoms().containsKey(FilenameUtils.getName(file.getAbsolutePath()))) {
+											romSevenZipFile = new RomSevenZipFile(console, file);
+											romSevenZipFile.setVersions();
+											model.addRow(romSevenZipFile);
+										} 
 									} catch (IOException ex) {
 										Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
 									}	break;

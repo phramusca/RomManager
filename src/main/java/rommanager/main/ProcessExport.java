@@ -5,7 +5,6 @@
  */
 package rommanager.main;
 
-import rommanager.gamelist.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,10 +52,10 @@ public class ProcessExport extends ProcessAbstract {
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
 			Popup.info("Export complete.");
+			progressBar.reset();
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
 		} finally {
-			progressBar.reset();
 			callBack.completed();
 		}
 	}

@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
-import rommanager.gamelist.ProcessRead;
 
 /**
  *
@@ -293,9 +292,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
 			jTableRom.setRowSorter(tableSorter);
 			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-
-			//   "FileName", "Versions"
-			sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+			//Order by console, name
+			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
 			tableSorter.setSortKeys(sortKeys);
 		}
 		else {

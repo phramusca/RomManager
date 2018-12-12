@@ -123,7 +123,10 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 		
         switch (columnIndex) {
 			case 0: return icon!= null ? icon: new ImageIcon();
-			case 1: return "<html>"+fileInfoRomSevenZip.getGame().getName()+"</html>";
+			case 1: 
+				String name = fileInfoRomSevenZip.getGame().getName();
+				name=name.equals("")?fileInfoRomSevenZip.getFilename():name;
+				return "<html>"+name+"</html>";
 			case 2: 
 				StringBuilder builder = new StringBuilder();
 				builder.append("<html>")

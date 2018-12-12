@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rommanager.gamelist;
+package rommanager.main;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import org.w3c.dom.Element;
 import rommanager.main.Console;
 import rommanager.main.ICallBackProcess;
 import rommanager.main.IconBuffer;
-import rommanager.main.RomManagerGUI;
 import rommanager.main.RomManagerOds;
 import rommanager.main.RomSevenZipFile;
 import rommanager.main.RomVersion;
@@ -62,10 +61,10 @@ public class ProcessRead extends ProcessAbstract {
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
 			Popup.info("Reading complete.");
+			progressBar.reset();
 		} catch (InterruptedException ex) {
 			Popup.info("Aborted by user");
 		} finally {
-			progressBar.reset();
 			callBack.completed();
 		}
 	}

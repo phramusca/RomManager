@@ -9,7 +9,6 @@ import rommanager.utils.Popup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import rommanager.gamelist.Game;
 
 /**
  *
