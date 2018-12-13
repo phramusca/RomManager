@@ -22,6 +22,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
+import rommanager.utils.ProcessAbstract;
+import sun.java2d.loops.ProcessPath;
 
 /**
  *
@@ -63,10 +65,23 @@ public class RomManagerGUI extends javax.swing.JFrame {
         renderer.setVerticalAlignment(SwingConstants.TOP);
         jTableRom.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		
-		RomManagerOds.readFile(tableModel, progressBar);
-		enableFilter();
+		disableGUI("Reading ods file: ");
+		new ReadOds(new CallBackProcess()).start();
     }
 
+	private class ReadOds extends ProcessAbstract {
+		private final ICallBackProcess callBack;
+		public ReadOds(ICallBackProcess callBack) {
+			super("Thread.RomManagerGUI.ReadOds");
+			this.callBack = callBack;
+		}
+		@Override
+		public void run() {
+			RomManagerOds.readFile(tableModel, progressBar);
+			callBack.completed();
+		}
+	}
+	
     private void setColumn(int index, int min, int pref) {
         TableColumn column = jTableRom.getColumnModel().getColumn(index);
 		column.setMinWidth(min);
