@@ -1,5 +1,5 @@
- /*
- * Copyright (C) 2014 phramusca ( https://github.com/phramusca/JaMuz/ )
+/* 
+ * Copyright (C) 2018 phramusca ( https://github.com/phramusca/JaMuz/ )
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package rommanager.main;
 
 import java.awt.Graphics2D;
