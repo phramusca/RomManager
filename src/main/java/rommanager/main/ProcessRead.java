@@ -47,7 +47,11 @@ public class ProcessRead extends ProcessAbstract {
 	private final TableModelRomSevenZip tableModel;
 	private final ICallBackProcess callBack;
 	
-	public ProcessRead(String exportPath, ProgressBar progressBar, TableModelRomSevenZip tableModel, ICallBackProcess callBack) {
+	public ProcessRead(
+			String exportPath, 
+			ProgressBar progressBar, 
+			TableModelRomSevenZip tableModel, 
+			ICallBackProcess callBack) {
 		super("Thread.gamelist.ProcessList");
 		this.exportPath = exportPath;
 		this.progressBar = progressBar;
@@ -73,13 +77,15 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-	private void read(String consolePath, boolean clean) throws InterruptedException {
+	private void read(String consolePath, boolean clean) 
+			throws InterruptedException {
 		try {
 			games = new HashMap<>();
 			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
 			Document doc = XML.open(filename);
 			if(doc==null) {
-				Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, "File not found: {0}", filename);
+				Logger.getLogger(ProcessRead.class.getName())
+						.log(Level.SEVERE, "File not found: {0}", filename);
 				return;
 			}
 			ArrayList<Element> elements = XML.getElements(doc, "game");
@@ -107,7 +113,8 @@ public class ProcessRead extends ProcessAbstract {
 						XML.getElementValue(element, "players"),
 						playCounter,
 						XML.getElementValue(element, "lastplayed"),
-						Boolean.parseBoolean(XML.getElementValue(element, "favorite")));
+						Boolean.parseBoolean(
+								XML.getElementValue(element, "favorite")));
 
 //				if(clean && !game.exists(rootPath)) {
 //					//FIXME: How to remove the node ?
@@ -122,12 +129,14 @@ public class ProcessRead extends ProcessAbstract {
 			
 			if(clean) {
 				// write the content into xml file
-				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				TransformerFactory transformerFactory = 
+						TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
 
 				//FIXME: Save to source (back it up first) when really cleaned
-				StreamResult result = new StreamResult(new File("gamelist-purged.xml"));
+				StreamResult result = new StreamResult(
+						new File("gamelist-purged.xml"));
 				transformer.transform(source, result);
 				StreamResult consoleResult = new StreamResult(System.out);
 				transformer.transform(source, consoleResult);
@@ -138,7 +147,8 @@ public class ProcessRead extends ProcessAbstract {
 				checkAbort();
 				for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 					checkAbort();
-					String key = FilenameUtils.getBaseName(romVersion.getFilename());
+					String key = FilenameUtils.getBaseName(
+							romVersion.getFilename());
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
 						IconBuffer.getCoverIcon(
@@ -153,7 +163,8 @@ public class ProcessRead extends ProcessAbstract {
 			}
 			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {
-			Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(ProcessRead.class.getName())
+					.log(Level.SEVERE, null, ex);
 		} 
 	}
 

@@ -36,10 +36,13 @@ public class ProcessList extends ProcessAbstract {
 	private final String sourcePath;
 	private final ProgressBar progressBar;
 	private final TableModelRomSevenZip tableModel;
-	private Map<String, Game> games;
 	private final ICallBackProcess callBack;
 		
-	public ProcessList(String sourcePath, ProgressBar progressBar, TableModelRomSevenZip tableModel, ICallBackProcess callBack) {
+	public ProcessList(
+			String sourcePath, 
+			ProgressBar progressBar, 
+			TableModelRomSevenZip tableModel, 
+			ICallBackProcess callBack) {
 		super("Thread.gamelist.ProcessList");
 		this.sourcePath = sourcePath;
 		this.progressBar = progressBar;
@@ -92,68 +95,88 @@ public class ProcessList extends ProcessAbstract {
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
   
     private void browseFoldersFS(Console console, String rootPath, File path, 
-			ProgressBar progressBar, TableModelRomSevenZip model) throws InterruptedException {
-        if (path.isDirectory()) {
-            File[] files = path.listFiles((File pathname) -> {
-				String ext = FilenameUtils.getExtension(pathname.getAbsolutePath())
-						.toLowerCase();
-				return ext.equals("7z")
-						|| ext.equals("dsk")
-						|| pathname.isDirectory();
-			});
-            if (files != null) {
-                if(files.length>0) {
-                    progressBar.setup(files.length);
-                    for (File file : files) {
-						checkAbort();
-                        progressBar.progress(FilenameUtils.getName(file.getAbsolutePath()));
-                        if (file.isDirectory()) {
-                            browseFoldersFS(console, rootPath, file, progressBar, model);
-                        }
-                        else {
-							switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
-								case "7z":
-									try {
-										RomSevenZipFile romSevenZipFile;
-										if(!tableModel.getRoms().containsKey(FilenameUtils.getName(file.getAbsolutePath()))) {
-											romSevenZipFile = new RomSevenZipFile(console, file);
-											romSevenZipFile.setVersions();
-											model.addRow(romSevenZipFile);
-										} 
-									} catch (IOException ex) {
-										Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
-									}	break;
-								case "dsk":
-									try {
-										String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
-										int pos = romName.indexOf("(");
-										if(pos>=0) {
-											romName=romName.substring(0, pos).trim();
-										}
-										romName=romName.concat(".dsk");
-										
-										RomSevenZipFile romSevenZipFile;
-										if(amstradRoms.containsKey(romName)) {
-											romSevenZipFile = amstradRoms.get(romName);
-										} else {
-											romSevenZipFile = new RomSevenZipFile(console, file, romName);
-											amstradRoms.put(romName, romSevenZipFile);
-										}
-										String versionPath = file.getAbsolutePath().substring(rootPath.length()+1);
-										
-										romSevenZipFile.addAmstradVersion(new RomVersion(
-												romName,
-												versionPath));
-									} catch (IOException ex) {
-										Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
-									}	break;
-								default:
-									break;
-							}
-                        }
-                    }
-                }
-            } 
+			ProgressBar progressBar, TableModelRomSevenZip model) 
+			throws InterruptedException {
+        if(!path.isDirectory()) {
+			return;
         }
+		File[] files = path.listFiles((File pathname) -> {
+			String ext = FilenameUtils.getExtension(
+					pathname.getAbsolutePath())
+					.toLowerCase();
+			return ext.equals("7z")
+					|| ext.equals("dsk")
+					|| pathname.isDirectory();
+		});
+		if (files == null || files.length<=0) {
+			return;
+		} 
+		progressBar.setup(files.length);
+		for (File file : files) {
+			checkAbort();
+			progressBar.progress(FilenameUtils.getName(
+					file.getAbsolutePath()));
+			if (file.isDirectory()) {
+				browseFoldersFS(
+						console,
+						rootPath,
+						file,
+						progressBar, 
+						model);
+			}
+			else {
+				switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+					case "7z":
+						try {
+							RomSevenZipFile romSevenZipFile;
+							if(!tableModel.getRoms().containsKey(
+									FilenameUtils.getName(
+											file.getAbsolutePath()))) {
+								romSevenZipFile = 
+										new RomSevenZipFile(
+												console, file);
+								romSevenZipFile.setVersions();
+								model.addRow(romSevenZipFile);
+							} 
+						} catch (IOException ex) {
+							Logger.getLogger(ProcessList.class.getName())
+									.log(Level.SEVERE, null, ex);
+						}	break;
+					case "dsk":
+						try {
+							String romName = FilenameUtils
+									.getBaseName(file.getAbsolutePath());
+							int pos = romName.indexOf("(");
+							if(pos>=0) {
+								romName=romName.substring(0, pos).trim();
+							}
+							romName=romName.concat(".dsk");
+
+							RomSevenZipFile romSevenZipFile;
+							if(amstradRoms.containsKey(romName)) {
+								romSevenZipFile = amstradRoms.get(romName);
+							} else {
+								romSevenZipFile = 
+										new RomSevenZipFile(
+												console,
+												file, 
+												romName);
+								amstradRoms.put(romName, romSevenZipFile);
+							}
+							String versionPath = 
+									file.getAbsolutePath()
+											.substring(rootPath.length()+1);
+							romSevenZipFile.addAmstradVersion(new RomVersion(
+									romName,
+									versionPath));
+						} catch (IOException ex) {
+							Logger.getLogger(ProcessList.class.getName())
+									.log(Level.SEVERE, null, ex);
+						}	break;
+					default:
+						break;
+				}
+			}
+		}
     }
 }
