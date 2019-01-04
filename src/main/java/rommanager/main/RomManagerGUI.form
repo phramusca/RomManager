@@ -47,7 +47,7 @@
                   <Component id="jPanel2" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jSplitPane1" pref="382" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" pref="374" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -233,7 +233,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelAction" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jButtonScanSource" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -241,9 +241,10 @@
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jProgressBar1" pref="352" max="32767" attributes="0"/>
+                      <Component id="jProgressBar1" min="-2" pref="307" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="jButtonAbort" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -260,6 +261,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jProgressBar1" alignment="3" max="32767" attributes="0"/>
                       <Component id="jLabelAction" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonAbort" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -314,6 +316,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Action: "/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonAbort">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Abort"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonAbortActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -44,6 +44,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private final ProgressBar progressBar;
     private static TableModelRomSevenZip tableModel;
     
+	private ProcessList processList;
+	private ProcessRead processRead;
+	private ProcessExport processExport;
+	
     /**
      * Creates new form RomManagerGUI
      */
@@ -125,6 +129,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonExtract = new javax.swing.JButton();
         jButtonScanSource = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
+        jButtonAbort = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -237,6 +242,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jLabelAction.setText("Action: ");
 
+        jButtonAbort.setText("Abort");
+        jButtonAbort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAbortActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -245,15 +257,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabelAction)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonScanSource)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonReadGameList)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonExtract))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonAbort))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -266,7 +279,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabelAction))
+                    .addComponent(jLabelAction)
+                    .addComponent(jButtonAbort))
                 .addContainerGap())
         );
 
@@ -292,7 +306,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -308,7 +322,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		ProcessList processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.start();
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
@@ -361,7 +375,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				enableGUI();
 				return;
 			}
-			ProcessExport processExport = new ProcessExport(
+			processExport = new ProcessExport(
 					sourcePath, 
 					exportPath, 
 					progressBar, 
@@ -436,7 +450,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			Popup.warning("Export path does not exist.");
 			return;
 		}
-		ProcessRead processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcess());
+		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcess());
 		processRead.start();
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 
@@ -457,7 +471,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
             jTextFieldPathSource.setText(selectedFolder);
         }
     }//GEN-LAST:event_jButtonOptionSelectFolderSourceActionPerformed
+
+    private void jButtonAbortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAbortActionPerformed
+        abort(processList);
+		abort(processExport);
+		abort(processRead);
+    }//GEN-LAST:event_jButtonAbortActionPerformed
     
+	private void abort(ProcessAbstract process) {
+		if(process!=null && process.isAlive()) {
+			process.abort();
+		}
+	}
+	
     public static String selectFolder(String defaultFolder) {
 		JFileChooser fc = new JFileChooser(defaultFolder);
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -502,6 +528,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAbort;
     private static javax.swing.JButton jButtonExtract;
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
