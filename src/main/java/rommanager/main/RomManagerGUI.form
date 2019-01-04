@@ -126,6 +126,10 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
@@ -149,11 +153,13 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jTextFieldPathSource" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonOptionSelectFolderSource" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jTextFieldPathExport" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonOptionSelectFolderExport" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -199,6 +205,16 @@
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
         </Component>
+        <Component class="javax.swing.JLabel" name="jLabel1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Roms Source folder:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Destination folder:"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel2">
@@ -225,7 +241,7 @@
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jProgressBar1" pref="464" max="32767" attributes="0"/>
+                      <Component id="jProgressBar1" pref="352" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -274,7 +290,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="jButtonExtract">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Extract"/>
+            <Property name="text" type="java.lang.String" value="Export"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExtractActionPerformed"/>

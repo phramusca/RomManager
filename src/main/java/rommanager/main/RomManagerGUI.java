@@ -117,6 +117,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonOptionSelectFolderExport = new javax.swing.JButton();
         jTextFieldPathSource = new javax.swing.JTextField();
         jButtonOptionSelectFolderSource = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jProgressBar1 = new ProgressBar();
         jButtonReadGameList = new javax.swing.JButton();
@@ -168,12 +170,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("Roms Source folder:");
+
+        jLabel2.setText("Destination folder:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextFieldPathExport)
@@ -190,11 +199,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldPathSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonOptionSelectFolderSource))
+                    .addComponent(jButtonOptionSelectFolderSource)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldPathExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonOptionSelectFolderExport))
+                    .addComponent(jButtonOptionSelectFolderExport)
+                    .addComponent(jLabel2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -210,7 +221,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonExtract.setText("Extract");
+        jButtonExtract.setText("Export");
         jButtonExtract.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonExtractActionPerformed(evt);
@@ -241,7 +252,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jButtonReadGameList)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonExtract))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -314,13 +325,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		//Enable filter
 		if(tableModel.getRowCount()>0) {
 			jTableRom.setAutoCreateRowSorter(true);
-			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
-			jTableRom.setRowSorter(tableSorter);
-			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-			//Order by console, name
-			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-			tableSorter.setSortKeys(sortKeys);
+//			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
+//			jTableRom.setRowSorter(tableSorter);
+			
+			//FIXME: Debug this !
+//			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
+//			//Order by console, name
+//			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+//			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+//			tableSorter.setSortKeys(sortKeys);
 		}
 		else {
 			jTableRom.setAutoCreateRowSorter(false);
@@ -335,17 +348,26 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		if (n == JOptionPane.YES_OPTION) {
 			disableGUI("Extraction: ");
 			String exportPath = jTextFieldPathExport.getText();
-			File file = new File(exportPath);
-			if(!file.exists()) {
+			File folder = new File(exportPath);
+			if(!folder.exists()) {
 				enableGUI();
 				Popup.warning("Export path does not exist.");
 				return;
 			}
-			ProcessExport processExport = new ProcessExport(exportPath, 
-					progressBar, tableModel, new CallBackProcess());
+			String sourcePath = jTextFieldPathSource.getText();
+			folder = new File(sourcePath);
+			if(!folder.exists()) {
+				Popup.warning("Source path does not exist.");
+				enableGUI();
+				return;
+			}
+			ProcessExport processExport = new ProcessExport(
+					sourcePath, 
+					exportPath, 
+					progressBar, 
+					tableModel, 
+					new CallBackProcess());
 			processExport.start();
-
-			Popup.warning("Disabled for now!");enableGUI();
 		}
     }//GEN-LAST:event_jButtonExtractActionPerformed
 
@@ -485,6 +507,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;
     private static javax.swing.JButton jButtonScanSource;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;
     private javax.swing.JList<String> jListVersions;
     private javax.swing.JPanel jPanel1;

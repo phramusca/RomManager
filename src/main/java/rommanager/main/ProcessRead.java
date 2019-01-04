@@ -30,13 +30,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import rommanager.main.Console;
-import rommanager.main.ICallBackProcess;
-import rommanager.main.IconBuffer;
-import rommanager.main.RomManagerOds;
-import rommanager.main.RomSevenZipFile;
-import rommanager.main.RomVersion;
-import rommanager.main.TableModelRomSevenZip;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -48,15 +41,15 @@ import rommanager.utils.XML;
  */
 public class ProcessRead extends ProcessAbstract {
 
-	private final String rootPath;
+	private final String exportPath;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
 	private final TableModelRomSevenZip tableModel;
 	private final ICallBackProcess callBack;
 	
-	public ProcessRead(String rootPath, ProgressBar progressBar, TableModelRomSevenZip tableModel, ICallBackProcess callBack) {
+	public ProcessRead(String exportPath, ProgressBar progressBar, TableModelRomSevenZip tableModel, ICallBackProcess callBack) {
 		super("Thread.gamelist.ProcessList");
-		this.rootPath = rootPath;
+		this.exportPath = exportPath;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
@@ -67,7 +60,7 @@ public class ProcessRead extends ProcessAbstract {
 		try {
 			for(Console console : Console.values()) {
 				checkAbort();
-				read(FilenameUtils.concat(rootPath, console.name()), true);
+				read(FilenameUtils.concat(exportPath, console.name()), true);
 			}
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
