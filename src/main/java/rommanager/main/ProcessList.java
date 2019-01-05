@@ -53,6 +53,13 @@ public class ProcessList extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
+			progressBar.setIndeterminate("Getting number of files");
+			for(Console console : Console.values()) {
+				checkAbort();
+				browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
+			}
+			progressBar.setup(nbFiles);
+			
 			for(Console console : Console.values()) {
 				checkAbort();
 				list(console, FilenameUtils.concat(sourcePath, console.name()));
@@ -83,19 +90,42 @@ public class ProcessList extends ProcessAbstract {
             return;
         }
 		
-		browseFoldersFS(console, path, new File(path), progressBar, tableModel);
+		browseFoldersFS(console, path, new File(path), tableModel);
 		for(RomSevenZipFile romSevenZipFile : amstradRoms.values()) {
 			checkAbort();
 			romSevenZipFile.setScore(false);
 			tableModel.addRow(romSevenZipFile);
-		}
-		progressBar.reset();   
+		}  
 	}
 	
 	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
   
-    private void browseFoldersFS(Console console, String rootPath, File path, 
-			ProgressBar progressBar, TableModelRomSevenZip model) 
+	private int nbFiles=0;
+	
+	private void browseNbFiles(File path, Console console) throws InterruptedException {
+		if(path.isDirectory()) {
+			File[] files = path.listFiles((File pathname) -> {
+			String ext = FilenameUtils.getExtension(
+					pathname.getAbsolutePath())
+					.toLowerCase();
+			return ext.equals("7z")
+					|| ext.equals("dsk")
+					|| pathname.isDirectory();
+			});
+			if (files != null && files.length>0) {
+				for (File file : files) {
+					checkAbort();
+					if (file.isDirectory()) {
+						browseNbFiles(file, console);
+					} else {
+						nbFiles+=1;
+					}
+				}
+			}
+		}
+	}
+	
+    private void browseFoldersFS(Console console, String rootPath, File path, TableModelRomSevenZip model) 
 			throws InterruptedException {
         if(!path.isDirectory()) {
 			return;
@@ -111,17 +141,14 @@ public class ProcessList extends ProcessAbstract {
 		if (files == null || files.length<=0) {
 			return;
 		} 
-		progressBar.setup(files.length);
 		for (File file : files) {
 			checkAbort();
-			progressBar.progress(FilenameUtils.getName(
-					file.getAbsolutePath()));
+			progressBar.progress(console.toString()+" \\ "+FilenameUtils.getName(file.getAbsolutePath()));
 			if (file.isDirectory()) {
 				browseFoldersFS(
 						console,
 						rootPath,
-						file,
-						progressBar, 
+						file, 
 						model);
 			}
 			else {

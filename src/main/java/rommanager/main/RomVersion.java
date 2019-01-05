@@ -80,7 +80,7 @@ public class RomVersion {
             System.out.println("******************************************************************************************************************");
             parseAttributes(attributes);
 
-			//FIXME 1 Make scoring customizable (no gui, use an ods config file)
+			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
 			
 			if(countries.size()<=0) {
 				score-=200;
@@ -163,7 +163,7 @@ public class RomVersion {
             }
             else if(attributes.startsWith("[")) {
                 end = attributes.indexOf("]");
-                standards.add(attributes.substring(1, 2));
+                standards.add(attributes.substring(1, end));
             }
             attributes = attributes.substring(end+1).trim();
         }
