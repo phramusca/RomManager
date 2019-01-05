@@ -49,7 +49,7 @@ public class RomSevenZipFile {
 		this.console = console;
     }
 	
-	//FIXME 3 Amstrad : Make its own derived class
+	//FIXME 4 Amstrad : Make its own derived class
 	/**
 	 * For dsk (Amstrad) files that are not groupped in 7z
 	 * @param console
@@ -91,7 +91,7 @@ public class RomSevenZipFile {
 	public void addAmstradVersion(RomVersion version) {
 		versions.add(version);
 		
-		//FIXME 3 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
+		//FIXME 4 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
 		if(version.getErrorLevel()==0) {
 			version.setBest(true);
 		}

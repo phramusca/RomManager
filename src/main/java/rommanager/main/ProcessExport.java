@@ -34,6 +34,7 @@ import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
+import rommanager.utils.StringManager;
 
 /**
  *
@@ -78,9 +79,7 @@ public class ProcessExport extends ProcessAbstract {
 					new File(consolePath).mkdirs();
 				}
 			}
-			extract();
-			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar);
+			export();
 			Popup.info("Export complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -90,10 +89,12 @@ public class ProcessExport extends ProcessAbstract {
 		}
 	}
 
-	//FIXME 2 Alow to select which console(s) and which version(s) [isBest, multiple, multi-disk roms] to export
+	//FIXME 5 Allow to select which console(s) and which version(s) [isBest, multiple, multi-disk roms] to export
 	//(now export all consoles, only best version and all dsk (amstrad) files)
 	
-    public void extract() throws InterruptedException {
+	//FIXME 6 Change "Export" into "Sync" => remove files not selected for export from exportPath
+	
+    public void export() throws InterruptedException {
         try {	
 			progressBar.setup(tableModel.getRowCount());
 			String sourceFolder;
@@ -101,17 +102,31 @@ public class ProcessExport extends ProcessAbstract {
 			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
 				checkAbort();
 				String filename = romSevenZipFile.getFilename();
+				progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getGame().getName());
 				for(RomVersion romVersion : 
 						romSevenZipFile.getVersions().stream()
 							.filter(r -> r.isBest() && r.getScore()>0)
 							.collect(Collectors.toList())) {
 					checkAbort();
-					progressBar.progress(filename);
-					
-					sourceFolder = FilenameUtils.concat(sourcePath, romSevenZipFile.getConsole().name());
-					exportFolder = FilenameUtils.concat(FilenameUtils.concat(exportPath, romSevenZipFile.getConsole().name()), romSevenZipFile.getConsole().toString());
+					sourceFolder = FilenameUtils.concat(
+							sourcePath, romSevenZipFile.getConsole().name());
+					exportFolder = FilenameUtils.concat(
+							FilenameUtils.concat(
+									exportPath, 
+									romSevenZipFile.getConsole().name()), 
+							romSevenZipFile.getConsole().toString());
 					
 					if(FilenameUtils.getExtension(filename).equals("7z")) {
+						String exportFileName = FilenameUtils.concat(
+										exportFolder, 
+										FilenameUtils.getBaseName(
+												romVersion.getFilename())
+											.concat(".zip"));
+						
+						if(new File(exportFileName).exists()) {
+							continue;
+						}
+						
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
 							FilenameUtils.concat(sourceFolder, filename)))) {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
@@ -125,9 +140,7 @@ public class ProcessExport extends ProcessAbstract {
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
 									}
-									if(zipFile(unzippedFile, FilenameUtils.concat(
-													exportFolder, 
-													FilenameUtils.getBaseName(romVersion.getFilename()).concat(".zip")))) {
+									if(zipFile(unzippedFile, exportFileName)) {
 										unzippedFile.delete();
 									}
 									break;
@@ -136,9 +149,13 @@ public class ProcessExport extends ProcessAbstract {
 							}
 						}
 					} else if(FilenameUtils.getExtension(filename).equals("dsk")) {
+						File exportFile=new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
+						if(exportFile.exists()) {
+							continue;
+						}
 						FileSystem.copyFile(
 								new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename())), 
-								new File(FilenameUtils.concat(exportFolder, romVersion.getFilename())));
+								exportFile);
 					}
 				}
 			}

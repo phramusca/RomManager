@@ -66,8 +66,6 @@ public class ProcessRead extends ProcessAbstract {
 				checkAbort();
 				read(FilenameUtils.concat(exportPath, console.name()), true);
 			}
-			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar);
 			Popup.info("Reading complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -117,7 +115,7 @@ public class ProcessRead extends ProcessAbstract {
 								XML.getElementValue(element, "favorite")));
 
 //				if(clean && !game.exists(rootPath)) {
-//					//FIXME: How to remove the node ?
+//					//FIXME: How to remove the node  [Why not  recreating the file ?]
 ////					doc.removeChild(element);
 ////					doc.getElementsByTagName("game").item(0).removeChild(element);
 //				} else {

@@ -26,4 +26,4 @@ hs_err_pid*
 RomManager\.properties
 gamelist-purged\.xml
 cache/
-*.ods
+RomManager*.ods

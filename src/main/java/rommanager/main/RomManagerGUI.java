@@ -126,7 +126,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jProgressBar1 = new ProgressBar();
         jButtonReadGameList = new javax.swing.JButton();
-        jButtonExtract = new javax.swing.JButton();
+        jButtonExport = new javax.swing.JButton();
         jButtonScanSource = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonAbort = new javax.swing.JButton();
@@ -226,10 +226,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonExtract.setText("Export");
-        jButtonExtract.addActionListener(new java.awt.event.ActionListener() {
+        jButtonExport.setText("Export");
+        jButtonExport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonExtractActionPerformed(evt);
+                jButtonExportActionPerformed(evt);
             }
         });
 
@@ -243,6 +243,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jLabelAction.setText("Action: ");
 
         jButtonAbort.setText("Abort");
+        jButtonAbort.setEnabled(false);
         jButtonAbort.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAbortActionPerformed(evt);
@@ -257,15 +258,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabelAction)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonScanSource)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonExport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonReadGameList)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonExtract))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 62, Short.MAX_VALUE))
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAbort))
         );
         jPanel2Layout.setVerticalGroup(
@@ -274,7 +276,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonReadGameList)
-                    .addComponent(jButtonExtract)
+                    .addComponent(jButtonExport)
                     .addComponent(jButtonScanSource))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -342,7 +344,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 //			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
 //			jTableRom.setRowSorter(tableSorter);
 			
-			//FIXME: Debug this !
+			//FIXME 2 Debug this enableFilter !
 //			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
 //			//Order by console, name
 //			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
@@ -354,13 +356,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 	}
 	
-    private void jButtonExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtractActionPerformed
+    private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
         int n = JOptionPane.showConfirmDialog(
 			this, "Are you sure you want to export roms ?",  //NOI18N
 			"Please Confirm",  //NOI18N
 			JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
-			disableGUI("Extraction: ");
+			disableGUI("Export: ");
 			String exportPath = jTextFieldPathExport.getText();
 			File folder = new File(exportPath);
 			if(!folder.exists()) {
@@ -383,7 +385,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 					new CallBackProcess());
 			processExport.start();
 		}
-    }//GEN-LAST:event_jButtonExtractActionPerformed
+    }//GEN-LAST:event_jButtonExportActionPerformed
 
 	private void disableGUI(String text) {
 		jLabelAction.setText(text);
@@ -398,12 +400,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
 	private static void enableGUI(boolean enable) {
-		jButtonExtract.setEnabled(enable);
+		jButtonExport.setEnabled(enable);
 		jButtonReadGameList.setEnabled(enable);
 		jButtonScanSource.setEnabled(enable);
 		
 		jButtonOptionSelectFolderExport.setEnabled(enable);
 		jButtonOptionSelectFolderSource.setEnabled(enable);
+		
+		jButtonAbort.setEnabled(!enable);
 	}
 	
     private void jTableRomMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableRomMousePressed
@@ -528,8 +532,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAbort;
-    private static javax.swing.JButton jButtonExtract;
+    private static javax.swing.JButton jButtonAbort;
+    private static javax.swing.JButton jButtonExport;
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;

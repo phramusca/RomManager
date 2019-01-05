@@ -233,17 +233,18 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelAction" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jButtonScanSource" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jButtonExport" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jButtonReadGameList" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jButtonExtract" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="62" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jProgressBar1" min="-2" pref="307" max="-2" attributes="0"/>
+                      <Component id="jProgressBar1" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonAbort" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -254,7 +255,7 @@
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButtonReadGameList" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonExtract" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonExport" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonScanSource" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -290,12 +291,12 @@
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="jButtonExtract">
+        <Component class="javax.swing.JButton" name="jButtonExport">
           <Properties>
             <Property name="text" type="java.lang.String" value="Export"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExtractActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
@@ -320,10 +321,14 @@
         <Component class="javax.swing.JButton" name="jButtonAbort">
           <Properties>
             <Property name="text" type="java.lang.String" value="Abort"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonAbortActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

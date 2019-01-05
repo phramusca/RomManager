@@ -80,6 +80,8 @@ public class RomVersion {
             System.out.println("******************************************************************************************************************");
             parseAttributes(attributes);
 
+			//FIXME 1 Make scoring customizable (no gui, use an ods config file)
+			
 			if(countries.size()<=0) {
 				score-=200;
 			}
@@ -93,7 +95,7 @@ public class RomVersion {
 			setScore(countries, "U", 10); // (U) - USA
 			setScore(countries, "UK", 10);
 			setScore(countries, "PD", 5); // Public domain, free software and freeware
-			setScore(countries, "Unl", -50); // Unlicensed //FIXME 5 Manage Unlicensed
+			setScore(countries, "Unl", -50); // Unlicensed //FIXME 3 Manage Unlicensed
 												// Keep those if no other available (F, U,...)
 												// OR Extract "special" games to a "special" folders(s)
 			
@@ -145,6 +147,11 @@ public class RomVersion {
 
 	// https://segaretro.org/GoodTools
 	// http://emulation.gametechwiki.com/index.php/GoodTools
+	
+	//FIXME 1 Manage all attributes (that can be different for some consoles)
+				// incl. attribute standard code "values" (attributes.substring(2, end) )
+				// - (VX.X) 	Version number (1.0 is earliest) 
+				// - [fX] et autres avec un X qui peux etre une filename surtout
     private void parseAttributes(String attributes) {
 
         while(!attributes.equals("")) {
@@ -156,10 +163,6 @@ public class RomVersion {
             }
             else if(attributes.startsWith("[")) {
                 end = attributes.indexOf("]");
-				
-				//FIXME 4 Manage attribute standard code "values" (attributes.substring(2, end) )
-				// - (VX.X) 	Version number (1.0 is earliest) 
-				// - [fX] et autres avec un X qui peux etre une filename surtout
                 standards.add(attributes.substring(1, 2));
             }
             attributes = attributes.substring(end+1).trim();

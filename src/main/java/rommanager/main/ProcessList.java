@@ -73,7 +73,7 @@ public class ProcessList extends ProcessAbstract {
 
 		File file = new File(path);
         if(!file.exists()) {
-            Logger.getLogger(RomManagerOds.class.getName())
+            Logger.getLogger(ProcessList.class.getName())
 					.log(Level.SEVERE, "No such path: {0}", path);
             return;
         }
