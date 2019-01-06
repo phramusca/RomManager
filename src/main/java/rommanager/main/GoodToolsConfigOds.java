@@ -18,8 +18,8 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jopendocument.dom.spreadsheet.Sheet;
@@ -35,11 +35,11 @@ public class GoodToolsConfigOds {
 	private final static File DOC_FILE = new File("GoodToolsConfig.ods");
 	private final static String SHEET_NAME = "ALL";
 	
-	private static List<GoodCode> codes;
+	private static Map<String, GoodCode> codes;
 
-	public static List<GoodCode> getCodes() {
+	public static Map<String, GoodCode> getCodes() {
 		if(codes==null) {
-			codes = new ArrayList<>();
+			codes = new HashMap<>();
 			readFile();
 		}
 		return codes;
@@ -57,13 +57,20 @@ public class GoodToolsConfigOds {
 			int nRowCount = sheet.getRowCount();
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
-				String category = row.getValue(0);
-				String type = row.getValue(1);
-				String code = row.getValue(2);
-				int score = Integer.valueOf(row.getValue(3));
-				String description = row.getValue(4);
-				GoodCode goodCode = new GoodCode(category, type, code, score, description);
-				codes.add(goodCode);
+				String category = row.getValue(0).trim();
+				if(row.getValue(2).trim().equals("")) {
+					break;
+				} else {
+					String code = row.getValue(1).trim();
+					int score = Integer.valueOf(row.getValue(2).trim());
+					String description = row.getValue(3).trim();
+
+					String type = (code.startsWith("(") || code.startsWith("["))
+							? code.substring(0, 1) : "";
+
+					GoodCode goodCode = new GoodCode(category, type, code, score, description);
+					codes.put(code, goodCode);
+				}
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(GoodToolsConfigOds.class.getName())

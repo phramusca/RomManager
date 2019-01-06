@@ -20,6 +20,8 @@ import rommanager.utils.Popup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -29,8 +31,8 @@ public class RomVersion {
     private final String filename;
 	private final String name;
     private String alternativeName;
-    private List<String> countries;
-    private List<String> standards;
+    private List<String> attrParenthesis;
+    private List<String> attrBrackets;
 	private int score;
 	private int errorLevel;
 	private boolean best;
@@ -45,8 +47,8 @@ public class RomVersion {
         this.filename = filename;
         System.out.println("name="+name);
         System.out.println("version="+filename);
-        countries = new ArrayList<>();
-        standards = new ArrayList<>();
+        attrParenthesis = new ArrayList<>();
+        attrBrackets = new ArrayList<>();
         alternativeName = "";
 		this.name=name;
         setScore();
@@ -72,8 +74,8 @@ public class RomVersion {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
-		this.countries = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
-        this.standards = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
+		this.attrParenthesis = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
+        this.attrBrackets = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
 		this.score = score;
 		this.errorLevel = errorLevel;
 		this.best = best;
@@ -112,47 +114,35 @@ public class RomVersion {
             System.out.println("alternativeName="+alternativeName);
             System.out.println("******************************************************************************************************************");
             parseAttributes(attributes);
-
-			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
-			List<GoodCode> codes = GoodToolsConfigOds.getCodes();
 			
-			
-			if(countries.size()<=0) {
+			if(attrParenthesis.size()<=0) {
 				score-=200;
 			}
 
+			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
+			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
+			for(GoodCode gc : codes.values().stream()
+							.filter(r -> r.getScore()!=0 && r.getType().equals("("))
+							.collect(Collectors.toList())) {
+				setScore(attrParenthesis, gc.getCode(), gc.getScore());
+			}
+			for(GoodCode gc : codes.values().stream()
+							.filter(r -> r.getScore()!=0 && r.getType().equals("["))
+							.collect(Collectors.toList())) {
+				setScore(attrBrackets, gc.getCode(), gc.getScore());
+			}
+			//FIXME 1 Manage this type (need to parse but no delimiters => use contains()
+//			for(GoodCode gc : codes.stream()
+//							.filter(r -> r.getScore()!=0 && r.getType().equals(""))
+//							.collect(Collectors.toList())) {
+//			}
 			
-			
-			
-			setScore(countries, "F", 100); // France
-			setScore(countries, "E", 40); // Europe
-			setScore(countries, "FC", 15); // (FC) - French Canadian
-			setScore(countries, "UE", 15); // (JU), (UE), (JUE) - Combination of the above
-			setScore(countries, "JUE", 15);
-			setScore(countries, "W", 15); // (W) - World (same as (JUE))
-			setScore(countries, "U", 10); // (U) - USA
-			setScore(countries, "UK", 10);
-			setScore(countries, "PD", 5); // Public domain, free software and freeware
-			setScore(countries, "Unl", -50); // Unlicensed //FIXME 3 Manage Unlicensed
-												// Keep those if no other available (F, U,...)
-												// OR Extract "special" games to a "special" folders(s)
-			
+			//FIXME 1 This is probably wrong since both lists are no more countries and standards
 			if(score>0) {
-				setScore(standards, "!", 50); // The ROM is an exact copy of the original game; it has not had any hacks or modifications. 
-				setScore(standards, "f", 40); // A fixed dump is a ROM that has been altered to run better on a flashcart or an emulator. 
-				setScore(standards, "h", -40); // A fixed dump is a ROM that has been altered to run better on a flashcart or an emulator. 
-				setScore(standards, "t", -40); // [tX] - The game has been supplied with a trainer
-				if(standards.size()<=0) {
+				if(attrBrackets.size()<=0) {
 					score+=30;
 				}
-				setScore(standards, "a", 20); // The ROM is a copy of an alternative release of the game. Many games have been re-released to fix bugs or to eliminate Game Genie codes. 
-				setScore(standards, "b", -10000); // [bX] - The game is a bad dump. These are useless. A bad dump often occurs with an older game or a faulty dumper (bad connection). Another common source of [b] ROMs is a corrupted upload to a release FTP. 
 			}
-			
-			
-			
-			
-			
 			errorLevel=score>=40?0:
 				score>0?1:
 				score<0?2:3;
@@ -187,11 +177,11 @@ public class RomVersion {
             int end = 0;
             if(attributes.startsWith("(")) {
                 end = attributes.indexOf(")");
-                countries.add(attributes.substring(1, end));
+                attrParenthesis.add(attributes.substring(1, end));
             }
             else if(attributes.startsWith("[")) {
                 end = attributes.indexOf("]");
-                standards.add(attributes.substring(1, end));
+                attrBrackets.add(attributes.substring(1, end));
             }
             attributes = attributes.substring(end+1).trim();
         }
@@ -202,11 +192,11 @@ public class RomVersion {
     }
     
     public List<String> getCountries() {
-        return countries;
+        return attrParenthesis;
     }
 
     public List<String> getStandards() {
-        return standards;
+        return attrBrackets;
     }
 
 	public String getAlternativeName() {
@@ -216,15 +206,38 @@ public class RomVersion {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append(score).append(" : ");
+        
+		out.append(score).append(" ");
         if(!alternativeName.equals("")) {
-            out.append(alternativeName).append(" ");
+            out.append("<BR/>").append(alternativeName).append(" ");
         }
-        if(countries.size()>0) {
-            out.append(countries).append(" ");
+        if(attrParenthesis.size()>0) {
+			Map<String, GoodCode> collect = GoodToolsConfigOds.getCodes().entrySet().stream()
+						.filter(r -> r.getValue().getScore()!=0 && r.getValue().getType().equals("("))
+						.collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+			for(String attr : attrParenthesis) {
+				out.append("<BR/>");
+				attr="("+attr+")";
+				if(collect.containsKey(attr)) {
+					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
+				} else {
+					out.append("UNKNOWN ").append("<b>").append(attr).append("</b>");
+				}
+			}
         }
-        if(standards.size()>0) {
-            out.append(standards).append(" ");
+        if(attrBrackets.size()>0) {
+			Map<String, GoodCode> collect = GoodToolsConfigOds.getCodes().entrySet().stream()
+						.filter(r -> r.getValue().getScore()!=0 && r.getValue().getType().equals("["))
+						.collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+			for(String attr : attrBrackets) {
+				out.append("<BR/>");
+				attr="["+attr+"]";
+				if(collect.containsKey(attr)) {
+					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
+				} else {
+					out.append("UNKNOWN ").append("<b>").append(attr).append("</b>");
+				}
+			}
         }
 		
 		return colorField(out.toString(), errorLevel, true);
