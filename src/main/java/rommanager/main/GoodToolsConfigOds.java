@@ -45,6 +45,8 @@ public class GoodToolsConfigOds {
 		return codes;
 	}
 
+	// https://segaretro.org/GoodTools
+	// http://emulation.gametechwiki.com/index.php/GoodTools
 	private static void readFile() {
 		if(!DOC_FILE.exists()) {
 			Logger.getLogger(GoodToolsConfigOds.class.getName())

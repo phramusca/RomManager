@@ -21,6 +21,8 @@ import rommanager.utils.Popup;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -439,7 +441,17 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			DefaultListModel versionsModel = new DefaultListModel();
 			int i=0;
 			List<Integer> indices=new ArrayList();
-			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
+			List<RomVersion> versions = romSevenZipFile.getVersions();
+			Collections.sort(versions, (RomVersion o1, RomVersion o2) -> {
+				//ORDER BY getScore DESC
+				if (o1.getScore() == o2.getScore())
+					return 0;
+				else if (o1.getScore() < o2.getScore())
+					return 1;
+				else
+					return -1;
+			});
+			for(RomVersion romVersion : versions) {
 				versionsModel.addElement(romVersion);
 				if(romVersion.isBest()) {
 					indices.add(i);

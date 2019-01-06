@@ -113,13 +113,18 @@ public class RomVersion {
             parseAttributes(attrWork);
 
 			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
+
+			//FIXME 1 Manage code "values" (attributes.substring(2, end) )
+				// - (VX.X) 	Version number (1.0 is earliest) 
+				// - [fX] et autres avec un X qui peux etre une filename surtout
+				
 			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
 			for(GoodCode gc : codes.values().stream()
 							.filter(r -> r.getScore()!=0)
 							.collect(Collectors.toList())) {
 				setScore(attributes, gc.getCode(), gc.getScore());
 			}
-			//FIXME 1 Manage this type (need to parse but no delimiters => use contains()
+			//FIXME 1 Manage "" type (need to parse but no delimiters => use contains()
 //			for(GoodCode gc : codes.stream()
 //							.filter(r -> r.getScore()!=0 && r.getType().equals(""))
 //							.collect(Collectors.toList())) {
@@ -146,15 +151,7 @@ public class RomVersion {
 		}
 	}
 
-	// https://segaretro.org/GoodTools
-	// http://emulation.gametechwiki.com/index.php/GoodTools
-	
-	//FIXME 1 Manage all attributes (that can be different for some consoles)
-				// incl. attribute standard code "values" (attributes.substring(2, end) )
-				// - (VX.X) 	Version number (1.0 is earliest) 
-				// - [fX] et autres avec un X qui peux etre une filename surtout
     private void parseAttributes(String attrWork) {
-
         while(!attrWork.equals("")) {
             attrWork=attrWork.trim();
             int end = 0;
