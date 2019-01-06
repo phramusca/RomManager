@@ -53,7 +53,7 @@ public class GoodCode {
 	}
 
 	public String getCode() {
-		return type.equals("")?code:code.substring(1, code.length()-1);
+		return code;
 	}
 
 	public String getDescription() {

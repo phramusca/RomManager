@@ -31,8 +31,7 @@ public class RomVersion {
     private final String filename;
 	private final String name;
     private String alternativeName;
-    private List<String> attrParenthesis;
-    private List<String> attrBrackets;
+    private List<String> attributes;
 	private int score;
 	private int errorLevel;
 	private boolean best;
@@ -47,8 +46,7 @@ public class RomVersion {
         this.filename = filename;
         System.out.println("name="+name);
         System.out.println("version="+filename);
-        attrParenthesis = new ArrayList<>();
-        attrBrackets = new ArrayList<>();
+        attributes = new ArrayList<>();
         alternativeName = "";
 		this.name=name;
         setScore();
@@ -59,23 +57,20 @@ public class RomVersion {
 	 * @param name
 	 * @param filename
 	 * @param alternativeName
-	 * @param countries
-	 * @param standards
+	 * @param attributes
 	 * @param score
 	 * @param errorLevel
 	 * @param best
 	 */
 	public RomVersion(String name, String filename, String alternativeName, 
-			String countries, 
-			String standards, 
+			String attributes,
 			int score, 
 			int errorLevel, 
 			boolean best) {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
-		this.attrParenthesis = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
-        this.attrBrackets = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
+		this.attributes = Arrays.asList(attributes.substring(1, attributes.length()-1).split(","));
 		this.score = score;
 		this.errorLevel = errorLevel;
 		this.best = best;
@@ -83,7 +78,8 @@ public class RomVersion {
 
 	public final void setScore() {
 		try {
-            String attributes = "";
+			attributes = new ArrayList<>();
+            String attrWork = "";
             if(!filename.startsWith(name)) {
                 int posPar = filename.indexOf("(");
                 int posBra = filename.indexOf("[");
@@ -101,35 +97,26 @@ public class RomVersion {
                     
                     System.out.println("pos="+pos);
                     alternativeName = filename.substring(0, pos).trim();
-                    attributes = filename.substring(pos);
+                    attrWork = filename.substring(pos);
                 }
                 else {
                     alternativeName = filename;
                 }
             }
             else {
-                attributes = filename.substring(name.length()).trim();
+                attrWork = filename.substring(name.length()).trim();
             }
-            System.out.println("attributes="+attributes);
+            System.out.println("attributes="+attrWork);
             System.out.println("alternativeName="+alternativeName);
             System.out.println("******************************************************************************************************************");
-            parseAttributes(attributes);
-			
-			if(attrParenthesis.size()<=0) {
-				score-=200;
-			}
+            parseAttributes(attrWork);
 
 			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
 			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
 			for(GoodCode gc : codes.values().stream()
-							.filter(r -> r.getScore()!=0 && r.getType().equals("("))
+							.filter(r -> r.getScore()!=0)
 							.collect(Collectors.toList())) {
-				setScore(attrParenthesis, gc.getCode(), gc.getScore());
-			}
-			for(GoodCode gc : codes.values().stream()
-							.filter(r -> r.getScore()!=0 && r.getType().equals("["))
-							.collect(Collectors.toList())) {
-				setScore(attrBrackets, gc.getCode(), gc.getScore());
+				setScore(attributes, gc.getCode(), gc.getScore());
 			}
 			//FIXME 1 Manage this type (need to parse but no delimiters => use contains()
 //			for(GoodCode gc : codes.stream()
@@ -137,12 +124,7 @@ public class RomVersion {
 //							.collect(Collectors.toList())) {
 //			}
 			
-			//FIXME 1 This is probably wrong since both lists are no more countries and standards
-			if(score>0) {
-				if(attrBrackets.size()<=0) {
-					score+=30;
-				}
-			}
+			
 			errorLevel=score>=40?0:
 				score>0?1:
 				score<0?2:3;
@@ -170,20 +152,17 @@ public class RomVersion {
 				// incl. attribute standard code "values" (attributes.substring(2, end) )
 				// - (VX.X) 	Version number (1.0 is earliest) 
 				// - [fX] et autres avec un X qui peux etre une filename surtout
-    private void parseAttributes(String attributes) {
+    private void parseAttributes(String attrWork) {
 
-        while(!attributes.equals("")) {
-            attributes=attributes.trim();
+        while(!attrWork.equals("")) {
+            attrWork=attrWork.trim();
             int end = 0;
-            if(attributes.startsWith("(")) {
-                end = attributes.indexOf(")");
-                attrParenthesis.add(attributes.substring(1, end));
+            if(attrWork.startsWith("(") 
+					|| attrWork.startsWith("[")) {
+                end = attrWork.indexOf(attrWork.startsWith("(")?")":"]");
+                attributes.add(attrWork.substring(0, end+1));
             }
-            else if(attributes.startsWith("[")) {
-                end = attributes.indexOf("]");
-                attrBrackets.add(attributes.substring(1, end));
-            }
-            attributes = attributes.substring(end+1).trim();
+            attrWork = attrWork.substring(end+1).trim();
         }
     }
     
@@ -191,12 +170,8 @@ public class RomVersion {
         return filename;
     }
     
-    public List<String> getCountries() {
-        return attrParenthesis;
-    }
-
-    public List<String> getStandards() {
-        return attrBrackets;
+    public List<String> getAttributes() {
+        return attributes;
     }
 
 	public String getAlternativeName() {
@@ -211,27 +186,12 @@ public class RomVersion {
         if(!alternativeName.equals("")) {
             out.append("<BR/>").append(alternativeName).append(" ");
         }
-        if(attrParenthesis.size()>0) {
+        if(attributes.size()>0) {
 			Map<String, GoodCode> collect = GoodToolsConfigOds.getCodes().entrySet().stream()
-						.filter(r -> r.getValue().getScore()!=0 && r.getValue().getType().equals("("))
+						.filter(r -> r.getValue().getScore()!=0)
 						.collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
-			for(String attr : attrParenthesis) {
+			for(String attr : attributes) {
 				out.append("<BR/>");
-				attr="("+attr+")";
-				if(collect.containsKey(attr)) {
-					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
-				} else {
-					out.append("UNKNOWN ").append("<b>").append(attr).append("</b>");
-				}
-			}
-        }
-        if(attrBrackets.size()>0) {
-			Map<String, GoodCode> collect = GoodToolsConfigOds.getCodes().entrySet().stream()
-						.filter(r -> r.getValue().getScore()!=0 && r.getValue().getType().equals("["))
-						.collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
-			for(String attr : attrBrackets) {
-				out.append("<BR/>");
-				attr="["+attr+"]";
 				if(collect.containsKey(attr)) {
 					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
 				} else {

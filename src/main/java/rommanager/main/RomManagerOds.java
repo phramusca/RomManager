@@ -54,7 +54,7 @@ public class RomManagerOds {
 			ProgressBar progressBar, 
 			boolean open) {
 		
-        int nbColumns=23;
+        int nbColumns=22;
         int nbRows=0;
         for(RomSevenZipFile sevenZipRomFile : model.getRoms().values()) {
             nbRows+=sevenZipRomFile.getVersions().size();
@@ -75,8 +75,7 @@ public class RomManagerOds {
 					sevenZipRomFile.getFilename(), 
 					romVersion.getFilename(), 
 					romVersion.getAlternativeName(),
-					romVersion.getCountries(), 
-					romVersion.getStandards(), 
+					romVersion.getAttributes(), 
 					romVersion.getScore(),
 					romVersion.getErrorLevel(),
 					romVersion.isBest(),
@@ -103,8 +102,7 @@ public class RomManagerOds {
         columns[i++] = "File Name";
         columns[i++] = "Version";
 		columns[i++] = "Alternative Name";
-        columns[i++] = "Countries";
-        columns[i++] = "Standards";
+        columns[i++] = "Attributes";
         columns[i++] = "Score";
 		columns[i++] = "Error Level";
 		columns[i++] = "Best";
@@ -164,31 +162,31 @@ public class RomManagerOds {
 				String filename = row.getValue(1);
 				String version = row.getValue(2);
 				String alternativeName = row.getValue(3);
-				String countries = row.getValue(4);
-				String standards = row.getValue(5);
-				int score = Integer.valueOf(row.getValue(6));
-				int errorLevel = Integer.valueOf(row.getValue(7));
-				boolean isBest = Boolean.parseBoolean(row.getValue(8));
-				String gameName = row.getValue(9);
-				String desc = row.getValue(10);
-				String genre = row.getValue(11);
-				float rating = Float.valueOf(row.getValue(12));
-				boolean isFavorite = Boolean.parseBoolean(row.getValue(13));
-				String players = row.getValue(14);
-				String developer = row.getValue(15);
-				String publisher = row.getValue(16);
-				String image = row.getValue(17);
-				String releaseDate = row.getValue(18);
-				String lastplayed = row.getValue(19);
-				int playcount = Integer.valueOf(row.getValue(20));
-				String thumbnail = row.getValue(21);
-				String path = row.getValue(22);
+				String attributes = row.getValue(4);
+				int score = Integer.valueOf(row.getValue(5));
+				int errorLevel = Integer.valueOf(row.getValue(6));
+				boolean isBest = Boolean.parseBoolean(row.getValue(7));
+				int i =8;
+				String gameName = row.getValue(i++);
+				String desc = row.getValue(i++);
+				String genre = row.getValue(i++);
+				float rating = Float.valueOf(row.getValue(i++));
+				boolean isFavorite = Boolean.parseBoolean(row.getValue(i++));
+				String players = row.getValue(i++);
+				String developer = row.getValue(i++);
+				String publisher = row.getValue(i++);
+				String image = row.getValue(i++);
+				String releaseDate = row.getValue(i++);
+				String lastplayed = row.getValue(i++);
+				int playcount = Integer.valueOf(row.getValue(i++));
+				String thumbnail = row.getValue(i++);
+				String path = row.getValue(i++);
 				model.addRow(console, filename);
 				RomVersion romVersion = new RomVersion(
 						FilenameUtils.getBaseName(filename),
 						version, 
 						alternativeName, 
-						countries, standards, 
+						attributes, 
 						score, errorLevel, isBest);
 				
 				Game game = new Game(path, gameName, desc, image, 
