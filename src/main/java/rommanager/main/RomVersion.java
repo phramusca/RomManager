@@ -79,6 +79,7 @@ public class RomVersion {
 	public final void setScore() {
 		try {
 			attributes = new ArrayList<>();
+			score=0;
             String attrWork = "";
             if(!filename.startsWith(name)) {
                 int posPar = filename.indexOf("(");
@@ -195,7 +196,7 @@ public class RomVersion {
 				if(collect.containsKey(attr)) {
 					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
 				} else {
-					out.append("UNKNOWN ").append("<b>").append(attr).append("</b>");
+					out.append("Unknown: ").append("<b>").append(attr).append("</b>");
 				}
 			}
         }
