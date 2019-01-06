@@ -52,7 +52,7 @@ public class ProcessRead extends ProcessAbstract {
 			ProgressBar progressBar, 
 			TableModelRomSevenZip tableModel, 
 			ICallBackProcess callBack) {
-		super("Thread.gamelist.ProcessList");
+		super("Thread.ProcessRead");
 		this.exportPath = exportPath;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;

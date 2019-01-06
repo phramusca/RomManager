@@ -34,7 +34,6 @@ import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
-import rommanager.utils.StringManager;
 
 /**
  *
@@ -55,7 +54,7 @@ public class ProcessExport extends ProcessAbstract {
 			ProgressBar progressBar, 
 			TableModelRomSevenZip tableModel, 
 			ICallBackProcess callBack) {
-		super("Thread.gamelist.ProcessList");
+		super("Thread.ProcessExport");
 		this.sourcePath = sourcePath;
 		this.exportPath = exportPath;
 		this.progressBar = progressBar;

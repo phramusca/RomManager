@@ -43,7 +43,7 @@ public class ProcessList extends ProcessAbstract {
 			ProgressBar progressBar, 
 			TableModelRomSevenZip tableModel, 
 			ICallBackProcess callBack) {
-		super("Thread.gamelist.ProcessList");
+		super("Thread.ProcessList");
 		this.sourcePath = sourcePath;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;

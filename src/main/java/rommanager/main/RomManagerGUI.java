@@ -44,6 +44,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private ProcessList processList;
 	private ProcessRead processRead;
 	private ProcessExport processExport;
+	private ProcessSetScore processSetScore;
 	
     /**
      * Creates new form RomManagerGUI
@@ -492,7 +493,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
-		List<GoodCode> codes = GoodToolsConfigOds.getCodes();
+		disableGUI("Setting score: ");
+		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess());
+		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
     
 	private void abort(ProcessAbstract process) {

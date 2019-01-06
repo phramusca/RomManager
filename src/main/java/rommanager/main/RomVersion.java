@@ -27,10 +27,10 @@ import java.util.List;
  */
 public class RomVersion {
     private final String filename;
-	private String name;
+	private final String name;
     private String alternativeName;
-    private final List<String> countries;
-    private final List<String> standards;
+    private List<String> countries;
+    private List<String> standards;
 	private int score;
 	private int errorLevel;
 	private boolean best;
@@ -114,13 +114,15 @@ public class RomVersion {
             parseAttributes(attributes);
 
 			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
-			
+			List<GoodCode> codes = GoodToolsConfigOds.getCodes();
 			
 			
 			if(countries.size()<=0) {
 				score-=200;
 			}
 
+			
+			
 			
 			setScore(countries, "F", 100); // France
 			setScore(countries, "E", 40); // Europe
