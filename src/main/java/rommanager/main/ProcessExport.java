@@ -101,7 +101,7 @@ public class ProcessExport extends ProcessAbstract {
 			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
 				checkAbort();
 				String filename = romSevenZipFile.getFilename();
-				progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getGame().getName());
+				progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getFilename());
 				for(RomVersion romVersion : 
 						romSevenZipFile.getVersions().stream()
 							.filter(r -> r.isBest() && r.getScore()>0)

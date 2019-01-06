@@ -44,6 +44,8 @@ public class ProcessSetScore extends ProcessAbstract {
 	public void run() {
 		try {
 			setScore();
+			progressBar.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBar);
 			Popup.info("Set Score complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -61,7 +63,9 @@ public class ProcessSetScore extends ProcessAbstract {
 			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 				checkAbort();
 				romVersion.setScore();
+				romVersion.setBest(false);
 			}
+			romSevenZipFile.setScore(true);
 		}
     }
 }

@@ -19,9 +19,16 @@ package rommanager.main;
 import rommanager.utils.Popup;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -31,7 +38,7 @@ public class RomVersion {
     private final String filename;
 	private final String name;
     private String alternativeName;
-    private List<String> attributes;
+    private List<Attribute> attributes;
 	private int score;
 	private int errorLevel;
 	private boolean best;
@@ -70,7 +77,23 @@ public class RomVersion {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
-		this.attributes = Arrays.asList(attributes.substring(1, attributes.length()-1).split(","));
+		this.attributes = new ArrayList<>();
+		JSONObject jsonObject;
+		try {
+			jsonObject = (JSONObject) new JSONParser().parse(attributes);
+			JSONArray attrArray = (JSONArray) jsonObject.get("attributes");
+			String raw;String key;String value;
+			for(int i=0; i<attrArray.size(); i++) {
+				JSONObject attr = (JSONObject) attrArray.get(i);
+				key = (String) attr.get("key");
+				raw = (String) attr.get("raw");
+				value = (String) attr.get("value");
+				this.attributes.add(new Attribute(raw, key, value));
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(RomVersion.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
 		this.score = score;
 		this.errorLevel = errorLevel;
 		this.best = best;
@@ -112,24 +135,31 @@ public class RomVersion {
             System.out.println("******************************************************************************************************************");
             parseAttributes(attrWork);
 
-			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
-
-			//FIXME 1 Manage code "values" (attributes.substring(2, end) )
+			//FIXME 3 Manage code "values" (attributes.substring(2, end) )
 				// - (VX.X) 	Version number (1.0 is earliest) 
 				// - [fX] et autres avec un X qui peux etre une filename surtout
 				
 			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
-			for(GoodCode gc : codes.values().stream()
-							.filter(r -> r.getScore()!=0)
-							.collect(Collectors.toList())) {
-				setScore(attributes, gc.getCode(), gc.getScore());
+			int found=0;
+			for(GoodCode gc : codes.values()) {
+				List<Attribute> contains = contains(gc.getCode());
+				if(contains.size()==1) {
+					contains.get(0).setKey(gc.getCode());
+					this.score+=gc.getScore();
+					found++;
+					if(contains.get(0).getRaw().startsWith("[T+")) {
+						String language = contains.get(0).getRaw().substring(3, 6);
+						if(GoodToolsConfigOds.getTranslations().containsKey(language)) {
+							GoodCountry translation = GoodToolsConfigOds.getTranslations().get(language);
+							contains.get(0).setValue(translation.getLanguage());
+							this.score+=translation.getScore();
+						}
+					}
+				}
+			}	
+			if(found<attributes.size()) {
+				this.score-=20;
 			}
-			//FIXME 1 Manage "" type (need to parse but no delimiters => use contains()
-//			for(GoodCode gc : codes.stream()
-//							.filter(r -> r.getScore()!=0 && r.getType().equals(""))
-//							.collect(Collectors.toList())) {
-//			}
-			
 			
 			errorLevel=score>=40?0:
 				score>0?1:
@@ -141,14 +171,14 @@ public class RomVersion {
         }
 	}
 	
-	public int getErrorLevel() {
-		return errorLevel;
+	private List<Attribute> contains(String regex) {
+		return attributes.stream()
+			.filter(a -> a.getRaw().matches(regex))
+			.collect(Collectors.toList());
 	}
 	
-	private void setScore(List<String> list, String value, int score) {
-		if(list.contains(value)) {
-			this.score+=score;
-		}
+	public int getErrorLevel() {
+		return errorLevel;
 	}
 
     private void parseAttributes(String attrWork) {
@@ -158,7 +188,7 @@ public class RomVersion {
             if(attrWork.startsWith("(") 
 					|| attrWork.startsWith("[")) {
                 end = attrWork.indexOf(attrWork.startsWith("(")?")":"]");
-                attributes.add(attrWork.substring(0, end+1));
+                attributes.add(new Attribute(attrWork.substring(0, end+1)));
             }
             attrWork = attrWork.substring(end+1).trim();
         }
@@ -168,8 +198,18 @@ public class RomVersion {
         return filename;
     }
     
-    public List<String> getAttributes() {
-        return attributes;
+    public String getAttributes() {
+		JSONArray tagsAsMap = new JSONArray();
+		attributes.stream().forEach((attr) -> {
+			Map jsonAsMap = new HashMap();
+			jsonAsMap.put("key", attr.getKey());
+			jsonAsMap.put("raw", attr.getRaw());
+			jsonAsMap.put("value", attr.getValue());
+			tagsAsMap.add(jsonAsMap);
+		});
+		JSONObject obj = new JSONObject();
+		obj.put("attributes", tagsAsMap);
+		return obj.toString();
     }
 
 	public String getAlternativeName() {
@@ -185,16 +225,14 @@ public class RomVersion {
             out.append("<BR/>").append(alternativeName).append(" ");
         }
         if(attributes.size()>0) {
-			Map<String, GoodCode> collect = GoodToolsConfigOds.getCodes().entrySet().stream()
-						.filter(r -> r.getValue().getScore()!=0)
-						.collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
-			for(String attr : attributes) {
+			for(Attribute attr : attributes) {
 				out.append("<BR/>");
-				if(collect.containsKey(attr)) {
-					out.append(GoodToolsConfigOds.getCodes().get(attr).getDescription()).append(" ").append(attr);
+				if(!attr.getKey().equals("")) {
+					out.append(GoodToolsConfigOds.getCodes().get(attr.getKey()).getDescription()).append(" ").append(attr.getRaw());
 				} else {
-					out.append("Unknown: ").append("<b>").append(attr).append("</b>");
+					out.append("Unknown: ").append("<b>").append(attr.getRaw()).append("</b>");
 				}
+				out.append(" ").append(attr.getValue());
 			}
         }
 		

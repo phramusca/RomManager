@@ -55,7 +55,7 @@ public enum Console {
 		msx2("CHANGEME"),
 		n64("Nintendo 64"),
 		neogeo("SNK Neo Geo"),
-		nes("CHANGEME"),
+		nes("Nintendo Entertainment System"),
 		ngp("SNK Neo Geo Pocket"),
 		ngpc("SNK Neo Geo Pocket Color"),
 		o2em("CHANGEME"),

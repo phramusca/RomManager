@@ -75,7 +75,7 @@ public class RomManagerOds {
 					sevenZipRomFile.getFilename(), 
 					romVersion.getFilename(), 
 					romVersion.getAlternativeName(),
-					romVersion.getAttributes(), 
+					romVersion.getAttributes(),
 					romVersion.getScore(),
 					romVersion.getErrorLevel(),
 					romVersion.isBest(),

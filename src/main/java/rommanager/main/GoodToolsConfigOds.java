@@ -33,21 +33,27 @@ import rommanager.utils.Row;
 public class GoodToolsConfigOds {
 	
 	private final static File DOC_FILE = new File("GoodToolsConfig.ods");
-	private final static String SHEET_NAME = "ALL";
 	
 	private static Map<String, GoodCode> codes;
+	private static Map<String, GoodCountry> translations;
 
 	public static Map<String, GoodCode> getCodes() {
 		if(codes==null) {
 			codes = new HashMap<>();
-			readFile();
+			readFileCodes();
 		}
 		return codes;
 	}
+	
+	public static Map<String, GoodCountry> getTranslations() {
+		if(translations==null) {
+			translations = new HashMap<>();
+			readFileTranslations();
+		}
+		return translations;
+	}
 
-	// https://segaretro.org/GoodTools
-	// http://emulation.gametechwiki.com/index.php/GoodTools
-	private static void readFile() {
+	private static void readFileTranslations() {
 		if(!DOC_FILE.exists()) {
 			Logger.getLogger(GoodToolsConfigOds.class.getName())
 					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
@@ -55,7 +61,41 @@ public class GoodToolsConfigOds {
 		}
         try {
 			SpreadSheet spreadSheet = SpreadSheet.createFromFile(DOC_FILE);
-			Sheet sheet = spreadSheet.getSheet(SHEET_NAME);
+			Sheet sheet = spreadSheet.getSheet("Translation");
+			int nRowCount = sheet.getRowCount();
+			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
+				Row row = new Row(sheet, nRowIndex);
+				String category = row.getValue(0).trim();
+				
+				
+				if(row.getValue(1).trim().equals("")) {
+					break;
+				} else {
+					String code = row.getValue(0).trim();
+					int score = Integer.valueOf(row.getValue(1).trim());
+					String description = row.getValue(2).trim();
+
+					GoodCountry goodCountry = new GoodCountry(code, score, description);
+					translations.put(code, goodCountry);
+				}
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(GoodToolsConfigOds.class.getName())
+					.log(Level.SEVERE, null, ex);
+		} 
+    }
+	
+	// https://segaretro.org/GoodTools
+	// http://emulation.gametechwiki.com/index.php/GoodTools
+	private static void readFileCodes() {
+		if(!DOC_FILE.exists()) {
+			Logger.getLogger(GoodToolsConfigOds.class.getName())
+					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
+			return;
+		}
+        try {
+			SpreadSheet spreadSheet = SpreadSheet.createFromFile(DOC_FILE);
+			Sheet sheet = spreadSheet.getSheet("ALL");
 			int nRowCount = sheet.getRowCount();
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
