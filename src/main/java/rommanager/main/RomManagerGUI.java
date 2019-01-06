@@ -26,13 +26,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -130,6 +127,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonScanSource = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonAbort = new javax.swing.JButton();
+        jButtonScore = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -250,6 +248,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jButtonScore.setText("Set Score");
+        jButtonScore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonScoreActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -262,10 +267,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonScanSource)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonScore)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonExport)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonReadGameList)
-                        .addGap(0, 62, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAbort))
@@ -277,7 +284,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonReadGameList)
                     .addComponent(jButtonExport)
-                    .addComponent(jButtonScanSource))
+                    .addComponent(jButtonScanSource)
+                    .addComponent(jButtonScore))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -400,9 +408,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
 	private static void enableGUI(boolean enable) {
+		jButtonScanSource.setEnabled(enable);
+		jButtonScore.setEnabled(enable);
 		jButtonExport.setEnabled(enable);
 		jButtonReadGameList.setEnabled(enable);
-		jButtonScanSource.setEnabled(enable);
 		
 		jButtonOptionSelectFolderExport.setEnabled(enable);
 		jButtonOptionSelectFolderSource.setEnabled(enable);
@@ -481,6 +490,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		abort(processExport);
 		abort(processRead);
     }//GEN-LAST:event_jButtonAbortActionPerformed
+
+    private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
+		List<GoodCode> codes = GoodToolsConfigOds.getCodes();
+    }//GEN-LAST:event_jButtonScoreActionPerformed
     
 	private void abort(ProcessAbstract process) {
 		if(process!=null && process.isAlive()) {
@@ -538,6 +551,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;
     private static javax.swing.JButton jButtonScanSource;
+    private static javax.swing.JButton jButtonScore;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;

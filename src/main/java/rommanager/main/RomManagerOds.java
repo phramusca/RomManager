@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import org.apache.commons.io.FilenameUtils;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
@@ -153,7 +154,6 @@ public class RomManagerOds {
 			progressBar.setup(nRowCount-1);	
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
-				int i=-1;
 				Console console=null;
 				String consoleName=row.getValue(0);
 				try {
@@ -183,9 +183,10 @@ public class RomManagerOds {
 				int playcount = Integer.valueOf(row.getValue(20));
 				String thumbnail = row.getValue(21);
 				String path = row.getValue(22);
-				
 				model.addRow(console, filename);
-				RomVersion romVersion = new RomVersion(version, 
+				RomVersion romVersion = new RomVersion(
+						FilenameUtils.getBaseName(filename),
+						version, 
 						alternativeName, 
 						countries, standards, 
 						score, errorLevel, isBest);

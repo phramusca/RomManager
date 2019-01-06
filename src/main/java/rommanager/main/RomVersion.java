@@ -27,16 +27,17 @@ import java.util.List;
  */
 public class RomVersion {
     private final String filename;
+	private String name;
     private String alternativeName;
-    private List<String> countries;
-    private List<String> standards;
+    private final List<String> countries;
+    private final List<String> standards;
 	private int score;
 	private int errorLevel;
 	private boolean best;
 	private Game game;
 	
     /**
-     *
+     * Create a Rom Version, read from fileSystem
      * @param name
      * @param filename
      */
@@ -47,7 +48,39 @@ public class RomVersion {
         countries = new ArrayList<>();
         standards = new ArrayList<>();
         alternativeName = "";
-        try {
+		this.name=name;
+        setScore();
+    }
+
+	/**
+	 * Create a Rom Version, read from ODS file
+	 * @param name
+	 * @param filename
+	 * @param alternativeName
+	 * @param countries
+	 * @param standards
+	 * @param score
+	 * @param errorLevel
+	 * @param best
+	 */
+	public RomVersion(String name, String filename, String alternativeName, 
+			String countries, 
+			String standards, 
+			int score, 
+			int errorLevel, 
+			boolean best) {
+		this.name = name;
+		this.filename = filename;
+		this.alternativeName = alternativeName;
+		this.countries = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
+        this.standards = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
+		this.score = score;
+		this.errorLevel = errorLevel;
+		this.best = best;
+	}
+
+	public final void setScore() {
+		try {
             String attributes = "";
             if(!filename.startsWith(name)) {
                 int posPar = filename.indexOf("(");
@@ -82,9 +115,12 @@ public class RomVersion {
 
 			//FIXME 1 Make scoring customizable (no gui, use GoodToolsConfig.ods)
 			
+			
+			
 			if(countries.size()<=0) {
 				score-=200;
 			}
+
 			
 			setScore(countries, "F", 100); // France
 			setScore(countries, "E", 40); // Europe
@@ -110,6 +146,11 @@ public class RomVersion {
 				setScore(standards, "a", 20); // The ROM is a copy of an alternative release of the game. Many games have been re-released to fix bugs or to eliminate Game Genie codes. 
 				setScore(standards, "b", -10000); // [bX] - The game is a bad dump. These are useless. A bad dump often occurs with an older game or a faulty dumper (bad connection). Another common source of [b] ROMs is a corrupted upload to a release FTP. 
 			}
+			
+			
+			
+			
+			
 			errorLevel=score>=40?0:
 				score>0?1:
 				score<0?2:3;
@@ -118,23 +159,8 @@ public class RomVersion {
         catch(java.lang.StringIndexOutOfBoundsException ex) {
             Popup.error(ex);
         }
-    }
-
-	public RomVersion(String filename, String alternativeName, 
-			String countries, 
-			String standards, 
-			int score, 
-			int errorLevel, 
-			boolean best) {
-		this.filename = filename;
-		this.alternativeName = alternativeName;
-		this.countries = Arrays.asList(countries.substring(1, countries.length()-1).split(","));
-        this.standards = Arrays.asList(standards.substring(1, standards.length()-1).split(","));
-		this.score = score;
-		this.errorLevel = errorLevel;
-		this.best = best;
 	}
-
+	
 	public int getErrorLevel() {
 		return errorLevel;
 	}
