@@ -135,9 +135,9 @@ public class RomVersion {
             System.out.println("******************************************************************************************************************");
             parseAttributes(attrWork);
 
-			//FIXME 3 Manage code "values" (attributes.substring(2, end) )
+			//FIXME 1 Manage code "values" (attributes.substring(2, end) )
 				// - (VX.X) 	Version number (1.0 is earliest) 
-				// - [fX] et autres avec un X qui peux etre une filename surtout
+				// - \[f\d*\] et autres avec un \d*
 				
 			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
 			int found=0;

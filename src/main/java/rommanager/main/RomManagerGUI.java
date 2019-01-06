@@ -28,10 +28,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -349,18 +352,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
 	private static void enableFilter() {
-		//Enable filter
 		if(tableModel.getRowCount()>0) {
 			jTableRom.setAutoCreateRowSorter(true);
-//			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
-//			jTableRom.setRowSorter(tableSorter);
+			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
+			jTableRom.setRowSorter(tableSorter);
 			
-			//FIXME 2 Debug this enableFilter !
-//			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-//			//Order by console, name
-//			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-//			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-//			tableSorter.setSortKeys(sortKeys);
+			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
+			//Order by console, name
+			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+			tableSorter.setSortKeys(sortKeys);
 		}
 		else {
 			jTableRom.setAutoCreateRowSorter(false);
