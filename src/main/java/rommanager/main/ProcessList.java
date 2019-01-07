@@ -143,7 +143,8 @@ public class ProcessList extends ProcessAbstract {
 		} 
 		for (File file : files) {
 			checkAbort();
-			progressBar.progress(console.toString()+" \\ "+FilenameUtils.getName(file.getAbsolutePath()));
+			String msg=console.toString()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
+			progressBar.progress(msg);
 			if (file.isDirectory()) {
 				browseFoldersFS(
 						console,
@@ -162,7 +163,7 @@ public class ProcessList extends ProcessAbstract {
 								romSevenZipFile = 
 										new RomSevenZipFile(
 												console, file);
-								romSevenZipFile.setVersions();
+								romSevenZipFile.setVersions(progressBar, msg);
 								model.addRow(romSevenZipFile);
 							} 
 						} catch (IOException ex) {
