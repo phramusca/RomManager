@@ -56,4 +56,9 @@ public class Attribute {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return "Attribute{" + "raw=" + raw + ", key=" + key + ", value=" + value + '}';
+	}
 }

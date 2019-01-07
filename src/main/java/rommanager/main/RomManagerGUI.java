@@ -115,10 +115,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jListVersions = new javax.swing.JList<>();
         jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
         jTableRom = new javax.swing.JTable();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jListVersions = new javax.swing.JList<>();
         jPanel1 = new javax.swing.JPanel();
         jTextFieldPathExport = new javax.swing.JTextField();
         jButtonOptionSelectFolderExport = new javax.swing.JButton();
@@ -138,11 +138,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
 
-        jSplitPane1.setDividerLocation(150);
-
-        jScrollPane1.setViewportView(jListVersions);
-
-        jSplitPane1.setLeftComponent(jScrollPane1);
+        jSplitPane1.setDividerLocation(1500);
 
         jTableRom.setAutoCreateColumnsFromModel(false);
         jTableRom.setModel(new TableModelRomSevenZip());
@@ -157,7 +153,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
         });
         jScrollPaneCheckTags1.setViewportView(jTableRom);
 
-        jSplitPane1.setRightComponent(jScrollPaneCheckTags1);
+        jSplitPane1.setLeftComponent(jScrollPaneCheckTags1);
+
+        jScrollPane1.setViewportView(jListVersions);
+
+        jSplitPane1.setRightComponent(jScrollPane1);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Configuration"));
 
@@ -304,10 +304,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSplitPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

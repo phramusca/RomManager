@@ -18,13 +18,13 @@ package rommanager.main;
 
 import rommanager.utils.Popup;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -133,32 +133,81 @@ public class RomVersion {
             System.out.println("attributes="+attrWork);
             System.out.println("alternativeName="+alternativeName);
             System.out.println("******************************************************************************************************************");
-            parseAttributes(attrWork);
-
-			//FIXME 1 Manage code "values" (attributes.substring(2, end) )
-				// - (VX.X) 	Version number (1.0 is earliest) 
-				// - \[f\d*\] et autres avec un \d*
-				
+            
+			//Parsing attributes
+			while(!attrWork.equals("")) {
+				attrWork=attrWork.trim();
+				int end = 0;
+				if(attrWork.startsWith("(") 
+						|| attrWork.startsWith("[")) {
+					end = attrWork.indexOf(attrWork.startsWith("(")?")":"]");
+					attributes.add(new Attribute(attrWork.substring(0, end+1)));
+				}
+				attrWork = attrWork.substring(end+1).trim();
+			}
+			//Get attributes scores
 			Map<String, GoodCode> codes = GoodToolsConfigOds.getCodes();
 			int found=0;
 			for(GoodCode gc : codes.values()) {
 				List<Attribute> contains = contains(gc.getCode());
 				if(contains.size()==1) {
-					contains.get(0).setKey(gc.getCode());
+					Attribute attribute = contains.get(0);
+					attribute.setKey(gc.getCode());
 					this.score+=gc.getScore();
 					found++;
-					if(contains.get(0).getRaw().startsWith("[T+")) {
-						String language = contains.get(0).getRaw().substring(3, 6);
+					
+					//TODO: Make custom behavior below configurable from ods file (=> no more custom)
+					if(attribute.getRaw().startsWith("[T+")) {
+						String language = attribute.getRaw().substring(3, 6);
 						if(GoodToolsConfigOds.getTranslations().containsKey(language)) {
 							GoodCountry translation = GoodToolsConfigOds.getTranslations().get(language);
-							contains.get(0).setValue(translation.getLanguage());
+							attribute.setValue(translation.getLanguage());
 							this.score+=translation.getScore();
 						}
+					} else if(
+							gc.getCode().startsWith("\\[")
+									&& gc.getCode().endsWith("\\d*\\]")
+							&& !gc.getCode().startsWith("\\[R-")) {
+						String value = attribute.getRaw().substring(2, attribute.getRaw().indexOf("]"));
+						this.score+=Integer.valueOf(value);
+						attribute.setValue("+"+value);
+					} else if(attribute.getRaw().startsWith("(REV")
+							|| attribute.getRaw().startsWith("(Vol")) {
+//					\(REV\d*\)		1	Revision number (00 is earliest) 
+//					\(Vol \d*\) 	1	Official multicart //TODO
+						String value = attribute.getRaw().substring(4, attribute.getRaw().indexOf(")"));
+						this.score+=Integer.valueOf(value);
+						attribute.setValue("{+"+value+"}");
+					} else if(attribute.getRaw().startsWith("(V")) {
+//					\(V\d*\.\d*\) 	1	Version number (1.0 is earliest) 
+						String value = attribute.getRaw().substring(2, attribute.getRaw().indexOf(")"));
+						int scoreToAdd = Math.round(Float.valueOf(value));
+						this.score+=scoreToAdd;
+						attribute.setValue("{+"+scoreToAdd+"}");
 					}
+					//TODO: Manage specific codes:
+//					\(\d*k\) 	1	ROM size in kilobits 
+//					\(\d*Mbit\) 	1	ROM size in megabits 
+//					\(19\d*\)	1	Release year (20th Century) 
+//					\(20\d*\)	1	Release year (21st Century) 
+//					\(Mapper \d*\) 	1	Mapper number 
+//					\[R-\d*\] 	1	Language 
+//					\d*-in-1 	1	Pirate multicart 
+//					\+ \d* NES 	1	Unlicensed multicart with ## NES games 
+//					s\d*e\d* 	1	Series number and episode number for videos 
+//					SMB\d* 	1	Unspecified Super Mario Bros. hack 
+//					\[h\d*+\d*C\] 	-1000	Hacked internal cartridge information; #th variant 
+//					\[h\d*C\]		-1000	Hacked internal cartridge information.
 				}
 			}	
 			if(found<attributes.size()) {
 				this.score-=20;
+			}
+			if(attributes.size()<=0) {
+				this.score-=10;
+				if(!filename.equals(name)) {
+					alternativeName = FilenameUtils.getBaseName(filename);
+				}
 			}
 			
 			errorLevel=score>=40?0:
@@ -180,19 +229,6 @@ public class RomVersion {
 	public int getErrorLevel() {
 		return errorLevel;
 	}
-
-    private void parseAttributes(String attrWork) {
-        while(!attrWork.equals("")) {
-            attrWork=attrWork.trim();
-            int end = 0;
-            if(attrWork.startsWith("(") 
-					|| attrWork.startsWith("[")) {
-                end = attrWork.indexOf(attrWork.startsWith("(")?")":"]");
-                attributes.add(new Attribute(attrWork.substring(0, end+1)));
-            }
-            attrWork = attrWork.substring(end+1).trim();
-        }
-    }
     
     public String getFilename() {
         return filename;
