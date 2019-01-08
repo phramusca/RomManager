@@ -49,7 +49,7 @@ public class ProcessSetScore extends ProcessAbstract {
 			Popup.info("Set Score complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
-			Popup.info("Aborted by user");
+//			Popup.info("Aborted by user");
 		} finally {
 			callBack.completed();
 		}
@@ -59,7 +59,7 @@ public class ProcessSetScore extends ProcessAbstract {
 		progressBar.setup(tableModel.getRowCount());
 		for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
 			checkAbort();
-			progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getGame().getName());
+			progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getFilename());
 			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
 				checkAbort();
 				romVersion.setScore();

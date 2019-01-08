@@ -63,26 +63,20 @@ public class RomSevenZipFile {
 		this.filename=filename;
 	}
 	
-	public void setVersions(ProgressBar progressBar, String msg) throws IOException {
+	public void setVersions(ProgressBar progressBar) throws IOException {
         if(FilenameUtils.getExtension(filename).equals("7z")) {
 			try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
 				SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-				int nbToAdd=15;int nbAdded=0;int nbTimes=1;String name; 
-				int maxBak=progressBar.getMaximum();
-				progressBar.setMaximum(maxBak+nbToAdd);
+				String name;
+				String msg = progressBar.getString();
 				while(entry!=null){
 					name=entry.getName();
-					if(nbAdded>nbToAdd*nbTimes) {
-						progressBar.setMaximum(maxBak+nbToAdd);
-						nbTimes++;
-					}
-					progressBar.progress(msg+" : "+name);nbAdded++;
+					progressBar.setString(msg+" : "+name);
 					versions.add(new RomVersion(
 							FilenameUtils.getBaseName(filename), 
 							name));
 					entry = sevenZFile.getNextEntry();
 				}
-				progressBar.setMaximum(maxBak+nbAdded);
 			}
 			setScore(true);
 		}

@@ -64,14 +64,14 @@ public class ProcessList extends ProcessAbstract {
 				checkAbort();
 				list(console, FilenameUtils.concat(sourcePath, console.name()));
 			}
+			
+			Popup.info("Listing complete.");
+		} catch (InterruptedException ex) {
+//			Popup.info("Aborted by user");
+		} finally {
 			progressBar.setIndeterminate("Saving ods file");
 			RomManagerOds.createFile(tableModel, progressBar);
-			Popup.info("Listing complete.");
 			progressBar.reset();
-			
-		} catch (InterruptedException ex) {
-			Popup.info("Aborted by user");
-		} finally {
 			callBack.completed();
 		}
 	}
@@ -86,7 +86,7 @@ public class ProcessList extends ProcessAbstract {
         }
         
         if(console.toString().trim().toUpperCase().equals("CHANGEME")) {
-            Popup.warning("Unsupported console: "+console);
+            Popup.warning("Unsupported console: "+console.name()+" ("+console.toString()+")");
             return;
         }
 		
@@ -163,7 +163,7 @@ public class ProcessList extends ProcessAbstract {
 								romSevenZipFile = 
 										new RomSevenZipFile(
 												console, file);
-								romSevenZipFile.setVersions(progressBar, msg);
+								romSevenZipFile.setVersions(progressBar);
 								model.addRow(romSevenZipFile);
 							} 
 						} catch (IOException ex) {
@@ -171,6 +171,7 @@ public class ProcessList extends ProcessAbstract {
 									.log(Level.SEVERE, null, ex);
 						}	break;
 					case "dsk":
+						//FIXME 4 Amstrad: do not re-read if already in tableModel, as for 7z above
 						try {
 							String romName = FilenameUtils
 									.getBaseName(file.getAbsolutePath());

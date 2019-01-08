@@ -52,7 +52,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 			"Console",
 			"Genre",
 			"Rating",
-			"Best Version"
+			"Export Selection"
         });
 		this.fireTableStructureChanged();
 	}

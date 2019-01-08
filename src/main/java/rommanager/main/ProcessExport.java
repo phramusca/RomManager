@@ -82,7 +82,7 @@ public class ProcessExport extends ProcessAbstract {
 			Popup.info("Export complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
-			Popup.info("Aborted by user");
+//			Popup.info("Aborted by user");
 		} finally {
 			callBack.completed();
 		}

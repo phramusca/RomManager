@@ -69,7 +69,7 @@ public class ProcessRead extends ProcessAbstract {
 			Popup.info("Reading complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
-			Popup.info("Aborted by user");
+//			Popup.info("Aborted by user");
 		} finally {
 			callBack.completed();
 		}

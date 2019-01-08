@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONArray;
@@ -155,12 +156,12 @@ public class RomVersion {
 					attribute.setKey(gc.getCode());
 					this.score+=gc.getScore();
 					found++;
-					
 					//TODO: Make custom behavior below configurable from ods file (=> no more custom)
 					if(attribute.getRaw().startsWith("[T+")) {
 						String language = attribute.getRaw().substring(3, 6);
 						if(GoodToolsConfigOds.getTranslations().containsKey(language)) {
-							GoodCountry translation = GoodToolsConfigOds.getTranslations().get(language);
+							GoodCountry translation = GoodToolsConfigOds
+									.getTranslations().get(language);
 							attribute.setValue(translation.getLanguage());
 							this.score+=translation.getScore();
 						}
@@ -168,25 +169,35 @@ public class RomVersion {
 							gc.getCode().startsWith("\\[")
 									&& gc.getCode().endsWith("\\d*\\]")
 							&& !gc.getCode().startsWith("\\[R-")) {
-						String value = attribute.getRaw().substring(2, attribute.getRaw().indexOf("]"));
+						String value = attribute.getRaw()
+								.substring(2, attribute.getRaw().indexOf("]"));
 						this.score+=Integer.valueOf(value);
 						attribute.setValue("+"+value);
 					} else if(attribute.getRaw().startsWith("(REV")
 							|| attribute.getRaw().startsWith("(Vol")) {
 //					\(REV\d*\)		1	Revision number (00 is earliest) 
 //					\(Vol \d*\) 	1	Official multicart //Not seen until now. TODO: Is this a multi-volume rom or a version number ?
-						String value = attribute.getRaw().substring(4, attribute.getRaw().indexOf(")"));
+						String value = attribute.getRaw()
+								.substring(4, attribute.getRaw().indexOf(")"));
 						this.score+=Integer.valueOf(value);
 						attribute.setValue("{+"+value+"}");
-					} else if(attribute.getRaw().startsWith("(V")) {
+					} else if(attribute.getRaw().startsWith("(V")
+							&& !attribute.getRaw().equals("(VS)")) {
 //					\(V\d*\.\d*\) 	1	Version number (1.0 is earliest) 
-						String value = attribute.getRaw().substring(2, attribute.getRaw().indexOf(")"));
-						String[] split = value.split("\\.");//major.minor
-						int score1=Integer.parseInt((split[0]))+1;//major
-						int score2=Integer.parseInt((split[1]));//minor
-						int scoreToAdd = score1+score2;
-						this.score+=scoreToAdd;
-						attribute.setValue("{+"+scoreToAdd+"}");
+						try {
+							String value = attribute.getRaw()
+									.substring(2, attribute.getRaw().indexOf(")"));
+							String[] split = value.split("\\.");//major.minor
+							int score1=Integer.parseInt((split[0]))+1;//major
+							int score2=Integer.parseInt((split[1]));//minor
+							int scoreToAdd = score1+score2;
+							this.score+=scoreToAdd;
+							attribute.setValue("{+"+scoreToAdd+"}");
+						} catch(PatternSyntaxException | NumberFormatException ex) {
+							Logger.getLogger(RomVersion.class.getName())
+									.log(Level.WARNING, attribute.toString(), ex);
+						}
+						
 					}
 					//TODO: Manage specific codes:
 //					\(\d*k\) 	1	ROM size in kilobits 
@@ -212,7 +223,6 @@ public class RomVersion {
 					alternativeName = FilenameUtils.getBaseName(filename);
 				}
 			}
-			
 			errorLevel=score>=40?0:
 				score>0?1:
 				score<0?2:3;
