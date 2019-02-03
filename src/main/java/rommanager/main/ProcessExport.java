@@ -128,7 +128,6 @@ public class ProcessExport extends ProcessAbstract {
 						if(new File(exportFileName).exists()) {
 							continue;
 						}
-						//FIXME 5 Some need zip, some not (n64 for instance)
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
 							FilenameUtils.concat(sourceFolder, filename)))) {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
@@ -142,6 +141,7 @@ public class ProcessExport extends ProcessAbstract {
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
 									}
+									//FIXME 5 Some need zip, some not (n64 for instance)
 									if(zipFile(unzippedFile, exportFileName)) {
 										unzippedFile.delete();
 									}
