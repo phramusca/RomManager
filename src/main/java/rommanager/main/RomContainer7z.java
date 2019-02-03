@@ -32,14 +32,14 @@ public class RomContainer7z extends RomContainer {
 	/**
 	 * For 7z files including rom versions
 	 * @param console
-	 * @param file
+	 * @param filename
 	 * @throws IOException
 	 */
-    public RomContainer7z(Console console, File file) throws IOException {
-        super(console, file);
+    public RomContainer7z(Console console, String filename) throws IOException {
+        super(console, filename);
     }
 
-	public void setVersions(ProgressBar progressBar) throws IOException {
+	public void setVersions(ProgressBar progressBar, String path) throws IOException {
 		try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
 			SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 			String name;

@@ -139,7 +139,7 @@ public class RomManagerOds {
     
 	public static void readFile( 
 			TableModelRom model, 
-			ProgressBar progressBar, String sourcePath) {
+			ProgressBar progressBar) {
 		if(!DOC_FILE.exists()) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
@@ -181,7 +181,7 @@ public class RomManagerOds {
 				int playcount = Integer.valueOf(row.getValue(i++));
 				String thumbnail = row.getValue(i++);
 				String path = row.getValue(i++);
-				model.addRow(console, filename, sourcePath);
+				model.addRow(console, filename);
 				RomVersion romVersion = new RomVersion(
 						FilenameUtils.getBaseName(filename),
 						version, 

@@ -29,15 +29,13 @@ import org.apache.commons.io.FilenameUtils;
  */
 public abstract class RomContainer {
 	
-	String path; //FIXME: Remove as only one specific usage, that can (should ?) be done different
     String filename;
     List<RomVersion> versions;
 	Console console;
 	private Game game = null;
 	
-	RomContainer(Console console, File file) throws IOException {
-        this.path = FilenameUtils.getFullPath(file.getAbsolutePath());
-        this.filename = FilenameUtils.getName(file.getAbsolutePath());
+	RomContainer(Console console, String filename) throws IOException {
+        this.filename = filename;
 		this.versions = new ArrayList<>();
 		this.console = console;
     }

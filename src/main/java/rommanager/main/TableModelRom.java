@@ -205,19 +205,17 @@ public class TableModelRom extends TableModelGeneric {
 	 * @param filename
 	 * @throws IOException
 	 */
-	public void addRow(Console console, String filename, String sourcePath) throws IOException {
+	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
 			RomContainer romContainer=null;
-			File file = new File(FilenameUtils.concat(sourcePath, FilenameUtils.concat(console.name(), filename)));
 			switch(FilenameUtils.getExtension(filename)) {				
 				case "7z":
-					romContainer = new RomContainer7z(console, file);
+					romContainer = new RomContainer7z(console, filename);
 					break;
 				case "dsk":
-					String romName = RomContainerAmstrad.getRomName(file);
+					String romName = RomContainerAmstrad.getRomName(filename);
 					romContainer = new RomContainerAmstrad(
 													console,
-													file, 
 													romName);
 					break;
 			}

@@ -97,14 +97,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		@Override
 		public void run() {
-			String sourcePath = jTextFieldPathSource.getText();
-			File file = new File(sourcePath);
-			if(!file.exists()) {
-				Popup.warning("Source path does not exist.");
-				enableGUI();
-				return;
-			}
-			RomManagerOds.readFile(tableModel, progressBar, sourcePath);
+			RomManagerOds.readFile(tableModel, progressBar);
 			callBack.completed();
 		}
 	}
@@ -182,11 +175,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 914, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButtonAuto)
                 .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -297,7 +290,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addComponent(jButtonExport)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonReadGameList)
-                .addContainerGap(813, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,10 +450,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jTableRomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableRomMouseClicked
 		RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
-			DefaultListModel versionsModel = new DefaultListModel();
+			displayVersions(romContainer.getVersions());
+		}
+    }//GEN-LAST:event_jTableRomMouseClicked
+
+	private void displayVersions(List<RomVersion> versions) {
+		DefaultListModel versionsModel = new DefaultListModel();
 			int i=0;
 			List<Integer> indices=new ArrayList();
-			List<RomVersion> versions = romContainer.getVersions();
 			Collections.sort(versions, (RomVersion o1, RomVersion o2) -> {
 				//ORDER BY getScore DESC
 				if (o1.getScore() == o2.getScore())
@@ -483,9 +480,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			for(i = 0; i < indices.size(); i++) { indicesArray[i] = indices.get(i); }
 			
 			jListVersions.setSelectedIndices(indicesArray);
-		}
-    }//GEN-LAST:event_jTableRomMouseClicked
-
+	}
+	
 	private RomContainer getRomContainer() {
 		RomContainer romContainer=null;
 		int selectedRow = jTableRom.getSelectedRow(); 		
@@ -556,6 +552,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
 			romContainer.setBestExportable();
+			displayVersions(romContainer.getVersions());
+//			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselct line in jtable
 		}
     }//GEN-LAST:event_jButtonAutoActionPerformed
     

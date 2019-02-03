@@ -92,6 +92,7 @@ public class ProcessList extends ProcessAbstract {
 		browseFoldersFS(console, path, new File(path));
 		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
+			romAmstrad.setBestExportable();
 			tableModel.addRow(romAmstrad);
 		}  
 	}
@@ -159,8 +160,8 @@ public class ProcessList extends ProcessAbstract {
 											file.getAbsolutePath()))) {
 								romSevenZipFile = 
 										new RomContainer7z(
-												console, file);
-								romSevenZipFile.setVersions(progressBar);
+												console, FilenameUtils.getName(file.getAbsolutePath()));
+								romSevenZipFile.setVersions(progressBar, FilenameUtils.getFullPath(file.getAbsolutePath()));
 								tableModel.addRow(romSevenZipFile);
 							} 
 						} catch (IOException ex) {
@@ -169,7 +170,7 @@ public class ProcessList extends ProcessAbstract {
 						}	break;
 					case "dsk":
 						try {
-							String romName = RomContainerAmstrad.getRomName(file);
+							String romName = RomContainerAmstrad.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()));
 							if(!tableModel.getRoms().containsKey(romName)) {
 								RomContainerAmstrad containerAmstrad;
 								if(amstradRoms.containsKey(romName)) {
@@ -178,7 +179,6 @@ public class ProcessList extends ProcessAbstract {
 									containerAmstrad = 
 											new RomContainerAmstrad(
 													console,
-													file, 
 													romName);
 									amstradRoms.put(romName, containerAmstrad);
 								}

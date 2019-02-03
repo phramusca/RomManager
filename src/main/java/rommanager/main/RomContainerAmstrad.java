@@ -33,9 +33,8 @@ public class RomContainerAmstrad extends RomContainer {
 	 * @param filename
 	 * @throws IOException
 	 */
-	public RomContainerAmstrad(Console console, File file, String filename) throws IOException {
-		super(console, file);
-		this.filename=filename;
+	public RomContainerAmstrad(Console console, String filename) throws IOException {
+		super(console, filename);
 	}
 	@Override
 	public void setBestExportable() {
@@ -45,8 +44,8 @@ public class RomContainerAmstrad extends RomContainer {
 		}
 	}
 	
-	static String getRomName(File file) {
-		String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
+	static String getRomName(String filename) {
+		String romName = filename;
 		int pos = romName.indexOf("(");
 		if(pos>=0) {
 			romName=romName.substring(0, pos).trim();
