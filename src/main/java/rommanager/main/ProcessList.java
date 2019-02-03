@@ -90,7 +90,7 @@ public class ProcessList extends ProcessAbstract {
             return;
         }
 		
-		browseFoldersFS(console, path, new File(path), tableModel);
+		browseFoldersFS(console, path, new File(path));
 		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
 			romAmstrad.setScore(false);
@@ -125,7 +125,7 @@ public class ProcessList extends ProcessAbstract {
 		}
 	}
 	
-    private void browseFoldersFS(Console console, String rootPath, File path, TableModelRom model) 
+    private void browseFoldersFS(Console console, String rootPath, File path) 
 			throws InterruptedException {
         if(!path.isDirectory()) {
 			return;
@@ -149,8 +149,7 @@ public class ProcessList extends ProcessAbstract {
 				browseFoldersFS(
 						console,
 						rootPath,
-						file, 
-						model);
+						file);
 			}
 			else {
 				switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
@@ -164,14 +163,13 @@ public class ProcessList extends ProcessAbstract {
 										new RomContainer7z(
 												console, file);
 								romSevenZipFile.setVersions(progressBar);
-								model.addRow(romSevenZipFile);
+								tableModel.addRow(romSevenZipFile);
 							} 
 						} catch (IOException ex) {
 							Logger.getLogger(ProcessList.class.getName())
 									.log(Level.SEVERE, null, ex);
 						}	break;
 					case "dsk":
-						//FIXME 4 Amstrad: do not re-read if already in tableModel, as for 7z above
 						try {
 							String romName = FilenameUtils
 									.getBaseName(file.getAbsolutePath());
@@ -180,24 +178,25 @@ public class ProcessList extends ProcessAbstract {
 								romName=romName.substring(0, pos).trim();
 							}
 							romName=romName.concat(".dsk");
-
-							RomContainerAmstrad containerAmstrad;
-							if(amstradRoms.containsKey(romName)) {
-								containerAmstrad = amstradRoms.get(romName);
-							} else {
-								containerAmstrad = 
-										new RomContainerAmstrad(
-												console,
-												file, 
-												romName);
-								amstradRoms.put(romName, containerAmstrad);
+							if(!tableModel.getRoms().containsKey(romName)) {
+								RomContainerAmstrad containerAmstrad;
+								if(amstradRoms.containsKey(romName)) {
+									containerAmstrad = amstradRoms.get(romName);
+								} else {
+									containerAmstrad = 
+											new RomContainerAmstrad(
+													console,
+													file, 
+													romName);
+									amstradRoms.put(romName, containerAmstrad);
+								}
+								String versionPath = 
+										file.getAbsolutePath()
+												.substring(rootPath.length()+1);
+								containerAmstrad.addVersion(new RomVersion(
+										romName,
+										versionPath));
 							}
-							String versionPath = 
-									file.getAbsolutePath()
-											.substring(rootPath.length()+1);
-							containerAmstrad.addVersion(new RomVersion(
-									romName,
-									versionPath));
 						} catch (IOException ex) {
 							Logger.getLogger(ProcessList.class.getName())
 									.log(Level.SEVERE, null, ex);
