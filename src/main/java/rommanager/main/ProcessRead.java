@@ -140,6 +140,7 @@ public class ProcessRead extends ProcessAbstract {
 				transformer.transform(source, consoleResult);
 			}
 			
+			//FIXME: Set only once for all consoles, as for ProcessList
 			progressBar.setup(tableModel.getRoms().size());
 			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
 				checkAbort();

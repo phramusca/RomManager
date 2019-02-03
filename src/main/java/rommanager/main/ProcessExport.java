@@ -75,7 +75,10 @@ public class ProcessExport extends ProcessAbstract {
 				checkAbort();
 				String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.toString());
 				if(!new File(consolePath).exists()) {
-					new File(consolePath).mkdirs();
+					if(!new File(consolePath).mkdirs()) {
+						Popup.error("Error creating "+consolePath);
+						callBack.completed();
+					}
 				}
 			}
 			export();
@@ -89,6 +92,7 @@ public class ProcessExport extends ProcessAbstract {
 	}
 
 	//FIXME 5 Allow to select which console(s) and which version(s) [isBest, multiple, multi-disk roms] to export
+	//FIXME 5 Some need zip, some not (n64 for instance)
 	//(now export all consoles, only best version and all dsk (amstrad) files)
 	
 	//FIXME 6 Change "Export" into "Sync" => remove files not selected for export from exportPath
@@ -114,7 +118,6 @@ public class ProcessExport extends ProcessAbstract {
 									exportPath, 
 									romSevenZipFile.getConsole().name()), 
 							romSevenZipFile.getConsole().toString());
-					
 					if(FilenameUtils.getExtension(filename).equals("7z")) {
 						String exportFileName = FilenameUtils.concat(
 										exportFolder, 
