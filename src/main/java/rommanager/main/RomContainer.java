@@ -29,7 +29,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public abstract class RomContainer {
 	
-	String path;
+	String path; //FIXME: Remove as only one specific usage, that can (should ?) be done different
     String filename;
     List<RomVersion> versions;
 	Console console;
@@ -42,24 +42,16 @@ public abstract class RomContainer {
 		this.console = console;
     }
 	
-	public final void setBestExportable() {
-		int bestScore=Integer.MIN_VALUE;
-		RomVersion bestVersion=null;
-		for(RomVersion version : versions) {
-			if(version.getScore()>bestScore) {
-				bestVersion=version;
-				bestScore=version.getScore();
-			} 
-		}
-		if(bestVersion!=null) {
-			bestVersion.setExportable(true);
-		}
-	}
-	
+	public abstract void setBestExportable();
+
 	 public List<RomVersion> getVersions() {
         return versions;
     }
 
+	 public void addVersion(RomVersion version) {
+		versions.add(version);
+	}
+	 
     public String getFilename() {
         return filename;
     }

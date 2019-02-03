@@ -18,13 +18,14 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
  * @author phramusca ( https://github.com/phramusca/ )
  */
 public class RomContainerAmstrad extends RomContainer {
-	
+
 	/**
 	 * For dsk (Amstrad) files that are not groupped in 7z
 	 * @param console
@@ -36,13 +37,21 @@ public class RomContainerAmstrad extends RomContainer {
 		super(console, file);
 		this.filename=filename;
 	}
-
-	public void addVersion(RomVersion version) {
-		versions.add(version);
-		
-		//FIXME 4 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
-		if(version.getErrorLevel()==0) {
-			version.setExportable(true);
+	@Override
+	public void setBestExportable() {
+		for(RomVersion version : versions) {
+			//FIXME 4 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
+			version.setExportable(version.getErrorLevel()==0);
 		}
+	}
+	
+	static String getRomName(File file) {
+		String romName = FilenameUtils.getBaseName(file.getAbsolutePath());
+		int pos = romName.indexOf("(");
+		if(pos>=0) {
+			romName=romName.substring(0, pos).trim();
+		}
+		romName=romName.concat(".dsk");
+		return romName;
 	}
 }

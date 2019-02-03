@@ -77,7 +77,6 @@ public class ProcessList extends ProcessAbstract {
 	}
 
 	private void list(Console console, String path) throws InterruptedException {
-
 		File file = new File(path);
         if(!file.exists()) {
             Logger.getLogger(ProcessList.class.getName())
@@ -170,13 +169,7 @@ public class ProcessList extends ProcessAbstract {
 						}	break;
 					case "dsk":
 						try {
-							String romName = FilenameUtils
-									.getBaseName(file.getAbsolutePath());
-							int pos = romName.indexOf("(");
-							if(pos>=0) {
-								romName=romName.substring(0, pos).trim();
-							}
-							romName=romName.concat(".dsk");
+							String romName = RomContainerAmstrad.getRomName(file);
 							if(!tableModel.getRoms().containsKey(romName)) {
 								RomContainerAmstrad containerAmstrad;
 								if(amstradRoms.containsKey(romName)) {
