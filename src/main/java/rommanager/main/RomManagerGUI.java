@@ -22,7 +22,9 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -139,7 +141,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         setTitle("Rom Manager");
 
         jTableRom.setAutoCreateColumnsFromModel(false);
-        jTableRom.setModel(new TableModelRom());
+        jTableRom.setModel(new rommanager.main.TableModelRom());
         jTableRom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -153,6 +155,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jSplitPane1.setLeftComponent(jScrollPaneCheckTags1);
 
+        jListVersions.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jListVersionsFocusLost(evt);
+            }
+        });
         jScrollPane1.setViewportView(jListVersions);
 
         jSplitPane1.setRightComponent(jScrollPane1);
@@ -492,7 +499,21 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess());
 		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
+
+    private void jListVersionsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jListVersionsFocusLost
+		DefaultListModel versionsModel = (DefaultListModel)jListVersions.getModel();
+		int i=0;
+		for (Iterator it = Collections.list(versionsModel.elements()) .iterator(); it.hasNext();) {
+			RomVersion romVersion = (RomVersion) it.next();
+			romVersion.setExportable(selectedIndicesContains(i));
+			i++;
+		}
+    }//GEN-LAST:event_jListVersionsFocusLost
     
+	private boolean selectedIndicesContains(int value) {
+		return IntStream.of(jListVersions.getSelectedIndices()).anyMatch(x -> x == value);
+	}
+	
 	private void abort(ProcessAbstract process) {
 		if(process!=null && process.isAlive()) {
 			process.abort();

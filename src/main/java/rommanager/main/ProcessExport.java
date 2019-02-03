@@ -106,8 +106,8 @@ public class ProcessExport extends ProcessAbstract {
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()
-	//FIXME 4 Allow to select which console(s) and which version(s) [isExportable, multiple, multi-disk roms] to export
-	//(now export all consoles, only best version and all dsk (amstrad) files)
+	//FIXME 4 Allow to select which console(s)
+	//(now export all consoles, only best version and all good dsk (amstrad) files)
 							.filter(r -> r.isExportable() && r.getScore()>0)
 							.collect(Collectors.toList())) {
 					checkAbort();
