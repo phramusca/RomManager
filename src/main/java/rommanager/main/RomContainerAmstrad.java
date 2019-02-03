@@ -42,7 +42,7 @@ public class RomContainerAmstrad extends RomContainer {
 		
 		//FIXME 4 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
 		if(version.getErrorLevel()==0) {
-			version.setBest(true);
+			version.setExportable(true);
 		}
 	}
 }

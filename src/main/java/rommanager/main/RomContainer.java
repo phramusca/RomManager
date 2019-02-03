@@ -42,7 +42,7 @@ public abstract class RomContainer {
 		this.console = console;
     }
 	
-	public final void setScore(boolean addBestForExport) {
+	public final void setBestExportable() {
 		int bestScore=Integer.MIN_VALUE;
 		RomVersion bestVersion=null;
 		for(RomVersion version : versions) {
@@ -51,8 +51,8 @@ public abstract class RomContainer {
 				bestScore=version.getScore();
 			} 
 		}
-		if(addBestForExport && bestVersion!=null) {
-			bestVersion.setBest(true);
+		if(bestVersion!=null) {
+			bestVersion.setExportable(true);
 		}
 	}
 	
@@ -66,7 +66,7 @@ public abstract class RomContainer {
 
     @Override
     public String toString() {
-		List<RomVersion> export = versions.stream().filter(v -> v.isBest())
+		List<RomVersion> export = versions.stream().filter(v -> v.isExportable())
 				.collect(Collectors.toList());
 		
         return export.size()==1
@@ -87,7 +87,7 @@ public abstract class RomContainer {
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
-				.filter(v -> v.isBest() && v.getGame()!=null && !v.getGame().getName().equals(""))
+				.filter(v -> v.isExportable() && v.getGame()!=null && !v.getGame().getName().equals(""))
 				.map(v -> v.getGame())
 				.collect(Collectors.toList());
 		

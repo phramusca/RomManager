@@ -93,7 +93,6 @@ public class ProcessList extends ProcessAbstract {
 		browseFoldersFS(console, path, new File(path));
 		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
-			romAmstrad.setScore(false);
 			tableModel.addRow(romAmstrad);
 		}  
 	}

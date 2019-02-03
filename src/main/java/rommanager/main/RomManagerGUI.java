@@ -434,7 +434,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			});
 			for(RomVersion romVersion : versions) {
 				versionsModel.addElement(romVersion);
-				if(romVersion.isBest()) {
+				if(romVersion.isExportable()) {
 					indices.add(i);
 				}
 				i++;

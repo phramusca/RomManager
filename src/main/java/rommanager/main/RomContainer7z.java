@@ -40,21 +40,19 @@ public class RomContainer7z extends RomContainer {
     }
 
 	public void setVersions(ProgressBar progressBar) throws IOException {
-        if(FilenameUtils.getExtension(filename).equals("7z")) {
-			try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
-				SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-				String name;
-				String msg = progressBar.getString();
-				while(entry!=null){
-					name=entry.getName();
-					progressBar.setString(msg+" : "+name);
-					versions.add(new RomVersion(
-							FilenameUtils.getBaseName(filename), 
-							name));
-					entry = sevenZFile.getNextEntry();
-				}
+		try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
+			SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+			String name;
+			String msg = progressBar.getString();
+			while(entry!=null){
+				name=entry.getName();
+				progressBar.setString(msg+" : "+name);
+				versions.add(new RomVersion(
+						FilenameUtils.getBaseName(filename), 
+						name));
+				entry = sevenZFile.getNextEntry();
 			}
-			setScore(true);
 		}
+		setBestExportable();
 	}
 }

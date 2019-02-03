@@ -78,7 +78,7 @@ public class RomManagerOds {
 					romVersion.getAttributes(),
 					romVersion.getScore(),
 					romVersion.getErrorLevel(),
-					romVersion.isBest(),
+					romVersion.isExportable(),
 					game.getName(),
 					game.getDesc(),
 					game.getGenre(),
@@ -105,7 +105,7 @@ public class RomManagerOds {
         columns[i++] = "Attributes";
         columns[i++] = "Score";
 		columns[i++] = "Error Level";
-		columns[i++] = "Best";
+		columns[i++] = "Export";
 		columns[i++] = "Name";
 		columns[i++] = "Description";
 		columns[i++] = "Genre";
@@ -165,7 +165,7 @@ public class RomManagerOds {
 				String attributes = row.getValue(4);
 				int score = Integer.valueOf(row.getValue(5));
 				int errorLevel = Integer.valueOf(row.getValue(6));
-				boolean isBest = Boolean.parseBoolean(row.getValue(7));
+				boolean isExportable = Boolean.parseBoolean(row.getValue(7));
 				int i =8;
 				String gameName = row.getValue(i++);
 				String desc = row.getValue(i++);
@@ -187,7 +187,7 @@ public class RomManagerOds {
 						version, 
 						alternativeName, 
 						attributes, 
-						score, errorLevel, isBest);
+						score, errorLevel, isExportable);
 				
 				Game game = new Game(path, gameName, desc, image, 
 					thumbnail, rating, releaseDate, 

@@ -91,9 +91,7 @@ public class ProcessExport extends ProcessAbstract {
 		}
 	}
 
-	//FIXME 5 Allow to select which console(s) and which version(s) [isBest, multiple, multi-disk roms] to export
-	//FIXME 5 Some need zip, some not (n64 for instance)
-	//(now export all consoles, only best version and all dsk (amstrad) files)
+
 	
 	//FIXME 6 Change "Export" into "Sync" => remove files not selected for export from exportPath
 	
@@ -108,7 +106,9 @@ public class ProcessExport extends ProcessAbstract {
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()
-							.filter(r -> r.isBest() && r.getScore()>0)
+	//FIXME 4 Allow to select which console(s) and which version(s) [isExportable, multiple, multi-disk roms] to export
+	//(now export all consoles, only best version and all dsk (amstrad) files)
+							.filter(r -> r.isExportable() && r.getScore()>0)
 							.collect(Collectors.toList())) {
 					checkAbort();
 					sourceFolder = FilenameUtils.concat(
@@ -128,7 +128,7 @@ public class ProcessExport extends ProcessAbstract {
 						if(new File(exportFileName).exists()) {
 							continue;
 						}
-						
+						//FIXME 5 Some need zip, some not (n64 for instance)
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
 							FilenameUtils.concat(sourceFolder, filename)))) {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();

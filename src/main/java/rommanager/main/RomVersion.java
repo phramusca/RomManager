@@ -42,7 +42,7 @@ public class RomVersion {
     private List<Attribute> attributes;
 	private int score;
 	private int errorLevel;
-	private boolean best;
+	private boolean exportable;
 	private Game game;
 	
     /**
@@ -97,7 +97,7 @@ public class RomVersion {
 
 		this.score = score;
 		this.errorLevel = errorLevel;
-		this.best = best;
+		this.exportable = best;
 	}
 
 	public final void setScore() {
@@ -331,12 +331,12 @@ public class RomVersion {
 		return score;
 	}
 
-	public boolean isBest() {
-		return best;
+	public boolean isExportable() {
+		return exportable;
 	}
 
-	public void setBest(boolean selected) {
-		this.best = selected;
+	public void setExportable(boolean exportable) {
+		this.exportable = exportable;
 	}
 	
 	public void setGame(Game game) {
