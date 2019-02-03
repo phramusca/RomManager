@@ -27,12 +27,12 @@ import rommanager.utils.ProgressBar;
 public class ProcessSetScore extends ProcessAbstract {
 
 	private final ProgressBar progressBar;
-	private final TableModelRomSevenZip tableModel;
+	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
 	public ProcessSetScore(
 			ProgressBar progressBar, 
-			TableModelRomSevenZip tableModel, 
+			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessSetScore");
 		this.progressBar = progressBar;
@@ -57,15 +57,15 @@ public class ProcessSetScore extends ProcessAbstract {
 
     public void setScore() throws InterruptedException {
 		progressBar.setup(tableModel.getRowCount());
-		for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
+		for(RomContainer romContainer : tableModel.getRoms().values()) {
 			checkAbort();
-			progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getFilename());
-			for(RomVersion romVersion : romSevenZipFile.getVersions()) {
+			progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
+			for(RomVersion romVersion : romContainer.getVersions()) {
 				checkAbort();
 				romVersion.setScore();
 				romVersion.setBest(false);
 			}
-			romSevenZipFile.setScore(true);
+			romContainer.setScore(true);
 		}
     }
 }

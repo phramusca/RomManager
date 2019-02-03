@@ -43,27 +43,27 @@ public class RomManagerOds {
 	}
 
 	public static void createFile(
-			TableModelRomSevenZip model, 
+			TableModelRom model, 
 			ProgressBar progressBar) {
 		
 		createFile(model, progressBar, false);
 	}
 	
 	public static void createFile(
-			TableModelRomSevenZip model, 
+			TableModelRom model, 
 			ProgressBar progressBar, 
 			boolean open) {
 		
         int nbColumns=22;
         int nbRows=0;
-        for(RomSevenZipFile sevenZipRomFile : model.getRoms().values()) {
-            nbRows+=sevenZipRomFile.getVersions().size();
+        for(RomContainer romContainer : model.getRoms().values()) {
+            nbRows+=romContainer.getVersions().size();
         }
         final Object[][] data = new Object[nbRows][nbColumns];
         
         int i=0; 
-        for(RomSevenZipFile sevenZipRomFile : model.getRoms().values()) {
-            for (RomVersion romVersion : sevenZipRomFile.getVersions()) {
+        for(RomContainer romContainer : model.getRoms().values()) {
+            for (RomVersion romVersion : romContainer.getVersions()) {
 				
 				Game game = romVersion.getGame();
 				if(game==null) {
@@ -71,8 +71,8 @@ public class RomManagerOds {
 				}
 				
                 data[i++] = new Object[] { 
-					sevenZipRomFile.getConsole().name(),
-					sevenZipRomFile.getFilename(), 
+					romContainer.getConsole().name(),
+					romContainer.getFilename(), 
 					romVersion.getFilename(), 
 					romVersion.getAlternativeName(),
 					romVersion.getAttributes(),
@@ -138,7 +138,7 @@ public class RomManagerOds {
     }
     
 	public static void readFile( 
-			TableModelRomSevenZip model, 
+			TableModelRom model, 
 			ProgressBar progressBar) {
 		if(!DOC_FILE.exists()) {
 			Logger.getLogger(RomManagerOds.class.getName())

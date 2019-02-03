@@ -35,13 +35,13 @@ public class ProcessList extends ProcessAbstract {
 
 	private final String sourcePath;
 	private final ProgressBar progressBar;
-	private final TableModelRomSevenZip tableModel;
+	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 		
 	public ProcessList(
 			String sourcePath, 
 			ProgressBar progressBar, 
-			TableModelRomSevenZip tableModel, 
+			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessList");
 		this.sourcePath = sourcePath;
@@ -91,14 +91,14 @@ public class ProcessList extends ProcessAbstract {
         }
 		
 		browseFoldersFS(console, path, new File(path), tableModel);
-		for(RomSevenZipFile romSevenZipFile : amstradRoms.values()) {
+		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
-			romSevenZipFile.setScore(false);
-			tableModel.addRow(romSevenZipFile);
+			romAmstrad.setScore(false);
+			tableModel.addRow(romAmstrad);
 		}  
 	}
 	
-	private final Map<String, RomSevenZipFile> amstradRoms = new HashMap<>();
+	private final Map<String, RomContainerAmstrad> amstradRoms = new HashMap<>();
   
 	private int nbFiles=0;
 	
@@ -125,7 +125,7 @@ public class ProcessList extends ProcessAbstract {
 		}
 	}
 	
-    private void browseFoldersFS(Console console, String rootPath, File path, TableModelRomSevenZip model) 
+    private void browseFoldersFS(Console console, String rootPath, File path, TableModelRom model) 
 			throws InterruptedException {
         if(!path.isDirectory()) {
 			return;
@@ -156,12 +156,12 @@ public class ProcessList extends ProcessAbstract {
 				switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
 					case "7z":
 						try {
-							RomSevenZipFile romSevenZipFile;
+							RomContainer7z romSevenZipFile;
 							if(!tableModel.getRoms().containsKey(
 									FilenameUtils.getName(
 											file.getAbsolutePath()))) {
 								romSevenZipFile = 
-										new RomSevenZipFile(
+										new RomContainer7z(
 												console, file);
 								romSevenZipFile.setVersions(progressBar);
 								model.addRow(romSevenZipFile);
@@ -181,21 +181,21 @@ public class ProcessList extends ProcessAbstract {
 							}
 							romName=romName.concat(".dsk");
 
-							RomSevenZipFile romSevenZipFile;
+							RomContainerAmstrad containerAmstrad;
 							if(amstradRoms.containsKey(romName)) {
-								romSevenZipFile = amstradRoms.get(romName);
+								containerAmstrad = amstradRoms.get(romName);
 							} else {
-								romSevenZipFile = 
-										new RomSevenZipFile(
+								containerAmstrad = 
+										new RomContainerAmstrad(
 												console,
 												file, 
 												romName);
-								amstradRoms.put(romName, romSevenZipFile);
+								amstradRoms.put(romName, containerAmstrad);
 							}
 							String versionPath = 
 									file.getAbsolutePath()
 											.substring(rootPath.length()+1);
-							romSevenZipFile.addAmstradVersion(new RomVersion(
+							containerAmstrad.addVersion(new RomVersion(
 									romName,
 									versionPath));
 						} catch (IOException ex) {

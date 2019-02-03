@@ -44,7 +44,7 @@ public class ProcessExport extends ProcessAbstract {
 	private final String exportPath;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
-	private final TableModelRomSevenZip tableModel;
+	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	private final String sourcePath;
 	
@@ -52,7 +52,7 @@ public class ProcessExport extends ProcessAbstract {
 			String sourcePath, 
 			String exportPath, 
 			ProgressBar progressBar, 
-			TableModelRomSevenZip tableModel, 
+			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessExport");
 		this.sourcePath = sourcePath;
@@ -102,22 +102,22 @@ public class ProcessExport extends ProcessAbstract {
 			progressBar.setup(tableModel.getRowCount());
 			String sourceFolder;
 			String exportFolder;
-			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
+			for(RomContainer romContainer : tableModel.getRoms().values()) {
 				checkAbort();
-				String filename = romSevenZipFile.getFilename();
-				progressBar.progress(romSevenZipFile.getConsoleStr()+" \\ "+romSevenZipFile.getFilename());
+				String filename = romContainer.getFilename();
+				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
-						romSevenZipFile.getVersions().stream()
+						romContainer.getVersions().stream()
 							.filter(r -> r.isBest() && r.getScore()>0)
 							.collect(Collectors.toList())) {
 					checkAbort();
 					sourceFolder = FilenameUtils.concat(
-							sourcePath, romSevenZipFile.getConsole().name());
+							sourcePath, romContainer.getConsole().name());
 					exportFolder = FilenameUtils.concat(
 							FilenameUtils.concat(
 									exportPath, 
-									romSevenZipFile.getConsole().name()), 
-							romSevenZipFile.getConsole().toString());
+									romContainer.getConsole().name()), 
+							romContainer.getConsole().toString());
 					if(FilenameUtils.getExtension(filename).equals("7z")) {
 						String exportFileName = FilenameUtils.concat(
 										exportFolder, 

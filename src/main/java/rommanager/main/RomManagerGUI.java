@@ -43,7 +43,7 @@ import rommanager.utils.ProcessAbstract;
 public class RomManagerGUI extends javax.swing.JFrame {
 
     private final ProgressBar progressBar;
-    private static TableModelRomSevenZip tableModel;
+    private static TableModelRom tableModel;
     
 	private ProcessList processList;
 	private ProcessRead processRead;
@@ -63,7 +63,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         
 		jTableRom.setRowHeight(IconBuffer.ICON_HEIGHT);
 		
-        tableModel = (TableModelRomSevenZip) jTableRom.getModel();
+        tableModel = (TableModelRom) jTableRom.getModel();
         jTableRom.setRowSorter(null);
 		//Adding columns from tableModel. Cannot be done automatically on properties
 		// as done, in initComponents, before setColumnModel which removes the columns ...
@@ -139,7 +139,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         setTitle("Rom Manager");
 
         jTableRom.setAutoCreateColumnsFromModel(false);
-        jTableRom.setModel(new TableModelRomSevenZip());
+        jTableRom.setModel(new TableModelRom());
         jTableRom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -333,7 +333,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private static void enableFilter() {
 		if(tableModel.getRowCount()>0) {
 			jTableRom.setAutoCreateRowSorter(true);
-			TableRowSorter<TableModelRomSevenZip> tableSorter = new TableRowSorter<>(tableModel);
+			TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
 			jTableRom.setRowSorter(tableSorter);
 			
 			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
@@ -418,11 +418,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		if(selectedRow>=0) { 			
 			selectedRow = jTableRom.convertRowIndexToModel(selectedRow);
 			
-			RomSevenZipFile romSevenZipFile = tableModel.getRom(selectedRow);
+			RomContainer romContainer = tableModel.getRom(selectedRow);
 			DefaultListModel versionsModel = new DefaultListModel();
 			int i=0;
 			List<Integer> indices=new ArrayList();
-			List<RomVersion> versions = romSevenZipFile.getVersions();
+			List<RomVersion> versions = romContainer.getVersions();
 			Collections.sort(versions, (RomVersion o1, RomVersion o2) -> {
 				//ORDER BY getScore DESC
 				if (o1.getScore() == o2.getScore())

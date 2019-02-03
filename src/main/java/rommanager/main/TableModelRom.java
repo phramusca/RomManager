@@ -29,9 +29,9 @@ import javax.swing.ImageIcon;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 
-public class TableModelRomSevenZip extends TableModelGeneric {
+public class TableModelRom extends TableModelGeneric {
 
-	private Map<String, RomSevenZipFile> roms;
+	private Map<String, RomContainer> roms;
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
@@ -39,7 +39,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
     /**
 	 * Create the table model
 	 */
-	public TableModelRomSevenZip() {
+	public TableModelRom() {
         this.roms = new LinkedHashMap<>();
         setColumns();
 	}
@@ -79,7 +79,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * Return list of roms
 	 * @return
 	 */
-	public Map<String, RomSevenZipFile> getRoms() {
+	public Map<String, RomContainer> getRoms() {
 		return roms;
 	}
 	
@@ -88,7 +88,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 * @param index
 	 * @return
 	 */
-	public RomSevenZipFile getRom(int index) {
+	public RomContainer getRom(int index) {
 		return (new ArrayList<>(roms.values())).get(index);
 	}
 
@@ -115,34 +115,34 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        RomSevenZipFile fileInfoRomSevenZip = getRom(rowIndex);
+        RomContainer romContainer = getRom(rowIndex);
 
 		ImageIcon icon = IconBuffer.getCoverIcon(
-				fileInfoRomSevenZip.getGame().getName(), "", 
+				romContainer.getGame().getName(), "", 
 				false);
 		
         switch (columnIndex) {
 			case 0: return icon!= null ? icon: new ImageIcon();
 			case 1: 
-				String name = fileInfoRomSevenZip.getGame().getName();
-				name=name.equals("")?fileInfoRomSevenZip.getFilename():name;
+				String name = romContainer.getGame().getName();
+				name=name.equals("")?romContainer.getFilename():name;
 				return "<html>"+name+"</html>";
 			case 2: 
 				StringBuilder builder = new StringBuilder();
 				builder.append("<html>")
-						.append(fileInfoRomSevenZip.getFilename())
+						.append(romContainer.getFilename())
 							.append("<BR/>")
-						.append(fileInfoRomSevenZip.getGame().getPlayers()).append(" ")
-						.append(fileInfoRomSevenZip.getGame().getDeveloper()).append(" / ")
-						.append(fileInfoRomSevenZip.getGame().getPublisher())
+						.append(romContainer.getGame().getPlayers()).append(" ")
+						.append(romContainer.getGame().getDeveloper()).append(" / ")
+						.append(romContainer.getGame().getPublisher())
 							.append("<BR/>").append("<BR/>")
-						.append(fileInfoRomSevenZip.getGame().getDesc())
+						.append(romContainer.getGame().getDesc())
 						.append("</html>");
 				return builder.toString();
-			case 3: return fileInfoRomSevenZip.getConsoleStr();
-			case 4: return fileInfoRomSevenZip.getGame().getGenre();
-			case 5: return fileInfoRomSevenZip.getGame().getRating();
-			case 6: return fileInfoRomSevenZip.toString();
+			case 3: return romContainer.getConsoleStr();
+			case 4: return romContainer.getGame().getGenre();
+			case 5: return romContainer.getGame().getRating();
+			case 6: return romContainer.toString();
 			
 		}
         return null;
@@ -156,14 +156,12 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 */
     @Override
     public void setValueAt(Object value, int row, int col) {
-		RomSevenZipFile file = getRom(row);
+		RomContainer romContainer = getRom(row);
 
 //        switch (col) {
 //            case 0: 
-//                select(file, (boolean)value);
 //                break;
 //            case 7:
-//                file.setRating((int) value);
 //                break;
 //		}
     }
@@ -193,10 +191,10 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	
 	/**
     * Add a row to the table
-	 * @param file
+	 * @param romContainer
     */
-    public void addRow(RomSevenZipFile file){
-		this.roms.put(file.getFilename(), file);
+    public void addRow(RomContainer romContainer){
+		this.roms.put(romContainer.getFilename(), romContainer);
 		this.fireTableDataChanged();
     }
 
@@ -208,7 +206,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 */
 	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
-			roms.put(filename, new RomSevenZipFile(console, new File(filename)));
+			roms.put(filename, new RomContainer7z(console, new File(filename)));
 		}
 	}
 	
@@ -216,7 +214,7 @@ public class TableModelRomSevenZip extends TableModelGeneric {
 	 *
 	 * @param file
 	 */
-	public void removeRow(RomSevenZipFile file){
+	public void removeRow(RomContainer7z file){
 		roms.remove(file.getFilename());
 		this.fireTableDataChanged();
     }

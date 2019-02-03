@@ -44,13 +44,13 @@ public class ProcessRead extends ProcessAbstract {
 	private final String exportPath;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
-	private final TableModelRomSevenZip tableModel;
+	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
 	public ProcessRead(
 			String exportPath, 
 			ProgressBar progressBar, 
-			TableModelRomSevenZip tableModel, 
+			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessRead");
 		this.exportPath = exportPath;
@@ -142,9 +142,9 @@ public class ProcessRead extends ProcessAbstract {
 			
 			//FIXME: Set only once for all consoles, as for ProcessList
 			progressBar.setup(tableModel.getRoms().size());
-			for(RomSevenZipFile romSevenZipFile : tableModel.getRoms().values()) {
+			for(RomContainer romContainer : tableModel.getRoms().values()) {
 				checkAbort();
-				for(RomVersion romVersion : romSevenZipFile.getVersions()) {
+				for(RomVersion romVersion : romContainer.getVersions()) {
 					checkAbort();
 					String key = FilenameUtils.getBaseName(
 							romVersion.getFilename());
@@ -158,7 +158,7 @@ public class ProcessRead extends ProcessAbstract {
 						romVersion.setGame(game);
 					}
 				}
-				progressBar.progress(romSevenZipFile.getFilename());
+				progressBar.progress(romContainer.getFilename());
 			}
 			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {

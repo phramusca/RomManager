@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 phramusca ( https://github.com/phramusca/ )
+/*
+ * Copyright (C) 2019 phramusca ( https://github.com/phramusca/ )
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,66 +21,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
-import rommanager.utils.ProgressBar;
 
 /**
  *
- * @author phramusca ( https://github.com/phramusca/JaMuz/ )
+ * @author phramusca ( https://github.com/phramusca/ )
  */
-public class RomSevenZipFile {
-    
-    private final String path;
-    private String filename;
-    private final List<RomVersion> versions;
-	private Console console;
+public abstract class RomContainer {
 	
-	/**
-	 * For 7z files including rom versions
-	 * @param console
-	 * @param file
-	 * @throws IOException
-	 */
-    public RomSevenZipFile(Console console, File file) throws IOException {
+	String path;
+    String filename;
+    List<RomVersion> versions;
+	Console console;
+	private Game game = null;
+	
+	RomContainer(Console console, File file) throws IOException {
         this.path = FilenameUtils.getFullPath(file.getAbsolutePath());
         this.filename = FilenameUtils.getName(file.getAbsolutePath());
 		this.versions = new ArrayList<>();
 		this.console = console;
     }
-	
-	//FIXME 4 Amstrad : Make its own derived class
-	/**
-	 * For dsk (Amstrad) files that are not groupped in 7z
-	 * @param console
-	 * @param file
-	 * @param filename
-	 * @throws IOException
-	 */
-	public RomSevenZipFile(Console console, File file, String filename) throws IOException {
-		this(console, file);
-		this.filename=filename;
-	}
-	
-	public void setVersions(ProgressBar progressBar) throws IOException {
-        if(FilenameUtils.getExtension(filename).equals("7z")) {
-			try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
-				SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-				String name;
-				String msg = progressBar.getString();
-				while(entry!=null){
-					name=entry.getName();
-					progressBar.setString(msg+" : "+name);
-					versions.add(new RomVersion(
-							FilenameUtils.getBaseName(filename), 
-							name));
-					entry = sevenZFile.getNextEntry();
-				}
-			}
-			setScore(true);
-		}
-	}
 	
 	public final void setScore(boolean addBestForExport) {
 		int bestScore=Integer.MIN_VALUE;
@@ -96,20 +56,10 @@ public class RomSevenZipFile {
 		}
 	}
 	
-    public List<RomVersion> getVersions() {
+	 public List<RomVersion> getVersions() {
         return versions;
     }
 
-	//Amstrad only
-	public void addAmstradVersion(RomVersion version) {
-		versions.add(version);
-		
-		//FIXME 4 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
-		if(version.getErrorLevel()==0) {
-			version.setBest(true);
-		}
-	}
-    
     public String getFilename() {
         return filename;
     }
@@ -134,8 +84,6 @@ public class RomSevenZipFile {
 		return console==null?"Unknown":console.toString();
 	}
 
-	private Game game = null;
-	
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
