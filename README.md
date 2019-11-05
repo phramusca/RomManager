@@ -12,7 +12,7 @@ Rom Manager allows filtering full rom sets and extract only good rom versions fo
 ### Set Score
 
 1) Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
-1) Update (or create) "RomManager.ods" output file
+1) Updates (overwrites!) "RomManager.ods" output file
 
 ### Export
 
