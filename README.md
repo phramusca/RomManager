@@ -1,32 +1,36 @@
 # RomManager
 
-Rom Manager allows filtering full rom sets and extract only good rom versions for your desired region.
+Rom Manager allows filtering full rom sets and extracting only good rom versions for your desired region.
 
 ## Process
 
+At startup [RomManager.ods](#RomManager-ods) is read and displayed.
+
 ### Scan Source
 
-1) Browse source folder for roms (refer to [Roms Source folder](#roms-source-folder))
-1) Creates (overwrites!) "RomManager.ods" output file
+1) Browse [Roms Source folder](#roms-source-folder) for roms
+1) Creates (overwrites!) [RomManager.ods](#RomManager-ods) output file
 
 ### Set Score
 
 1) Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
-1) Updates (overwrites!) "RomManager.ods" output file
+1) Updates (overwrites!) [RomManager.ods](#RomManager-ods) output file
 
 ### Export
 
-Export all consoles, only best version of each rom and all good dsk (amstrad) files.
+Export selected rom versions to [Destination folder](#destination-folder)
 
-Next step is to change this into "Sync" and to be able to select which versions/games to export (best by default)
+Currently, only best version (highest score) of each rom and all good dsk (amstrad) files are selected for export.
+
+Next step is to change this into "Sync" and to be able to select which versions/games to export (still best by default)
 
 ### Read gamelist.xml
 
-Reads [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table. 
+Read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table. 
 
 The [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating. 
 
-Note that "RomManager.ods" is NOT (yet) updated.
+Note that [RomManager.ods](#RomManager-ods) is NOT (yet) updated.
 
 ## Configuration
 
@@ -39,7 +43,7 @@ It must include subfolders:
 * named as in [Supported consoles](#supported-consoles) list.
 * containing 7z files (or .dsk files for Amstrad CPC (amstradcpc) only)
 
-### Destination folder
+### <a name="destination-folder"></a> Destination folder
 
 Select folder where to:
 * export selected roms
@@ -49,7 +53,7 @@ Select folder where to:
 
 This configures how scores are computed. 
 
-**French / Europe games favored by default. Change as desired !**
+**French / Europe games favored by default. Change it as desired !**
 
 | Tab | Content |
 | :--- |:---|
@@ -57,11 +61,15 @@ This configures how scores are computed.
 | ALL | Score by code. Note: also include some language codes! |
 | README | More information |
 
+## 
+
+### <a name="RomManager-ods"></a> RomManager.ods
+
+Output file, after "Scan Source" and "Set Score". 
+
+Read at startup (cheap but convenient sort of database).
+
 ### <a name="supported-consoles"></a> Supported consoles
-
-List of supported consoles can be found in "Console.java" 
-
-Here is current list, knowing that "CHANGEME" console are NOT (yet) supported :
 
 | Folder name | Console |
 | :--- |:---|
@@ -74,50 +82,28 @@ Here is current list, knowing that "CHANGEME" console are NOT (yet) supported :
 | atarist | Atari ST |
 | c64 | Commodore 64 |
 | cavestory | Cave Story |
-| colecovision | CHANGEME |
-| daphne | CHANGEME |
 | dos | DOS |
 | dreamcast | Sega DreamCast |
-| fba | CHANGEME |
-| fba_libretro | CHANGEME |
-| fds | CHANGEME |
 | gamegear | Sega Game Gear |
 | gb | Nintendo Game Boy |
 | gba | Nintendo Game Boy Advance |
 | gbc | Nintendo Game Boy Color |
 | gw | Nintendo Game & Watch |
-| imageviewer | CHANGEME |
-| lutro | CHANGEME |
 | lynx | Atari Lynx |
 | mame | MAME (Arcade) |
 | mastersystem | Sega Master System |
 | megadrive | Sega Megadrive |
-| moonlight | CHANGEME |
-| msx | CHANGEME |
-| msx1 | CHANGEME |
-| msx2 | CHANGEME |
 | n64 | Nintendo 64 |
 | neogeo | SNK Neo Geo |
 | nes | Nintendo Entertainment System |
 | ngp | SNK Neo Geo Pocket |
 | ngpc | SNK Neo Geo Pocket Color |
-| o2em | CHANGEME |
 | pcengine | NEC PC engine |
 | pcenginecd | NEC PC engine CD |
-| prboom | CHANGEME |
 | psp | Sony PSP |
 | psx | Sony PSX (PS1) |
-| scummvm | CHANGEME |
 | sega32x | Sega Mega Drive 32X |
 | segacd | Sega Mega CD |
-| sg1000 | CHANGEME |
 | snes | Super Nintendo |
 | supergrafx | NEC SuperGrafX |
-| thomson | CHANGEME |
-| vectrex | CHANGEME |
 | virtualboy | Nintendo Virtual Boy |
-| wswan | CHANGEME |
-| wswanc | CHANGEME |
-| x68000 | CHANGEME |
-| zx81 | CHANGEME |
-| zxspectrum | CHANGEME |
