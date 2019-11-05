@@ -39,8 +39,8 @@ It must include subfolders:
 
 ### Destination folder
 
-* where to export files
-* where to read "gamelist.xml"
+* where to export selected roms
+* where to read "gamelist.xml" files
 
 ### <a name="GoodToolsConfig"></a> GoodToolsConfig.ods
 
