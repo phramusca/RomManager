@@ -53,6 +53,8 @@ public class ProcessList extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
+			//FIXME 3 Alow adding only one console (so we can add new ones and update - at least overwrite only - existing ones)
+			
 			progressBar.setIndeterminate("Getting number of files");
 			for(Console console : Console.values()) {
 				checkAbort();
