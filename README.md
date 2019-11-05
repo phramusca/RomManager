@@ -22,7 +22,9 @@ Next step is to change this into "Sync" and to be able to select which versions/
 
 ### Read gamelist.xml
 
-Reads "gamelist.xml" from each destination subfolder (each console) and updates table. 
+Reads [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table. 
+
+The [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating. 
 
 Note that "RomManager.ods" is NOT (yet) updated.
 
@@ -39,8 +41,9 @@ It must include subfolders:
 
 ### Destination folder
 
-* where to export selected roms
-* where to read "gamelist.xml" files
+Select folder where to:
+* export selected roms
+* read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) files
 
 ### <a name="GoodToolsConfig"></a> GoodToolsConfig.ods
 
