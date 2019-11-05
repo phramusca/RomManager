@@ -2,7 +2,7 @@
 
 Rom Manager allows filtering full rom sets and extract only good rom versions for your desired region.
 
-## == Process ==
+## Process
 
 ### Scan Source
 
@@ -26,7 +26,7 @@ Reads "gamelist.xml" from each destination subfolder (each console) and updates 
 
 Note that "RomManager.ods" is NOT (yet) updated.
 
-## == Configuration ==
+## Configuration
 
 ### <a name="roms-source-folder"></a>  Roms Source folder
 
