@@ -36,6 +36,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
+import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -86,7 +87,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jSplitPane1.setResizeWeight(1);
 		
 		disableGUI("Reading ods file: ");
-		new ReadOds(new CallBackProcess(), jTextFieldPathSource.getText()).start();
+		new ReadOds(new CallBackProcessList(), jTextFieldPathSource.getText()).start();
     }
 
 	private class ReadOds extends ProcessAbstract {
@@ -353,17 +354,23 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
-		processList.start();
+		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcessList());
+		processList.browseNbFiles();
+		DialogConsole.main(new CallBackDialogConsole());
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
-	private class CallBackProcess implements ICallBackProcess {
-
+	private class CallBackDialogConsole implements ICallBackProcess {
+		@Override
+		public void completed() {
+			processList.start();
+		}
+	}
+	
+	private class CallBackProcessList implements ICallBackProcess {
 		@Override
 		public void completed() {
 			enableGUI();
 		}
-		
 	}
 	
 	private static void enableFilter() {
@@ -409,7 +416,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 					exportPath, 
 					progressBar, 
 					tableModel, 
-					new CallBackProcess());
+					new CallBackProcessList());
 			processExport.start();
 		}
     }//GEN-LAST:event_jButtonExportActionPerformed
@@ -503,7 +510,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			Popup.warning("Export path does not exist.");
 			return;
 		}
-		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcess());
+		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcessList());
 		processRead.start();
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 
@@ -542,7 +549,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
+		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcessList(), sourcePath);
 		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
 

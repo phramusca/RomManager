@@ -80,13 +80,35 @@ public enum Console {
 		zxspectrum("CHANGEME");
 		
         private final String name;
+		private int nbFiles;
+		private boolean isSelected;
 		
         private Console(String name) {
             this.name = name;
 		}
+		
+		public void setNbFiles(int nbFiles) {
+			this.nbFiles = nbFiles;
+		}
 
+		public void setSelected(boolean selected) {
+			isSelected=selected;
+		}
+		
+		public int getNbFiles() {
+			return nbFiles;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
         @Override
 		public String toString() {
-			return name;
+			return getName()+" ("+getNbFiles()+")";
+		}
+
+		boolean isSelected() {
+			return isSelected;
 		}
 	}

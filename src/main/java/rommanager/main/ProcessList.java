@@ -52,21 +52,22 @@ public class ProcessList extends ProcessAbstract {
 
 	@Override
 	public void run() {
+		
 		try {
-			//FIXME 3 Alow adding only one console (so we can add new ones and update - at least overwrite only - existing ones)
-			
-			progressBar.setIndeterminate("Getting number of files");
+			int nbSelected=0;
 			for(Console console : Console.values()) {
 				checkAbort();
-				browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
+				if(console.isSelected()) {
+					nbSelected+=console.getNbFiles();
+				}
 			}
-			progressBar.setup(nbFiles);
-			
+			progressBar.setup(nbSelected);
 			for(Console console : Console.values()) {
 				checkAbort();
-				list(console, FilenameUtils.concat(sourcePath, console.name()));
+				if(console.isSelected()) {
+					list(console, FilenameUtils.concat(sourcePath, console.name()));
+				}
 			}
-			
 			Popup.info("Listing complete.");
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
@@ -77,7 +78,17 @@ public class ProcessList extends ProcessAbstract {
 			callBack.completed();
 		}
 	}
-
+	
+	void browseNbFiles() {				
+		progressBar.setIndeterminate("Getting number of files");
+		for(Console console : Console.values()) {
+			nbFiles=0;
+			browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
+			console.setNbFiles(nbFiles);
+		}
+		progressBar.reset();
+	}
+	
 	private void list(Console console, String path) throws InterruptedException {
 		File file = new File(path);
         if(!file.exists()) {
@@ -100,10 +111,9 @@ public class ProcessList extends ProcessAbstract {
 	}
 	
 	private final Map<String, RomContainerAmstrad> amstradRoms = new HashMap<>();
-  
-	private int nbFiles=0;
 	
-	private void browseNbFiles(File path, Console console) throws InterruptedException {
+	private static int nbFiles=0;
+	private void browseNbFiles(File path, Console console) {
 		if(path.isDirectory()) {
 			File[] files = path.listFiles((File pathname) -> {
 			String ext = FilenameUtils.getExtension(
@@ -115,7 +125,6 @@ public class ProcessList extends ProcessAbstract {
 			});
 			if (files != null && files.length>0) {
 				for (File file : files) {
-					checkAbort();
 					if (file.isDirectory()) {
 						browseNbFiles(file, console);
 					} else {

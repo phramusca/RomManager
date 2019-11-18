@@ -17,14 +17,15 @@
 package rommanager.main;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFileFilter;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
@@ -39,7 +40,6 @@ import rommanager.utils.Row;
  */
 public class RomManagerOds {
 	
-	//FIXME 1 Save ods to source folder with a datetime (DONE, TEST in DEBUG MODE)
 	private final static String DOC_FILE = "RomManager";
 	private final static String SHEET_NAME = "List";
 	
@@ -147,16 +147,20 @@ public class RomManagerOds {
 			ProgressBar progressBar, String sourceFolder) {
 	
 		//FIXME 1 Let user choose ods file !
-		String[] list = new File(sourceFolder).list((File dir, String name) -> {
-			return name.matches(DOC_FILE+"*.ods");
+		String[] arrayList = new File(sourceFolder).list((File dir, String name) -> {
+			return name.matches(DOC_FILE+".+\\.ods");
 		});
-		
-		if(list.length<=0) {
+		if(arrayList.length<=0) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.WARNING, "No "+DOC_FILE+"*.ods in {0}", sourceFolder);
 			return;
 		}
-		File odsFile = new File(FilenameUtils.concat(sourceFolder, FilenameUtils.getBaseName(list[0])));
+		List<String> list = new ArrayList<String>();
+		for(String file : arrayList) {
+			list.add(file);
+		}
+		Collections.sort(list);
+		File odsFile = new File(FilenameUtils.concat(sourceFolder, list.get(list.size()-1)));
 		if(!odsFile.exists()) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
