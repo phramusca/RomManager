@@ -17,15 +17,18 @@
 package rommanager.main;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
+import rommanager.utils.DateTime;
 import rommanager.utils.Popup;
 import rommanager.utils.ProgressBar;
 import rommanager.utils.Row;
@@ -36,8 +39,8 @@ import rommanager.utils.Row;
  */
 public class RomManagerOds {
 	
-	//FIXME 2 Save ods to source folder with a datetime 
-	private final static File DOC_FILE = new File("RomManager.ods");
+	//FIXME 1 Save ods to source folder with a datetime (DONE, TEST in DEBUG MODE)
+	private final static String DOC_FILE = "RomManager";
 	private final static String SHEET_NAME = "List";
 	
 	public RomManagerOds() {
@@ -45,15 +48,15 @@ public class RomManagerOds {
 
 	public static void createFile(
 			TableModelRom model, 
-			ProgressBar progressBar) {
+			ProgressBar progressBar, String sourceFolder) {
 		
-		createFile(model, progressBar, false);
+		createFile(model, progressBar, false, sourceFolder);
 	}
 	
 	public static void createFile(
 			TableModelRom model, 
 			ProgressBar progressBar, 
-			boolean open) {
+			boolean open, String sourceFolder) {
 		
         int nbColumns=22;
         int nbRows=0;
@@ -122,15 +125,16 @@ public class RomManagerOds {
 		columns[i++] = "Thumbnail";
 		columns[i++] = "Path";
         TableModel docModel = new DefaultTableModel(data, columns);
-        if(DOC_FILE.exists()) {
-            DOC_FILE.delete();
+		File odsFile = new File(FilenameUtils.concat(sourceFolder, DOC_FILE+"_"+DateTime.getCurrentLocal(DateTime.DateTimeFormat.FILE)+".ods"));
+        if(odsFile.exists()) {
+            odsFile.delete();
         }
         SpreadSheet spreadSheet = SpreadSheet.createEmpty(docModel);
         spreadSheet.getFirstSheet().setName(SHEET_NAME);
         try {
-            spreadSheet.saveAs(DOC_FILE);
+            spreadSheet.saveAs(odsFile);
 			if(open) {
-				OOUtils.open(DOC_FILE);
+				OOUtils.open(odsFile);
 			}
         } catch (IOException ex) {
             Logger.getLogger(RomManagerOds.class.getName())
@@ -140,14 +144,26 @@ public class RomManagerOds {
     
 	public static void readFile( 
 			TableModelRom model, 
-			ProgressBar progressBar) {
-		if(!DOC_FILE.exists()) {
+			ProgressBar progressBar, String sourceFolder) {
+	
+		//FIXME 1 Let user choose ods file !
+		String[] list = new File(sourceFolder).list((File dir, String name) -> {
+			return name.matches(DOC_FILE+"*.ods");
+		});
+		
+		if(list.length<=0) {
+			Logger.getLogger(RomManagerOds.class.getName())
+					.log(Level.WARNING, "No "+DOC_FILE+"*.ods in {0}", sourceFolder);
+			return;
+		}
+		File odsFile = new File(FilenameUtils.concat(sourceFolder, FilenameUtils.getBaseName(list[0])));
+		if(!odsFile.exists()) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
 			return;
 		}
         try {
-			SpreadSheet spreadSheet = SpreadSheet.createFromFile(DOC_FILE);
+			SpreadSheet spreadSheet = SpreadSheet.createFromFile(odsFile);
 			Sheet sheet = spreadSheet.getSheet(SHEET_NAME);
 			int nRowCount = sheet.getRowCount();
 			progressBar.setup(nRowCount-1);	

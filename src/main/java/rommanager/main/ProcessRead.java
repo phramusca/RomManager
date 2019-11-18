@@ -140,7 +140,7 @@ public class ProcessRead extends ProcessAbstract {
 				transformer.transform(source, consoleResult);
 			}
 			
-			//FIXME: Set only once for all consoles, as for ProcessList
+			//FIXME 9 Set only once for all consoles, as for ProcessList
 			progressBar.setup(tableModel.getRoms().size());
 			for(RomContainer romContainer : tableModel.getRoms().values()) {
 				checkAbort();

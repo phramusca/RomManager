@@ -72,7 +72,7 @@ public class ProcessList extends ProcessAbstract {
 //			Popup.info("Aborted by user");
 		} finally {
 			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar);
+			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
 			progressBar.reset();
 			callBack.completed();
 		}

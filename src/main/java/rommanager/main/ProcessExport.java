@@ -106,10 +106,10 @@ public class ProcessExport extends ProcessAbstract {
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()
-	//FIXME 4 Allow to select which console(s) to export
+	// FIXME 4 Select with a checkbox (keep that in ods) what roms/versions for which console to export
+		// Make filters (console but also genre, rating         ,"selected for export" - how?)												
 	//(now export all consoles, only best version and all good dsk (amstrad) files)
-	// => Make filters (console but also genre, rating         ,"selected for export" - how?)
-			// AND only export selected on jTable (make sure ctrl-a or/and a button is available)
+
 							.filter(r -> r.isExportable() && r.getScore()>0)
 							.collect(Collectors.toList())) {
 					checkAbort();

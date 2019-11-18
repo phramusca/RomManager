@@ -29,15 +29,18 @@ public class ProcessSetScore extends ProcessAbstract {
 	private final ProgressBar progressBar;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
+	private final String sourcePath;
 	
 	public ProcessSetScore(
 			ProgressBar progressBar, 
 			TableModelRom tableModel, 
-			ICallBackProcess callBack) {
+			ICallBackProcess callBack,
+			String sourcePath) {
 		super("Thread.ProcessSetScore");
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
+		this.sourcePath = sourcePath;
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public class ProcessSetScore extends ProcessAbstract {
 		try {
 			setScore();
 			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar);
+			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
 			Popup.info("Set Score complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {

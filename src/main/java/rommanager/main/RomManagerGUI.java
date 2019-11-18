@@ -86,18 +86,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jSplitPane1.setResizeWeight(1);
 		
 		disableGUI("Reading ods file: ");
-		new ReadOds(new CallBackProcess()).start();
+		new ReadOds(new CallBackProcess(), jTextFieldPathSource.getText()).start();
     }
 
 	private class ReadOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
-		public ReadOds(ICallBackProcess callBack) {
+		private final String sourceFolder;
+		public ReadOds(ICallBackProcess callBack, String sourceFolder) {
 			super("Thread.RomManagerGUI.ReadOds");
 			this.callBack = callBack;
+			this.sourceFolder = sourceFolder;
 		}
 		@Override
 		public void run() {
-			RomManagerOds.readFile(tableModel, progressBar);
+			RomManagerOds.readFile(tableModel, progressBar, sourceFolder);
 			callBack.completed();
 		}
 	}
@@ -533,7 +535,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
 		disableGUI("Setting score : ");
-		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess());
+		String sourcePath = jTextFieldPathSource.getText();
+		File file = new File(sourcePath);
+		if(!file.exists()) {
+			Popup.warning("Source path does not exist.");
+			enableGUI();
+			return;
+		}
+		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
 		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
@@ -545,7 +554,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			romVersion.setExportable(selectedIndicesContains(i));
 			i++;
 		}
-		//FIXME 9 Need a button to save to ods when user wants to store exportable changes
+		//FIXME 2 Need a button to save to ods when user wants to store exportable changes
     }//GEN-LAST:event_jListVersionsFocusLost
 
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
