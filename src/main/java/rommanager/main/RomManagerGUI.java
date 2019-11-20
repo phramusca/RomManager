@@ -87,7 +87,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jSplitPane1.setResizeWeight(1);
 		
 		disableGUI("Reading ods file: ");
-		new ReadOds(new CallBackProcessList(), jTextFieldPathSource.getText()).start();
+		new ReadOds(new CallBackProcess(), jTextFieldPathSource.getText()).start();
     }
 
 	private class ReadOds extends ProcessAbstract {
@@ -141,6 +141,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonReadGameList = new javax.swing.JButton();
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
+        jButtonSave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -259,6 +260,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jLabelAction.setText("Action: ");
 
+        jButtonSave.setText("Save");
+        jButtonSave.setToolTipText("");
+        jButtonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -293,6 +302,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addComponent(jButtonExport)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonReadGameList)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonSave)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -312,7 +323,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonScanSource)
                     .addComponent(jButtonScore)
                     .addComponent(jButtonExport)
-                    .addComponent(jButtonReadGameList))
+                    .addComponent(jButtonReadGameList)
+                    .addComponent(jButtonSave))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -354,7 +366,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcessList());
+		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
 		DialogConsole.main(new CallBackDialogConsole());
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
@@ -366,7 +378,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 	}
 	
-	private class CallBackProcessList implements ICallBackProcess {
+	private class CallBackProcess implements ICallBackProcess {
 		@Override
 		public void completed() {
 			enableGUI();
@@ -416,7 +428,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 					exportPath, 
 					progressBar, 
 					tableModel, 
-					new CallBackProcessList());
+					new CallBackProcess());
 			processExport.start();
 		}
     }//GEN-LAST:event_jButtonExportActionPerformed
@@ -510,7 +522,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			Popup.warning("Export path does not exist.");
 			return;
 		}
-		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcessList());
+		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcess());
 		processRead.start();
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 
@@ -549,7 +561,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcessList(), sourcePath);
+		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
 		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
@@ -561,7 +573,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			romVersion.setExportable(selectedIndicesContains(i));
 			i++;
 		}
-		//FIXME 2 Need a button to save to ods when user wants to store exportable changes
     }//GEN-LAST:event_jListVersionsFocusLost
 
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
@@ -572,7 +583,36 @@ public class RomManagerGUI extends javax.swing.JFrame {
 //			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselct line in jtable
 		}
     }//GEN-LAST:event_jButtonAutoActionPerformed
+
+    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+        disableGUI("Saving : ");
+		String sourcePath = jTextFieldPathSource.getText();
+		File file = new File(sourcePath);
+		if(!file.exists()) {
+			Popup.warning("Source path does not exist.");
+			enableGUI();
+			return;
+		}
+		new SaveOds(new CallBackProcess(), sourcePath).start();
+    }//GEN-LAST:event_jButtonSaveActionPerformed
     
+	private class SaveOds extends ProcessAbstract {
+		private final ICallBackProcess callBack;
+		private final String sourceFolder;
+		public SaveOds(ICallBackProcess callBack, String sourceFolder) {
+			super("Thread.RomManagerGUI.ReadOds");
+			this.callBack = callBack;
+			this.sourceFolder = sourceFolder;
+		}
+		@Override
+		public void run() {
+			progressBar.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBar, sourceFolder);
+			progressBar.reset();
+			callBack.completed();
+		}
+	}
+	
 	private boolean selectedIndicesContains(int value) {
 		return IntStream.of(jListVersions.getSelectedIndices()).anyMatch(x -> x == value);
 	}
@@ -633,6 +673,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;
+    private javax.swing.JButton jButtonSave;
     private static javax.swing.JButton jButtonScanSource;
     private static javax.swing.JButton jButtonScore;
     private javax.swing.JLabel jLabel1;

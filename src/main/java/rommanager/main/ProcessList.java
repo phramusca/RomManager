@@ -101,7 +101,7 @@ public class ProcessList extends ProcessAbstract {
             Popup.warning("Unsupported console: "+console.name()+" ("+console.toString()+")");
             return;
         }
-		
+		tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
 		browseFoldersFS(console, path, new File(path));
 		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
