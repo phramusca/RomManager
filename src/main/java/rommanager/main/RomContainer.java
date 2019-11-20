@@ -69,7 +69,7 @@ public abstract class RomContainer {
 	}
 	
 	public String getConsoleStr() {
-		return console==null?"Unknown":console.toString();
+		return console==null?"Unknown":console.getName();
 	}
 
 	public Game getGame() {

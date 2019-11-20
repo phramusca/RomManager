@@ -73,7 +73,7 @@ public class ProcessExport extends ProcessAbstract {
 			
 			for(Console console : collect) {
 				checkAbort();
-				String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.toString());
+				String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
 				if(!new File(consolePath).exists()) {
 					if(!new File(consolePath).mkdirs()) {
 						Popup.error("Error creating "+consolePath);
@@ -119,7 +119,7 @@ public class ProcessExport extends ProcessAbstract {
 							FilenameUtils.concat(
 									exportPath, 
 									romContainer.getConsole().name()), 
-							romContainer.getConsole().toString());
+							romContainer.getConsole().getName());
 					if(FilenameUtils.getExtension(filename).equals("7z")) {
 						String exportFileName = FilenameUtils.concat(
 										exportFolder, 

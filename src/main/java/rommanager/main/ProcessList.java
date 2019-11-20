@@ -89,6 +89,8 @@ public class ProcessList extends ProcessAbstract {
 		progressBar.reset();
 	}
 	
+	boolean refresh;
+	
 	private void list(Console console, String path) throws InterruptedException {
 		File file = new File(path);
         if(!file.exists()) {
@@ -97,11 +99,13 @@ public class ProcessList extends ProcessAbstract {
             return;
         }
         
-        if(console.toString().trim().toUpperCase().equals("CHANGEME")) {
-            Popup.warning("Unsupported console: "+console.name()+" ("+console.toString()+")");
+        if(console.getName().trim().toUpperCase().equals("CHANGEME")) {
+            Popup.warning("Unsupported console: "+console.name()+" ("+console.getName()+")");
             return;
         }
-		tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
+		if(refresh) {
+			tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
+		}
 		browseFoldersFS(console, path, new File(path));
 		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
 			checkAbort();
@@ -153,7 +157,7 @@ public class ProcessList extends ProcessAbstract {
 		} 
 		for (File file : files) {
 			checkAbort();
-			String msg=console.toString()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
+			String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
 			progressBar.progress(msg);
 			if (file.isDirectory()) {
 				browseFoldersFS(
@@ -210,4 +214,9 @@ public class ProcessList extends ProcessAbstract {
 			}
 		}
     }
+
+	void start(boolean refresh) {
+		this.refresh=refresh;
+		this.start();
+	}
 }

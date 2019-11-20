@@ -17,7 +17,10 @@
 
 package rommanager.main;
 
+import java.util.Enumeration;
 import java.util.List;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 
 /**
@@ -26,14 +29,14 @@ import javax.swing.DefaultListModel;
  */
 public class DialogConsole extends javax.swing.JDialog {
 
-	private final ICallBackProcess callback;
+	private final ICallBackConsole callback;
 
 	/** Creates new CoverDisplayGUI
 	 * @param parent
 	 * @param modal  
 	 * @param callback  
 	 */
-	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackProcess callback) {
+	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback) {
 		super(parent, modal);
 		initComponents();	
 		DefaultListModel model = new DefaultListModel();
@@ -55,14 +58,17 @@ public class DialogConsole extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroupListType = new javax.swing.ButtonGroup();
         jPanelOptionsGenres = new javax.swing.JPanel();
         jScrollPaneOptionsMachines1 = new javax.swing.JScrollPane();
         jListConsoles = new javax.swing.JList();
         jButton1 = new javax.swing.JButton();
+        jRadioButtonRefreshSelected = new javax.swing.JRadioButton();
+        jRadioButtonOnlyNew = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanelOptionsGenres.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Consoles")); // NOI18N
+        jPanelOptionsGenres.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Consoles"));
 
         jListConsoles.setModel(new DefaultListModel());
         jScrollPaneOptionsMachines1.setViewportView(jListConsoles);
@@ -74,6 +80,13 @@ public class DialogConsole extends javax.swing.JDialog {
             }
         });
 
+        buttonGroupListType.add(jRadioButtonRefreshSelected);
+        jRadioButtonRefreshSelected.setText("Refresh"); // NOI18N
+
+        buttonGroupListType.add(jRadioButtonOnlyNew);
+        jRadioButtonOnlyNew.setSelected(true);
+        jRadioButtonOnlyNew.setText("Only add new"); // NOI18N
+
         javax.swing.GroupLayout jPanelOptionsGenresLayout = new javax.swing.GroupLayout(jPanelOptionsGenres);
         jPanelOptionsGenres.setLayout(jPanelOptionsGenresLayout);
         jPanelOptionsGenresLayout.setHorizontalGroup(
@@ -81,19 +94,28 @@ public class DialogConsole extends javax.swing.JDialog {
             .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPaneOptionsMachines1, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneOptionsMachines1, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsGenresLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButtonOnlyNew)
+                            .addComponent(jRadioButtonRefreshSelected))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
         jPanelOptionsGenresLayout.setVerticalGroup(
             jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
-                .addComponent(jScrollPaneOptionsMachines1, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                .addComponent(jScrollPaneOptionsMachines1, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addGap(12, 12, 12))
+                .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(13, 13, 13))
+                    .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
+                        .addComponent(jRadioButtonOnlyNew)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jRadioButtonRefreshSelected))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -111,20 +133,33 @@ public class DialogConsole extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
+		boolean refresh = getSelectedButtonText(buttonGroupListType).equals("Refresh");
+		
 		List<Console> selectedConsoles = (List<Console>)jListConsoles.getSelectedValuesList();
 		for(Console console : selectedConsoles) {
 			console.setSelected(true);
 		}
 		dispose();
-		callback.completed();
+		callback.completed(refresh);
     }//GEN-LAST:event_jButton1ActionPerformed
-		
+	
+	private String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+        return null;
+    }
+	
 	/**
 	 * 
 	 * @param callback
 	 */
-	public static void main(ICallBackProcess callback) {
+	public static void main(ICallBackConsole callback) {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -156,9 +191,12 @@ public class DialogConsole extends javax.swing.JDialog {
 	}
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroupListType;
     private javax.swing.JButton jButton1;
     private static javax.swing.JList jListConsoles;
     private javax.swing.JPanel jPanelOptionsGenres;
+    private javax.swing.JRadioButton jRadioButtonOnlyNew;
+    private javax.swing.JRadioButton jRadioButtonRefreshSelected;
     private javax.swing.JScrollPane jScrollPaneOptionsMachines1;
     // End of variables declaration//GEN-END:variables
 }

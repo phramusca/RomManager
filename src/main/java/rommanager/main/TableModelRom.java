@@ -16,7 +16,6 @@
  */
 package rommanager.main;
 
-import java.io.File;
 import java.io.IOException;
 import rommanager.utils.TableModelGeneric;
 import java.util.ArrayList;
