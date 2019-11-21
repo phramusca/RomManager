@@ -97,12 +97,13 @@ public class ProcessExport extends ProcessAbstract {
 	
     public void export() throws InterruptedException {
         try {	
-			progressBar.setup(tableModel.getRowCount());
+			List<RomContainer> roms = tableModel.getRoms().values()
+					.stream().filter(r->r.getConsole().isSelected())
+					.collect(Collectors.toList());
+			progressBar.setup(roms.size());
 			String sourceFolder;
 			String exportFolder;
-			for(RomContainer romContainer : tableModel.getRoms().values()
-					.stream().filter(r->r.getConsole().isSelected())
-					.collect(Collectors.toList())) {
+			for(RomContainer romContainer : roms) {
 				checkAbort();
 				String filename = romContainer.getFilename();
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
@@ -134,16 +135,20 @@ public class ProcessExport extends ProcessAbstract {
 								if(entry.getName().equals(romVersion.getFilename())) { 
 									File unzippedFile=new File(FilenameUtils.concat(
 													exportFolder,
-													entry.getName()));
+													romVersion.getFilename()));
 									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
 									}
-									//FIXME 5 Some need zip, some not (n64 for instance)
-									if(zipFile(unzippedFile, exportFileName)) {
-										unzippedFile.delete();
+									if(romContainer.getConsole().isZip()) {
+										if(zipFile(unzippedFile, exportFileName)) {
+											unzippedFile.delete();
+										}
+									} else {
+										
 									}
+									
 									break;
 								}
 								entry = sevenZFile.getNextEntry();

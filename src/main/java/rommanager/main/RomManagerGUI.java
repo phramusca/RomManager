@@ -30,8 +30,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -520,41 +518,45 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 	
     private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
-        int n = JOptionPane.showConfirmDialog(
-			this, "Are you sure you want to export roms ?",  //NOI18N
-			"Please Confirm",  //NOI18N
-			JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
-			disableGUI("Exporting : ");
-			String exportPath = jTextFieldPathExport.getText();
-			File folder = new File(exportPath);
-			if(!folder.exists()) {
-				enableGUI();
-				Popup.warning("Export path does not exist.");
-				return;
-			}
-			String sourcePath = jTextFieldPathSource.getText();
-			folder = new File(sourcePath);
-			if(!folder.exists()) {
-				Popup.warning("Source path does not exist.");
-				enableGUI();
-				return;
-			}
-			processExport = new ProcessExport(
-					sourcePath, 
-					exportPath, 
-					progressBar, 
-					tableModel, 
-					new CallBackProcess());
-			processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
-			processList.browseNbFiles();
-			DialogConsole.main(new CallBackDialogConsoleExport(), false);
+        disableGUI("Exporting : ");
+		String exportPath = jTextFieldPathExport.getText();
+		File folder = new File(exportPath);
+		if(!folder.exists()) {
+			enableGUI();
+			Popup.warning("Export path does not exist.");
+			return;
 		}
+		String sourcePath = jTextFieldPathSource.getText();
+		folder = new File(sourcePath);
+		if(!folder.exists()) {
+			Popup.warning("Source path does not exist.");
+			enableGUI();
+			return;
+		}
+		processExport = new ProcessExport(
+				sourcePath, 
+				exportPath, 
+				progressBar, 
+				tableModel, 
+				new CallBackProcess());
+		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+		processList.browseNbFiles();
+		DialogConsole.main(new CallBackDialogConsoleExport(), false);
     }//GEN-LAST:event_jButtonExportActionPerformed
 
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh) {
+			export();
+		}
+	}
+	
+	private void export() {
+		int n = JOptionPane.showConfirmDialog(
+		this, "Are you sure you want to export roms ?",  //NOI18N
+		"Please Confirm",  //NOI18N
+		JOptionPane.YES_NO_OPTION);
+		if (n == JOptionPane.YES_OPTION) {
 			processExport.start();
 		}
 	}
