@@ -35,8 +35,9 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param parent
 	 * @param modal  
 	 * @param callback  
+	 * @param displayRefresh  
 	 */
-	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback) {
+	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh) {
 		super(parent, modal);
 		initComponents();	
 		DefaultListModel model = new DefaultListModel();
@@ -47,6 +48,11 @@ public class DialogConsole extends javax.swing.JDialog {
 		}
 		jListConsoles.setModel(model);
 		this.callback = callback;
+		if(!displayRefresh) {
+			jRadioButtonOnlyNew.setVisible(false);
+			jRadioButtonRefreshSelected.setVisible(false);
+			jButton1.setText("Export");
+		}
 	}
 	
 	/** This method is called from within the constructor to
@@ -159,7 +165,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * 
 	 * @param callback
 	 */
-	public static void main(ICallBackConsole callback) {
+	public static void main(ICallBackConsole callback, boolean displayRefresh) {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -182,7 +188,7 @@ public class DialogConsole extends javax.swing.JDialog {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback );
+				DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh );
 				//Center the dialog
 				dialog.setLocationRelativeTo(dialog.getParent());
 				dialog.setVisible(true);

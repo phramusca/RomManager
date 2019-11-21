@@ -67,7 +67,7 @@ public class RomContainer7z extends RomContainer {
 				bestScore=version.getScore();
 			} 
 		}
-		if(bestVersion!=null) {
+		if(bestVersion!=null && bestVersion.getScore()>0) {
 			bestVersion.setExportable(true);
 		}
 	}

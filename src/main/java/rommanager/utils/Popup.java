@@ -27,8 +27,8 @@ import javax.swing.JOptionPane;
  */
 public class Popup {
 	
-	//TODO: Make "JaMuz" configurable
-	private static final String appName = "JaMuz";  //NOI18N
+	//TODO: Make appName configurable
+	private static final String appName = "Rom Manager";  //NOI18N
 	private static Logger logger=null; //Can't be static. Why should it be (as netbeans says) ?
 	
 	/**

@@ -29,7 +29,6 @@ public class RomContainerAmstrad extends RomContainer {
 	/**
 	 * For dsk (Amstrad) files that are not groupped in 7z
 	 * @param console
-	 * @param file
 	 * @param filename
 	 * @throws IOException
 	 */

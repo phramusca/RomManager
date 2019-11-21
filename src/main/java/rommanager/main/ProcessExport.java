@@ -73,11 +73,13 @@ public class ProcessExport extends ProcessAbstract {
 			
 			for(Console console : collect) {
 				checkAbort();
-				String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
-				if(!new File(consolePath).exists()) {
-					if(!new File(consolePath).mkdirs()) {
-						Popup.error("Error creating "+consolePath);
-						callBack.completed();
+				if(console.isSelected()) {
+					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
+					if(!new File(consolePath).exists()) {
+						if(!new File(consolePath).mkdirs()) {
+							Popup.error("Error creating "+consolePath);
+							callBack.completed();
+						}
 					}
 				}
 			}
@@ -91,8 +93,6 @@ public class ProcessExport extends ProcessAbstract {
 		}
 	}
 
-
-	
 	//FIXME 6 Change "Export" into "Sync" => remove files not selected for export from exportPath
 	
     public void export() throws InterruptedException {
@@ -100,26 +100,22 @@ public class ProcessExport extends ProcessAbstract {
 			progressBar.setup(tableModel.getRowCount());
 			String sourceFolder;
 			String exportFolder;
-			for(RomContainer romContainer : tableModel.getRoms().values()) {
+			for(RomContainer romContainer : tableModel.getRoms().values()
+					.stream().filter(r->r.getConsole().isSelected())
+					.collect(Collectors.toList())) {
 				checkAbort();
 				String filename = romContainer.getFilename();
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
-						romContainer.getVersions().stream()
-	// FIXME 1 Do not setExportable=true by default if bad errorLevel for the rom, then do not filter on getScore
-	// FIXME 2 Add filter on number of files exported (only <=0 ; 1 and >1)
-	// FIXME 3 Use DialogueConsole to select what console(s) to export (sync)							
-	//(now export all consoles, only best version with score>0, and all good dsk (amstrad) files)
-
-							.filter(r -> r.isExportable() && r.getScore()>0)
+						romContainer.getVersions().stream()							
+							.filter(r -> r.isExportable())
 							.collect(Collectors.toList())) {
 					checkAbort();
 					sourceFolder = FilenameUtils.concat(
 							sourcePath, romContainer.getConsole().name());
 					exportFolder = FilenameUtils.concat(
 							FilenameUtils.concat(
-									exportPath, 
-									romContainer.getConsole().name()), 
+									exportPath, romContainer.getConsole().name()), 
 							romContainer.getConsole().getName());
 					if(FilenameUtils.getExtension(filename).equals("7z")) {
 						String exportFileName = FilenameUtils.concat(

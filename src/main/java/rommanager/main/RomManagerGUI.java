@@ -456,10 +456,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();		
-		DialogConsole.main(new CallBackDialogConsole());
+		DialogConsole.main(new CallBackDialogConsoleScan(), true);
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
-	private class CallBackDialogConsole implements ICallBackConsole {
+	private class CallBackDialogConsoleScan implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh) {
 			processList.start(refresh);
@@ -546,10 +546,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
 					progressBar, 
 					tableModel, 
 					new CallBackProcess());
-			processExport.start();
+			processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+			processList.browseNbFiles();
+			DialogConsole.main(new CallBackDialogConsoleExport(), false);
 		}
     }//GEN-LAST:event_jButtonExportActionPerformed
 
+	private class CallBackDialogConsoleExport implements ICallBackConsole {
+		@Override
+		public void completed(boolean refresh) {
+			processExport.start();
+		}
+	}
+	
 	private void disableGUI(String text) {
 		jLabelAction.setText(text);
 		jTableRom.setAutoCreateRowSorter(false);

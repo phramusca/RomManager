@@ -69,7 +69,7 @@ public class TableRowFilter extends RowFilter {
             this.console=genre;
         }
     }
-    
+    // TODO Add GUI filter on number of files exported (only <=0 ; 1 and >1)
     @Override
     public boolean include(Entry entry) {
         RomContainer romFile = (RomContainer) entry.getValue(6);
