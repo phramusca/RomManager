@@ -142,7 +142,7 @@ public class TableModelRom extends TableModelGeneric {
 			case 3: return romContainer.getConsoleStr();
 			case 4: return romContainer.getGame().getGenre();
 			case 5: return romContainer.getGame().getRating();
-			case 6: return romContainer.toString();
+			case 6: return romContainer; //need to return object for the filter (.toString() is auto anyway)
 			
 		}
         return null;

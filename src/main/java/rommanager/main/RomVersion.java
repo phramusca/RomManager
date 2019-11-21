@@ -68,13 +68,13 @@ public class RomVersion {
 	 * @param attributes
 	 * @param score
 	 * @param errorLevel
-	 * @param best
+	 * @param isExportable
 	 */
 	public RomVersion(String name, String filename, String alternativeName, 
 			String attributes,
 			int score, 
 			int errorLevel, 
-			boolean best) {
+			boolean isExportable) {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
@@ -97,7 +97,7 @@ public class RomVersion {
 
 		this.score = score;
 		this.errorLevel = errorLevel;
-		this.exportable = best;
+		this.exportable = isExportable;
 	}
 
 	public final void setScore() {

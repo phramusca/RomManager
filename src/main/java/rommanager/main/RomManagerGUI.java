@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
@@ -36,7 +37,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
-import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -90,6 +90,31 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		new ReadOds(new CallBackProcess(), jTextFieldPathSource.getText()).start();
     }
 
+	/**
+	 *
+	 * @param list
+	 * @return
+	 */
+	public static DefaultListModel getModel(List<String> list) {
+        return getModel(list, true);
+    }
+	
+	/**
+	 *
+	 * @param list
+	 * @param sort
+	 * @return
+	 */
+	public static DefaultListModel getModel(List<String> list, boolean sort) {
+        DefaultListModel model = new DefaultListModel();
+        if(sort) { Collections.sort(list); }
+        model.addElement("All");
+        for(String element : list) {
+            model.addElement(element);
+        }
+        return model;
+    }
+	
 	private class ReadOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
 		private final String sourceFolder;
@@ -120,13 +145,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
-        jTableRom = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jListVersions = new javax.swing.JList<>();
-        jButtonAuto = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jTextFieldPathExport = new javax.swing.JTextField();
         jButtonOptionSelectFolderExport = new javax.swing.JButton();
@@ -142,58 +160,24 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
+        jSplitPane2 = new javax.swing.JSplitPane();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPaneSelectGenre1 = new javax.swing.JScrollPane();
+        jListFilterConsole = new javax.swing.JList();
+        jScrollPaneSelectGenre2 = new javax.swing.JScrollPane();
+        jListFilterGenre = new javax.swing.JList();
+        jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
+        jListFilterRating = new javax.swing.JList();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
+        jTableRom = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jListVersions = new javax.swing.JList<>();
+        jButtonAuto = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
-
-        jTableRom.setAutoCreateColumnsFromModel(false);
-        jTableRom.setModel(new rommanager.main.TableModelRom());
-        jTableRom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTableRomMousePressed(evt);
-            }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableRomMouseClicked(evt);
-            }
-        });
-        jScrollPaneCheckTags1.setViewportView(jTableRom);
-
-        jSplitPane1.setLeftComponent(jScrollPaneCheckTags1);
-
-        jListVersions.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jListVersionsFocusLost(evt);
-            }
-        });
-        jScrollPane1.setViewportView(jListVersions);
-
-        jButtonAuto.setText("Auto");
-        jButtonAuto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAutoActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonAuto)
-                .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jButtonAuto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
-        );
-
-        jSplitPane1.setRightComponent(jPanel2);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -335,6 +319,108 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jListFilterConsole.setModel(new DefaultListModel());
+        jListFilterConsole.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListFilterConsole.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListFilterConsoleValueChanged(evt);
+            }
+        });
+        jScrollPaneSelectGenre1.setViewportView(jListFilterConsole);
+
+        jListFilterGenre.setModel(new DefaultListModel());
+        jListFilterGenre.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListFilterGenre.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListFilterGenreValueChanged(evt);
+            }
+        });
+        jScrollPaneSelectGenre2.setViewportView(jListFilterGenre);
+
+        jListFilterRating.setModel(new DefaultListModel());
+        jListFilterRating.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListFilterRating.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListFilterRatingValueChanged(evt);
+            }
+        });
+        jScrollPaneSelectGenre4.setViewportView(jListFilterRating);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPaneSelectGenre2))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
+        );
+
+        jSplitPane2.setLeftComponent(jPanel3);
+
+        jTableRom.setAutoCreateColumnsFromModel(false);
+        jTableRom.setModel(new rommanager.main.TableModelRom());
+        jTableRom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTableRomMousePressed(evt);
+            }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableRomMouseClicked(evt);
+            }
+        });
+        jScrollPaneCheckTags1.setViewportView(jTableRom);
+
+        jSplitPane1.setLeftComponent(jScrollPaneCheckTags1);
+
+        jListVersions.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jListVersionsFocusLost(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jListVersions);
+
+        jButtonAuto.setText("Auto");
+        jButtonAuto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAutoActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonAuto)
+                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jButtonAuto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE))
+        );
+
+        jSplitPane1.setRightComponent(jPanel2);
+
+        jSplitPane2.setRightComponent(jSplitPane1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -343,7 +429,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSplitPane1))
+                    .addComponent(jSplitPane2))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -352,7 +438,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1)
+                .addComponent(jSplitPane2)
                 .addContainerGap())
         );
 
@@ -387,22 +473,51 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 	}
 	
-	private static void enableFilter() {
-		if(tableModel.getRowCount()>0) {
-			jTableRom.setAutoCreateRowSorter(true);
-			TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
-			jTableRom.setRowSorter(tableSorter);
-			
-			List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-			//Order by console, name
-			sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-			sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-			tableSorter.setSortKeys(sortKeys);
-		}
-		else {
-			jTableRom.setAutoCreateRowSorter(false);
-		}
-	}
+	private static void filter() {
+        filter(true);
+    }
+    
+	private static final TableRowFilter filterVideo= new TableRowFilter();
+	
+    private static void filter(boolean fillLists) {
+//        TableRowSorter<TableModelVideo> tableSorter
+        //Enable row tableSorter (cannot be done if model is empty)
+        if(tableModel.getRowCount()>0) {
+            //Enable auto sorter
+            jTableRom.setAutoCreateRowSorter(true);
+            //Get sorter
+            TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
+            jTableRom.setRowSorter(tableSorter);
+            //Sort by console, name  (Debug display problem before enabling)
+//            List <RowSorter.SortKey> sortKeys = new ArrayList<>();
+//            sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+//            sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+//            tableSorter.setSortKeys(sortKeys);
+            //Désactive le tri pour
+//            tableSorter.setSortable(0, false); // Checkbox
+//            tableSorter.setSortable(1, false); // Thumbnail
+//            tableSorter.setSortable(4, false); // Synopsis
+            //Filter, Apply current filter
+            tableSorter.setRowFilter(filterVideo);
+
+            if(fillLists) {
+				List<String> consoles=tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
+				List<String> genres=tableModel.getRoms().values().stream().map(r -> r.getGame().getGenre()).distinct().collect(Collectors.toList());
+				List<String> ratings=tableModel.getRoms().values().stream().map(r -> String.valueOf(r.getGame().getRating())).distinct().collect(Collectors.toList());
+
+				jListFilterConsole.setModel(getModel(consoles));
+				jListFilterGenre.setModel(getModel(genres));
+				jListFilterRating.setModel(getModel(ratings));
+
+				jListFilterConsole.setSelectedIndex(0);
+				jListFilterGenre.setSelectedIndex(0);
+				jListFilterRating.setSelectedIndex(0);
+            }
+        }
+        else {
+            jTableRom.setAutoCreateRowSorter(false);
+        }
+    }
 	
     private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
         int n = JOptionPane.showConfirmDialog(
@@ -444,7 +559,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	
 	public void enableGUI() {
 		enableGUI(true);
-		enableFilter();
+		filter();
 	}
 	
 	private static void enableGUI(boolean enable) {
@@ -598,6 +713,27 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		new SaveOds(new CallBackProcess(), sourcePath).start();
     }//GEN-LAST:event_jButtonSaveActionPerformed
+
+    private void jListFilterConsoleValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterConsoleValueChanged
+        if(jListFilterConsole.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
+            filterVideo.displayByConsole((String) jListFilterConsole.getSelectedValue());
+            filter(false);
+        }
+    }//GEN-LAST:event_jListFilterConsoleValueChanged
+
+    private void jListFilterGenreValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterGenreValueChanged
+        if(jListFilterGenre.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
+            filterVideo.displayByGenre((String) jListFilterGenre.getSelectedValue());
+            filter(false);
+        }
+    }//GEN-LAST:event_jListFilterGenreValueChanged
+
+    private void jListFilterRatingValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterRatingValueChanged
+        if(jListFilterRating.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
+            filterVideo.displayByRating((String) jListFilterRating.getSelectedValue());
+            filter(false);
+        }
+    }//GEN-LAST:event_jListFilterRatingValueChanged
     
 	private class SaveOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
@@ -682,13 +818,21 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;
+    private static javax.swing.JList jListFilterConsole;
+    private static javax.swing.JList jListFilterGenre;
+    private static javax.swing.JList jListFilterRating;
     private javax.swing.JList<String> jListVersions;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private static javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JScrollPane jScrollPaneCheckTags1;
+    private javax.swing.JScrollPane jScrollPaneSelectGenre1;
+    private javax.swing.JScrollPane jScrollPaneSelectGenre2;
+    private javax.swing.JScrollPane jScrollPaneSelectGenre4;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JSplitPane jSplitPane2;
     private static javax.swing.JTable jTableRom;
     private static javax.swing.JTextField jTextFieldPathExport;
     private static javax.swing.JTextField jTextFieldPathSource;

@@ -106,9 +106,10 @@ public class ProcessExport extends ProcessAbstract {
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()
-	// FIXME 4 Select with a checkbox (keep that in ods) what roms/versions for which console to export
-		// Make filters (console but also genre, rating         ,"selected for export" - how?)												
-	//(now export all consoles, only best version and all good dsk (amstrad) files)
+	// FIXME 1 Do not setExportable=true by default if bad errorLevel for the rom, then do not filter on getScore
+	// FIXME 2 Add filter on number of files exported (only <=0 ; 1 and >1)
+	// FIXME 3 Use DialogueConsole to select what console(s) to export (sync)							
+	//(now export all consoles, only best version with score>0, and all good dsk (amstrad) files)
 
 							.filter(r -> r.isExportable() && r.getScore()>0)
 							.collect(Collectors.toList())) {

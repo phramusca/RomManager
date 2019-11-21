@@ -18,7 +18,7 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -155,10 +155,7 @@ public class RomManagerOds {
 					.log(Level.WARNING, "No "+DOC_FILE+"*.ods in {0}", sourceFolder);
 			return;
 		}
-		List<String> list = new ArrayList<String>();
-		for(String file : arrayList) {
-			list.add(file);
-		}
+		List<String> list = Arrays.asList(arrayList);
 		Collections.sort(list);
 		File odsFile = new File(FilenameUtils.concat(sourceFolder, list.get(list.size()-1)));
 		if(!odsFile.exists()) {
