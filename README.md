@@ -1,7 +1,5 @@
 # RomManager
 
-RomManager is ... a Rom Manager. Waouh !
-
 ## Features
 
 - Scan full rom sets 
