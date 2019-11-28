@@ -1,6 +1,13 @@
 # RomManager
 
-Rom Manager allows filtering full rom sets and extracting only good rom versions for your desired region.
+RomManager is ... a Rom Manager. Waouh !
+
+## Features
+
+- Scan full rom sets 
+- Set score, based on your preferences
+- Sync selected rom version(s) to given destination
+- Read gamelist.xml to get game info (cover, name, description, ...)
 
 ## Process
 
@@ -14,15 +21,14 @@ At startup [RomManager.ods](#RomManager-ods) is read and displayed.
 ### Set Score
 
 1) Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
+1) Set exportable
+  - all good dsk (amstrad) files
+  - only best rom version (highest score) for other consoles
 1) Update (overwrites!) [RomManager.ods](#RomManager-ods) output file
 
-### Export
+### Sync
 
-Export selected rom versions to [Destination folder](#destination-folder)
-
-Currently, only best version (highest score) of each rom and all good dsk (amstrad) files are selected for export.
-
-Next step is to change this into "Sync" and to be able to select which versions/games to export (still best by default)
+Export selected rom versions to [Destination folder](#destination-folder), removing unwanted versions.
 
 ### Read gamelist.xml
 
