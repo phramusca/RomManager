@@ -44,6 +44,7 @@ public class RomVersion {
 	private int errorLevel;
 	private boolean exportable;
 	private Game game;
+	private boolean toCopy;
 	
     /**
      * Create a Rom Version, read from fileSystem
@@ -246,6 +247,29 @@ public class RomVersion {
     public String getFilename() {
         return filename;
     }
+	
+	public String getExportFilename(RomContainer rom, String exportPath) {
+		String exportFolder = FilenameUtils.concat(
+				FilenameUtils.concat(
+						exportPath, rom.getConsole().name()), 
+				rom.getConsole().getName());
+		if(FilenameUtils.getExtension(rom.getFilename()).equals("7z")) {
+			if(rom.getConsole().isZip()) {
+				return FilenameUtils.concat(
+							exportFolder, 
+							FilenameUtils.getBaseName(
+									filename)
+								.concat(".zip"));
+			} else {
+				return FilenameUtils.concat(
+							exportFolder,
+							filename);
+			}
+		} else if(FilenameUtils.getExtension(rom.getFilename()).equals("dsk")) {
+			return FilenameUtils.concat(exportFolder, filename);
+		}
+		return "";
+	}
     
     public String getAttributes() {
 		JSONArray tagsAsMap = new JSONArray();
@@ -345,5 +369,13 @@ public class RomVersion {
 
 	public Game getGame() {
 		return game;
+	}
+
+	void setToCopy(boolean toCopy) {
+		this.toCopy = toCopy;
+	}
+
+	boolean isToCopy() {
+		return toCopy;
 	}
 }

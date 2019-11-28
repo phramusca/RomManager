@@ -36,14 +36,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import rommanager.utils.ProcessAbstract;
-
+//TODO Reset (clear) rom jList on jTable lost selection
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class RomManagerGUI extends javax.swing.JFrame {
 
-    private final ProgressBar progressBar;
+    private final ProgressBar progressBar; //TODO: Check usages: numbers seem weird sometimes
     private static TableModelRom tableModel;
     
 	private ProcessList processList;
@@ -218,7 +218,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonExport.setText("Export");
+        jButtonExport.setText("Sync"); // NOI18N
         jButtonExport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonExportActionPerformed(evt);
@@ -547,16 +547,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh) {
-			export();
-		}
-	}
-	
-	private void export() {
-		int n = JOptionPane.showConfirmDialog(
-		this, "Are you sure you want to export roms ?",  //NOI18N
-		"Please Confirm",  //NOI18N
-		JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
 			processExport.start();
 		}
 	}
@@ -682,16 +672,23 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
-		disableGUI("Setting score : ");
-		String sourcePath = jTextFieldPathSource.getText();
-		File file = new File(sourcePath);
-		if(!file.exists()) {
-			Popup.warning("Source path does not exist.");
-			enableGUI();
-			return;
+		//TODO As for Export (Sync), prompt console(s)
+		int n = JOptionPane.showConfirmDialog(
+		this, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
+		"Please Confirm",  //NOI18N
+		JOptionPane.YES_NO_OPTION);
+		if (n == JOptionPane.YES_OPTION) {
+			disableGUI("Setting score : ");
+			String sourcePath = jTextFieldPathSource.getText();
+			File file = new File(sourcePath);
+			if(!file.exists()) {
+				Popup.warning("Source path does not exist.");
+				enableGUI();
+				return;
+			}
+			processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
+			processSetScore.start();
 		}
-		processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
-		processSetScore.start();
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
     private void jListVersionsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jListVersionsFocusLost

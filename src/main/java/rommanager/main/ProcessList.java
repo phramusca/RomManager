@@ -84,7 +84,7 @@ public class ProcessList extends ProcessAbstract {
 		for(Console console : Console.values()) {
 			nbFiles=0;
 			browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
-			console.setNbFiles(nbFiles);
+			console.setNbFiles(nbFiles); //TODO Set NbFiles also on Export (Sync) to display number of exportable versions
 		}
 		progressBar.reset();
 	}

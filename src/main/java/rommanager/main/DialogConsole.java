@@ -17,6 +17,8 @@
 
 package rommanager.main;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.AbstractButton;
@@ -39,7 +41,9 @@ public class DialogConsole extends javax.swing.JDialog {
 	 */
 	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh) {
 		super(parent, modal);
-		initComponents();	
+		initComponents();
+		Arrays.asList(Console.values()).
+                forEach(console -> console.setSelected(false));
 		DefaultListModel model = new DefaultListModel();
 		for(Console console : Console.values()) {
 			if(console.getNbFiles()>0) {

@@ -43,6 +43,12 @@ public abstract class RomContainer {
 	 public List<RomVersion> getVersions() {
         return versions;
     }
+	 
+	public List<String> getExportableFilenames(String exportPath) {
+		return versions.stream().filter(r->r.isExportable())
+				.map(r->r.getExportFilename(this, exportPath))
+				.collect(Collectors.toList());
+	}
 
 	 public void addVersion(RomVersion version) {
 		versions.add(version);
@@ -71,7 +77,7 @@ public abstract class RomContainer {
 	public String getConsoleStr() {
 		return console==null?"Unknown":console.getName();
 	}
-
+	
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
@@ -84,5 +90,22 @@ public abstract class RomContainer {
 			}
 		}
 		return game==null?new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false):game;
+	}
+
+	public void setToCopyTrue() {
+		versions.forEach(v->v.setToCopy(false));
+		getExportableVersions().forEach(v->v.setToCopy(true));
+	}
+	
+	public List<RomVersion> getExportableVersions() {
+		return versions.stream()							
+			.filter(r -> r.isExportable())
+			.collect(Collectors.toList());
+	}
+	
+	public List<RomVersion> getToCopyVersions() {
+		return versions.stream()							
+			.filter(r -> r.isToCopy())
+			.collect(Collectors.toList());
 	}
 }

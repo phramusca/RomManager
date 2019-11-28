@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -29,6 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
@@ -43,10 +44,12 @@ public class ProcessExport extends ProcessAbstract {
 
 	private final String exportPath;
 	private final ProgressBar progressBar;
-	private Map<String, Game> games;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	private final String sourcePath;
+	
+	private List<RomContainer> romSourceList;
+	private List<File> romDestinationList;
 	
 	public ProcessExport(
 			String sourcePath, 
@@ -66,12 +69,14 @@ public class ProcessExport extends ProcessAbstract {
 	public void run() {
 		try {
 			
-			List<Console> collect = tableModel.getRoms().values().stream()
+			List<Console> consoles = tableModel.getRoms().values().stream()
 					.map(v -> v.getConsole())
 					.distinct()
 					.collect(Collectors.toList());
 			
-			for(Console console : collect) {
+			//Get files currently on destination
+			romDestinationList = new ArrayList<>();
+			for(Console console : consoles) {
 				checkAbort();
 				if(console.isSelected()) {
 					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
@@ -80,36 +85,44 @@ public class ProcessExport extends ProcessAbstract {
 							Popup.error("Error creating "+consolePath);
 							callBack.completed();
 						}
+					} else {
+						browseFS(new File(consolePath));
 					}
 				}
 			}
-			export();
-			Popup.info("Export complete.");
-			progressBar.reset();
-		} catch (InterruptedException ex) {
-//			Popup.info("Aborted by user");
-		} finally {
-			callBack.completed();
-		}
-	}
-
-	//FIXME 6 Change "Export" into "Sync" => remove files not selected for export from exportPath
-	
-    public void export() throws InterruptedException {
-        try {	
-			List<RomContainer> roms = tableModel.getRoms().values()
-					.stream().filter(r->r.getConsole().isSelected())
+			
+			//Get source roms & setToCopyTrue(true)
+			romSourceList = tableModel.getRoms().values()
+					.stream().filter(r->r.getConsole().isSelected() && r.getExportableVersions().size()>0)
+					.peek(r -> r.setToCopyTrue())
 					.collect(Collectors.toList());
-			progressBar.setup(roms.size());
+			
+			//Remove files on destination
+			this.checkAbort();
+			progressBar.setup(romSourceList.size() + romDestinationList.size());
+			for (File file : romDestinationList) {
+				this.checkAbort();
+				if(!searchInSourceList(file)) {
+					//Not a file to be copied, removing it on destination
+					file.delete();
+				}
+				progressBar.progress(file.getAbsolutePath());
+			}
+
+			//Copy files to destination
+			romSourceList = romSourceList
+					.stream().filter(r->r.getConsole().isSelected() 
+							&& r.getExportableVersions().size()>0)
+					.collect(Collectors.toList());
 			String sourceFolder;
 			String exportFolder;
-			for(RomContainer romContainer : roms) {
+			for(RomContainer romContainer : romSourceList) {
 				checkAbort();
 				String filename = romContainer.getFilename();
 				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()							
-							.filter(r -> r.isExportable())
+							.filter(r -> r.isToCopy())
 							.collect(Collectors.toList())) {
 					checkAbort();
 					sourceFolder = FilenameUtils.concat(
@@ -125,9 +138,9 @@ public class ProcessExport extends ProcessAbstract {
 												romVersion.getFilename())
 											.concat(".zip"));
 						
-						if(new File(exportFileName).exists()) {
-							continue;
-						}
+//						if(new File(exportFileName).exists()) {
+//							continue;
+//						}
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
 							FilenameUtils.concat(sourceFolder, filename)))) {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
@@ -136,6 +149,9 @@ public class ProcessExport extends ProcessAbstract {
 									File unzippedFile=new File(FilenameUtils.concat(
 													exportFolder,
 													romVersion.getFilename()));
+//									if(unzippedFile.exists()) {
+//										continue;
+//									}
 									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
@@ -145,10 +161,7 @@ public class ProcessExport extends ProcessAbstract {
 										if(zipFile(unzippedFile, exportFileName)) {
 											unzippedFile.delete();
 										}
-									} else {
-										
-									}
-									
+									}									
 									break;
 								}
 								entry = sevenZFile.getNextEntry();
@@ -165,10 +178,94 @@ public class ProcessExport extends ProcessAbstract {
 					}
 				}
 			}
+			Popup.info("Export complete.");
+			progressBar.reset();
+		} catch (InterruptedException ex) {
+//			Popup.info("Aborted by user");
 		} catch (IOException ex) {
 			Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
-		} 
-    }
+		} finally {
+			callBack.completed();
+		}
+	}
+	
+	//TODO: Use a Map instead ...
+	private boolean searchInSourceList(File file) throws InterruptedException {
+		
+		//FileSystem.copyFile preserves datetime
+		//Unfortunatly on some devices it does not work
+		//ex: Android (https://stackoverflow.com/questions/18677438/android-set-last-modified-time-for-the-file)
+		//=> TODO Make options of these, must be one or the other
+		//to detect if file is different
+		
+		// !!! DO NOT THOSE BELOW to true
+		// unless you set fileSource properly
+		// and that you can manage the case of a RomVersion in a 7z (H2 getlength, size and content ?)
+		boolean doCheckLength = false;
+		boolean doCheckLastModified = false;
+		boolean doCheckContent = false;
+
+		for(RomContainer rom : romSourceList) {
+			for(RomVersion romVersion : rom.getToCopyVersions()) {
+				this.checkAbort();
+				try {
+				//TODO: maybe support ignoreCase as an option
+	//			if(fileInfo.getRelativeFullPath().equalsIgnoreCase(relativeFullPath)) { return true; }
+				//We want sync to be case sensitive
+					if(romVersion.getExportFilename(rom, exportPath).equals(file.getAbsolutePath())) { 
+						File fileSource = new File(FilenameUtils.concat(
+								sourcePath, romVersion.getFilename()));
+						File fileDestination = new File(romVersion.getExportFilename(rom, exportPath));
+						if(!doCheckLength || fileSource.length()==fileDestination.length()) {
+							if(!doCheckLastModified || fileSource.lastModified()==fileDestination.lastModified() ) {
+									if(!doCheckContent || 
+											FileUtils.contentEquals(fileSource, 
+													fileDestination)) {
+										romVersion.setToCopy(false); 
+										return true; 
+									}
+							}
+						}
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(ProcessExport.class.getName())
+							.log(Level.SEVERE, null, ex);
+				}
+			}
+		}
+		return false;
+	}
+	
+	private void browseFS(File path) throws InterruptedException {
+        this.checkAbort();
+        //Verifying we have a path and not a file
+        if (path.isDirectory()) {
+            File[] files = path.listFiles();
+            if (files != null) {
+//                if(files.length<=0) {
+//                    if(!FilenameUtils.equalsNormalizedOnSystem(
+//							this.device.getDestination(), 
+//							path.getAbsolutePath())) {
+//                        Jamuz.getLogger().log(Level.FINE, 
+//								"Deleted empty folder \"{0}\"", 
+//								path.getAbsolutePath());  //NOI18N
+//                        path.delete();
+//                    }
+//                }
+//                else {
+                    for (File file : files) {
+                        this.checkAbort();
+                        if (file.isDirectory()) {
+                            browseFS(file);
+                        }
+                        else {
+                            this.romDestinationList.add(file);
+                        }
+                    }
+//                }
+            } 
+        }
+	}
 	
 	private static boolean zipFile(File inputFile, String zipFilePath) {
         try {
