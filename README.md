@@ -15,16 +15,16 @@ At startup [RomManager.ods](#RomManager-ods) is read and displayed.
 
 ### Scan Source
 
-1) Browse [Roms Source folder](#roms-source-folder) for roms
-1) Create (overwrites!) [RomManager.ods](#RomManager-ods) output file
+1) Browse [Roms Source folder](#roms-source-folder) for roms.
+1) Create (overwrites!) [RomManager.ods](#RomManager-ods) output file.
 
 ### Set Score
 
-1) Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
-1) Set exportable
-  - all good dsk (amstrad) files
-  - only best rom version (highest score) for other consoles
-1) Update (overwrites!) [RomManager.ods](#RomManager-ods) output file
+1. Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
+1. Set exportable:
+    * all good dsk (amstrad) files.
+    * only best rom version (highest score) for other consoles.
+1. Update (overwrites!) [RomManager.ods](#RomManager-ods) output file.
 
 ### Sync
 
