@@ -78,10 +78,7 @@ public class ProcessRead extends ProcessAbstract {
 					String key = FilenameUtils.getBaseName(romVersion.getFilename());
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
-						IconBuffer.getCoverIcon(game.getName(), 
-								FilenameUtils.concat(consolePath, 
-										game.getImage()), 
-								true);
+						IconBuffer.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
 						romVersion.setGame(game);
 					}
 				}
@@ -138,7 +135,7 @@ public class ProcessRead extends ProcessAbstract {
 								XML.getElementValue(element, "favorite")));
 
 //				if(clean && !game.exists(rootPath)) {
-//					//FIXME 7 How to remove the node  [Why not  recreating the file ?]
+//					// ??? How to remove the node  [Why not  recreating the file ?]
 ////					doc.removeChild(element);
 ////					doc.getElementsByTagName("game").item(0).removeChild(element);
 //				} else {
@@ -155,7 +152,7 @@ public class ProcessRead extends ProcessAbstract {
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
 
-				//FIXME 7 Save to source (back it up first) when really cleaned
+				//FIXME 7 Save gamelist-purged.xml to source (back it up first) when really cleaned
 				StreamResult result = new StreamResult(
 						new File("gamelist-purged.xml"));
 				transformer.transform(source, result);

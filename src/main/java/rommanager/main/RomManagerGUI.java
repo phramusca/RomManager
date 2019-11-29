@@ -36,14 +36,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import rommanager.utils.ProcessAbstract;
-//TODO Reset (clear) rom jList on jTable lost selection
+//FIXME 4 Reset (clear) rom jList on jTable lost selection
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class RomManagerGUI extends javax.swing.JFrame {
 
-    private final ProgressBar progressBar; //TODO: Check usages: numbers seem weird sometimes
+    private final ProgressBar progressBar; //FIXME 5 Check usages of all ProgressBar numbers seem weird/unappropriate sometimes
     private static TableModelRom tableModel;
     
 	private ProcessList processList;
@@ -672,7 +672,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
-		//TODO As for Export (Sync), prompt console(s)
+		//FIXME 2 As for Export (Sync), prompt console(s)
+		// - with an option to set best exportable OR leave exportable flag unchanged
 		int n = JOptionPane.showConfirmDialog(
 		this, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
 		"Please Confirm",  //NOI18N
@@ -706,7 +707,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		if(romContainer!=null) {
 			romContainer.setBestExportable();
 			displayVersions(romContainer.getVersions());
-//			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselct line in jtable
+//			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselect line in jtable
 		}
     }//GEN-LAST:event_jButtonAutoActionPerformed
 

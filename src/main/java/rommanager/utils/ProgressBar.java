@@ -19,7 +19,7 @@ package rommanager.utils;
 
 import javax.swing.JProgressBar;
 
-//TODO: Transformer toutes les progress bar pour utiliser cette classe !
+//FIXME 1 Transformer toutes les progress bar pour utiliser cette classe (si y'en a) !
 
 /**
  * Progress bar extension

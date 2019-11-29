@@ -242,6 +242,7 @@ public class ProcessExport extends ProcessAbstract {
         if (path.isDirectory()) {
             File[] files = path.listFiles();
             if (files != null) {
+				//TODO: Either use (is this needed ? safe ?) OR remove commented
 //                if(files.length<=0) {
 //                    if(!FilenameUtils.equalsNormalizedOnSystem(
 //							this.device.getDestination(), 

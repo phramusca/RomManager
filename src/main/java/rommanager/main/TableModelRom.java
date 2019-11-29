@@ -117,9 +117,7 @@ public class TableModelRom extends TableModelGeneric {
     public Object getValueAt(int rowIndex, int columnIndex) {
         RomContainer romContainer = getRom(rowIndex);
 
-		ImageIcon icon = IconBuffer.getCoverIcon(
-				romContainer.getGame().getName(), "", 
-				false);
+		ImageIcon icon = IconBuffer.getCoverIcon(romContainer.getGame().getName(), "", false);
 		
         switch (columnIndex) {
 			case 0: return icon!= null ? icon: new ImageIcon();

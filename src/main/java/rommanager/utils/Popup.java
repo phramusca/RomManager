@@ -28,15 +28,15 @@ import javax.swing.JOptionPane;
 public class Popup {
 	
 	//TODO: Make appName configurable
-	private static final String appName = "Rom Manager";  //NOI18N
-	private static Logger logger=null; //Can't be static. Why should it be (as netbeans says) ?
+	private static final String APP_NAME = "Rom Manager";  //NOI18N
+	private static Logger LOGGER=null; //Can't be static. Why should it be (as netbeans says) ?
 	
 	/**
-	 * Set the logger
+	 * Set the LOGGER
 	 * @param logger
 	 */
 	public static void setLogger(Logger logger) {
-		Popup.logger = logger;
+		Popup.LOGGER = logger;
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class Popup {
 	 * @param str
 	 */
 	public static void info(String str) {
-		javax.swing.JOptionPane.showMessageDialog(null, str, appName, JOptionPane.INFORMATION_MESSAGE);
+		javax.swing.JOptionPane.showMessageDialog(null, str, APP_NAME, JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	/**
@@ -52,13 +52,13 @@ public class Popup {
 	 * @param str
 	 */
 	public static void warning(String str) {
-        if(logger!=null) {
-			Popup.logger.log(Level.WARNING, str);
+        if(LOGGER!=null) {
+			Popup.LOGGER.log(Level.WARNING, str);
 		}
-		javax.swing.JOptionPane.showMessageDialog(null, str, appName + " - Warning", JOptionPane.WARNING_MESSAGE);  //NOI18N
+		javax.swing.JOptionPane.showMessageDialog(null, str, APP_NAME + " - Warning", JOptionPane.WARNING_MESSAGE);  //NOI18N
 	}
 
-	//TODO: do not call OptionsEnv.logger from this class
+	//TODO: do not call OptionsEnv.LOGGER from this class
 	//as we loose the impacted class and method
 	//=> Need to go through the code and for each method, make sure:
 	//- we return a boolean (pass/fail)
@@ -70,8 +70,8 @@ public class Popup {
 	 * @param str
 	 */
 	public static void error(String str) {
-		if(logger!=null) {
-			Popup.logger.severe(str);
+		if(LOGGER!=null) {
+			Popup.LOGGER.severe(str);
 		}
 		popupError(str);
     }
@@ -82,8 +82,8 @@ public class Popup {
 	 * @param ex
 	 */
 	public static void error(String str, Exception ex) {
-		if(logger!=null) {
-			Popup.logger.log(Level.SEVERE, str, ex);
+		if(LOGGER!=null) {
+			Popup.LOGGER.log(Level.SEVERE, str, ex);
 		}
 		popupError(str+":\n\n"+ex.toString());  //NOI18N
 	}
@@ -93,8 +93,8 @@ public class Popup {
 	 * @param ex
 	 */
 	public static void error(Exception ex) {
-		if(logger!=null) {
-			Popup.logger.log(Level.SEVERE, appName, ex);
+		if(LOGGER!=null) {
+			Popup.LOGGER.log(Level.SEVERE, APP_NAME, ex);
 		}
 		else {
 			System.out.println(ex.toString());
@@ -119,7 +119,7 @@ public class Popup {
 	}
 	
 	private static void popupError(String str) {
-		javax.swing.JOptionPane.showMessageDialog(null, str, appName + " - Error", JOptionPane.ERROR_MESSAGE);  //NOI18N
+		javax.swing.JOptionPane.showMessageDialog(null, str, APP_NAME + " - Error", JOptionPane.ERROR_MESSAGE);  //NOI18N
 	}
 	
 }

@@ -69,12 +69,7 @@ public class FileSystem {
 			
 			FileUtils.copyFile(sourceFile, destFile, true);
     }
-	//TODO: How to display progress (especially for videos)
-    //http://stackoverflow.com/questions/11427303/progress-bar-with-apache-fileutils-copydirectory
-    //https://netbeans.org/bugzilla/show_bug.cgi?id=95305
-    //http://stackoverflow.com/questions/15805303/copying-a-file-using-fileutils-copyfile
-////FOR DISPLAY progressbar IN A JTable cell: http://stackoverflow.com/questions/13753562/adding-progress-bar-to-each-table-cell-for-file-progress-java
-    
+
 	public static File replaceHome(File file) {
 		return replaceHome(file.getPath());
 	}

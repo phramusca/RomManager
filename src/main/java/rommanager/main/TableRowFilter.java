@@ -24,7 +24,7 @@ import javax.swing.RowFilter;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 
-//TODO: Include this in TableModelVideo, so we can refresh table (fire) when filter changes
+//TODO: Include this in TableModelRom, so we can refresh table (fire) when filter changes
 public class TableRowFilter extends RowFilter {
 
     private String console = null;
@@ -69,7 +69,7 @@ public class TableRowFilter extends RowFilter {
             this.console=genre;
         }
     }
-    // TODO Add GUI filter on number of files exported (only <=0 ; 1 and >1)
+    // FIXME 6 Add GUI filter on number of files exported (only <=0 ; 1 and >1)
     @Override
     public boolean include(Entry entry) {
         RomContainer romFile = (RomContainer) entry.getValue(6);

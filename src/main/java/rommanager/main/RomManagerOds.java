@@ -146,7 +146,8 @@ public class RomManagerOds {
 			TableModelRom model, 
 			ProgressBar progressBar, String sourceFolder) {
 	
-		//TODO Let user choose ods file !
+		//TODO Eventually Let user choose ods file !
+		// Currently, it opens latest one
 		String[] arrayList = new File(sourceFolder).list((File dir, String name) -> {
 			return name.matches(DOC_FILE+".+\\.ods");
 		});

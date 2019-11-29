@@ -52,6 +52,7 @@ public class IconBuffer {
      */
     public static final int ICON_WIDTH = 105;
     
+	//FIXME 1 Is file used ?
     /**
      * Get cover icon from cache if exists, from internet if not
 	 * @param key
