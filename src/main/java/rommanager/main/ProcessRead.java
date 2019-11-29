@@ -62,10 +62,33 @@ public class ProcessRead extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
+			games = new HashMap<>();
 			for(Console console : Console.values()) {
 				checkAbort();
 				read(FilenameUtils.concat(exportPath, console.name()), true);
 			}
+			
+			progressBar.setup(tableModel.getRoms().size());
+			String consolePath;
+			for(RomContainer romContainer : tableModel.getRoms().values()) {
+				checkAbort();
+				consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
+				for(RomVersion romVersion : romContainer.getVersions()) {
+					checkAbort();
+					String key = FilenameUtils.getBaseName(romVersion.getFilename());
+					if(games.containsKey(key)) {
+						Game game = games.get(key);
+						IconBuffer.getCoverIcon(game.getName(), 
+								FilenameUtils.concat(consolePath, 
+										game.getImage()), 
+								true);
+						romVersion.setGame(game);
+					}
+				}
+				progressBar.progress(romContainer.getFilename());
+			}
+			tableModel.fireTableDataChanged();
+			
 			Popup.info("Reading complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -78,7 +101,7 @@ public class ProcessRead extends ProcessAbstract {
 	private void read(String consolePath, boolean clean) 
 			throws InterruptedException {
 		try {
-			games = new HashMap<>();
+			
 			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
 			Document doc = XML.open(filename);
 			if(doc==null) {
@@ -139,35 +162,9 @@ public class ProcessRead extends ProcessAbstract {
 				StreamResult consoleResult = new StreamResult(System.out);
 				transformer.transform(source, consoleResult);
 			}
-			
-			//FIXME 9 Set only once for all consoles, as for ProcessList
-			progressBar.setup(tableModel.getRoms().size());
-			for(RomContainer romContainer : tableModel.getRoms().values()) {
-				checkAbort();
-				for(RomVersion romVersion : romContainer.getVersions()) {
-					checkAbort();
-					String key = FilenameUtils.getBaseName(
-							romVersion.getFilename());
-					if(games.containsKey(key)) {
-						Game game = games.get(key);
-						IconBuffer.getCoverIcon(
-								game.getName(), 
-								FilenameUtils.concat(consolePath, 
-										game.getImage()), 
-								true);
-						romVersion.setGame(game);
-					}
-				}
-				progressBar.progress(romContainer.getFilename());
-			}
-			tableModel.fireTableDataChanged();
 		} catch (TransformerException ex) {
 			Logger.getLogger(ProcessRead.class.getName())
 					.log(Level.SEVERE, null, ex);
 		} 
 	}
-
-	public Map<String, Game> getGames() {
-		return games;
-	}	
 }
