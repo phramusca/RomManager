@@ -183,6 +183,17 @@ public class ProcessList extends ProcessAbstract {
 							Logger.getLogger(ProcessList.class.getName())
 									.log(Level.SEVERE, null, ex);
 						}	break;
+					
+					//FIXME 0 Manage  other sets no grouped in 7z files, such as :
+						// - GoodColNonGood			rom,col. Others ?
+						// - GoodNGPxNonGood.7z		ngc. Others ?
+						// - GoodVBoy				vb. Others ?
+						// - GoodVect				vec. Others ?
+						// - GoodGenV321 (Latest but Is it really better than GoodGen3.00 ?)
+						//
+						//=> Maybe dot not check for extension, just default: ?
+						//=> Rename RomContainerAmstrad to RomContainerFlat
+						
 					case "dsk":
 						try {
 							String romName = RomContainerAmstrad.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()));

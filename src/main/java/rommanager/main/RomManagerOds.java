@@ -151,7 +151,7 @@ public class RomManagerOds {
 		String[] arrayList = new File(sourceFolder).list((File dir, String name) -> {
 			return name.matches(DOC_FILE+".+\\.ods");
 		});
-		if(arrayList.length<=0) {
+		if(arrayList==null || arrayList.length<=0) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.WARNING, "No "+DOC_FILE+"*.ods in {0}", sourceFolder);
 			return;
