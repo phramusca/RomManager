@@ -179,17 +179,18 @@ public class ProcessList extends ProcessAbstract {
 								romSevenZipFile.setVersions(progressBar, FilenameUtils.getFullPath(file.getAbsolutePath()));
 								tableModel.addRow(romSevenZipFile);
 							} 
-						} catch (IOException ex) {
-							Logger.getLogger(ProcessList.class.getName())
-									.log(Level.SEVERE, null, ex);
+						} catch (IOException | OutOfMemoryError ex) {
+							//FIXME 9: Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
+							Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
 						}	break;
 					
 					//FIXME 0 Manage  other sets no grouped in 7z files, such as :
-						// - GoodColNonGood			rom,col. Others ?
+					//From /media/raph/Maxtor1/Emulation/Roms/4_Sources => FAIRE MENAGE/archive.org  ___ NOUVEAU   _____ PAS MEME FORMAT  :-(
 						// - GoodNGPxNonGood.7z		ngc. Others ?
 						// - GoodVBoy				vb. Others ?
 						// - GoodVect				vec. Others ?
 						// - GoodGenV321 (Latest but Is it really better than GoodGen3.00 ?)
+						// - GoodColNonGood			rom,col. Others ? (Attention, ces roms ne marchent pas)
 						//
 						//=> Maybe dot not check for extension, just default: ?
 						//=> Rename RomContainerAmstrad to RomContainerFlat

@@ -115,6 +115,7 @@ public class IconBuffer {
             g2.drawImage(icon.getImage(), 0, 0, null);
             g2.dispose();
             ImageIO.write(bi, "png", getCacheFile(key)); //NOI18N
+			//FIXME: Create cache folder if it does not exist (earlier in ProcessRead) !!!! Or we get a java.lang.NullPointerException
 		} catch (IIOException ex) {
             Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -39,7 +39,7 @@ public class RomContainer7z extends RomContainer {
         super(console, filename);
     }
 
-	public void setVersions(ProgressBar progressBar, String path) throws IOException {
+	public void setVersions(ProgressBar progressBar, String path) throws IOException, OutOfMemoryError {
 		try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
 			SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 			String name;
