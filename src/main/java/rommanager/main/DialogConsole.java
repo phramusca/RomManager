@@ -168,6 +168,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	/**
 	 * 
 	 * @param callback
+	 * @param displayRefresh
 	 */
 	public static void main(ICallBackConsole callback, boolean displayRefresh) {
 		/* Set the Nimbus look and feel */

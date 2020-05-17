@@ -22,7 +22,7 @@ import java.io.IOException;
  *
  * @author phramusca ( https://github.com/phramusca/ )
  */
-public class RomContainerAmstrad extends RomContainer {
+public class RomContainerFlat extends RomContainer {
 
 	/**
 	 * For dsk (Amstrad) files that are not groupped in 7z
@@ -30,7 +30,7 @@ public class RomContainerAmstrad extends RomContainer {
 	 * @param filename
 	 * @throws IOException
 	 */
-	public RomContainerAmstrad(Console console, String filename) throws IOException {
+	public RomContainerFlat(Console console, String filename) throws IOException {
 		super(console, filename);
 	}
 	@Override

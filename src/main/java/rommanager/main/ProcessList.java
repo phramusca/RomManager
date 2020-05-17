@@ -107,14 +107,14 @@ public class ProcessList extends ProcessAbstract {
 			tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
 		}
 		browseFoldersFS(console, path, new File(path));
-		for(RomContainerAmstrad romAmstrad : amstradRoms.values()) {
+		for(RomContainerFlat romAmstrad : amstradRoms.values()) {
 			checkAbort();
 			romAmstrad.setBestExportable();
 			tableModel.addRow(romAmstrad);
 		}  
 	}
 	
-	private final Map<String, RomContainerAmstrad> amstradRoms = new HashMap<>();
+	private final Map<String, RomContainerFlat> amstradRoms = new HashMap<>();
 	
 	private static int nbFiles=0;
 	private void browseNbFiles(File path, Console console) {
@@ -193,18 +193,17 @@ public class ProcessList extends ProcessAbstract {
 						// - GoodColNonGood			rom,col. Others ? (Attention, ces roms ne marchent pas)
 						//
 						//=> Maybe dot not check for extension, just default: ?
-						//=> Rename RomContainerAmstrad to RomContainerFlat
 						
 					case "dsk":
 						try {
-							String romName = RomContainerAmstrad.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()));
+							String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()));
 							if(!tableModel.getRoms().containsKey(romName)) {
-								RomContainerAmstrad containerAmstrad;
+								RomContainerFlat containerAmstrad;
 								if(amstradRoms.containsKey(romName)) {
 									containerAmstrad = amstradRoms.get(romName);
 								} else {
 									containerAmstrad = 
-											new RomContainerAmstrad(
+											new RomContainerFlat(
 													console,
 													romName);
 									amstradRoms.put(romName, containerAmstrad);

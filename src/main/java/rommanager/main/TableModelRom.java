@@ -210,8 +210,8 @@ public class TableModelRom extends TableModelGeneric {
 					romContainer = new RomContainer7z(console, filename);
 					break;
 				case "dsk":
-					String romName = RomContainerAmstrad.getRomName(filename);
-					romContainer = new RomContainerAmstrad(
+					String romName = RomContainerFlat.getRomName(filename);
+					romContainer = new RomContainerFlat(
 													console,
 													romName);
 					break;
