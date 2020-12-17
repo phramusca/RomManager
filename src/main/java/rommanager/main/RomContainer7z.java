@@ -29,30 +29,30 @@ import rommanager.utils.ProgressBar;
  */
 public class RomContainer7z extends RomContainer {
 
-	/**
-	 * For 7z files including rom versions
-	 * @param console
-	 * @param filename
-	 * @throws IOException
-	 */
+    /**
+     * For 7z files including rom versions
+     * @param console
+     * @param filename
+     * @throws IOException
+     */
     public RomContainer7z(Console console, String filename) throws IOException {
         super(console, filename);
     }
 
-	public void setVersions(ProgressBar progressBar, String path) throws IOException, OutOfMemoryError {
-		try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
-			SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-			String name;
-			String msg = progressBar.getString();
-			while(entry!=null){
-				name=entry.getName();
-				progressBar.setString(msg+" : "+name);
-				versions.add(new RomVersion(
-						FilenameUtils.getBaseName(filename), 
-						name));
-				entry = sevenZFile.getNextEntry();
-			}
-		}
+    public void setVersions(ProgressBar progressBar, String path) throws IOException, OutOfMemoryError {
+        try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
+            SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+            String name;
+            String msg = progressBar.getString();
+            while(entry!=null){
+                name=entry.getName();
+                progressBar.setString(msg+" : "+name);
+                versions.add(new RomVersion(
+                        FilenameUtils.getBaseName(filename), 
+                        name));
+                entry = sevenZFile.getNextEntry();
+            }
+        }
 		setBestExportable();
 	}
 	

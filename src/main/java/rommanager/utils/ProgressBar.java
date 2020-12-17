@@ -19,14 +19,11 @@ package rommanager.utils;
 
 import javax.swing.JProgressBar;
 
-//FIXME 1 Transformer toutes les progress bar pour utiliser cette classe (si y'en a) !
-
 /**
  * Progress bar extension
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class ProgressBar extends JProgressBar {
-	
 	private int index = 0;
 //	private int msgMax = 60;
 	private boolean displayAsPercent = false;

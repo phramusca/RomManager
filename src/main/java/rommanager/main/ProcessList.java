@@ -184,7 +184,7 @@ public class ProcessList extends ProcessAbstract {
 							Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
 						}	break;
 					
-					//FIXME 0 Manage  other sets no grouped in 7z files, such as :
+					//FIXME 10 Manage  other sets no grouped in 7z files, such as :
 					//From /media/raph/Maxtor1/Emulation/Roms/4_Sources => FAIRE MENAGE/archive.org  ___ NOUVEAU   _____ PAS MEME FORMAT  :-(
 						// - GoodNGPxNonGood.7z		ngc. Others ?
 						// - GoodVBoy				vb. Others ?
