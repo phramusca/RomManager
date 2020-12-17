@@ -454,7 +454,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();		
-		DialogConsole.main(new CallBackDialogConsoleScan(), true);
+		DialogConsole.main(new CallBackDialogConsoleScan(), true, "Scan Source");
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
 	private class CallBackDialogConsoleScan implements ICallBackConsole {
@@ -541,7 +541,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				new CallBackProcess());
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
-		DialogConsole.main(new CallBackDialogConsoleExport(), false);
+		DialogConsole.main(new CallBackDialogConsoleExport(), false, "Sync");
     }//GEN-LAST:event_jButtonExportActionPerformed
 
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
@@ -672,26 +672,36 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
-		//FIXME 2 As for Export (Sync), prompt console(s)
-		// - with an option to set best exportable OR leave exportable flag unchanged
-		int n = JOptionPane.showConfirmDialog(
-		this, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
-		"Please Confirm",  //NOI18N
-		JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
-			disableGUI("Setting score : ");
-			String sourcePath = jTextFieldPathSource.getText();
-			File file = new File(sourcePath);
-			if(!file.exists()) {
-				Popup.warning("Source path does not exist.");
-				enableGUI();
-				return;
-			}
-			processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
-			processSetScore.start();
-		}
+	
+        disableGUI("Setting score : ");
+        String sourcePath = jTextFieldPathSource.getText();
+        File file = new File(sourcePath);
+        if(!file.exists()) {
+            Popup.warning("Source path does not exist.");
+            enableGUI();
+            return;
+        }
+        processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
+        processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+        processList.browseNbFiles();
+        DialogConsole.main(new CallBackDialogConsoleScore(), false, "Set Score");
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
+    private class CallBackDialogConsoleScore implements ICallBackConsole {
+		@Override
+		public void completed(boolean refresh) {
+            //FIXME 12 option : set best as exportable OR leave exportable flag unchanged
+            int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
+            "Please Confirm",  //NOI18N
+            JOptionPane.YES_NO_OPTION);
+            if (n == JOptionPane.YES_OPTION) {
+                processSetScore.start();
+            } else {
+                enableGUI();
+            }
+		}
+	}
+    
     private void jListVersionsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jListVersionsFocusLost
 		DefaultListModel versionsModel = (DefaultListModel)jListVersions.getModel();
 		int i=0;

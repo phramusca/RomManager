@@ -16,6 +16,7 @@
  */
 package rommanager.main;
 
+import java.util.stream.Collectors;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -60,7 +61,9 @@ public class ProcessSetScore extends ProcessAbstract {
 
     public void setScore() throws InterruptedException {
 		progressBar.setup(tableModel.getRowCount());
-		for(RomContainer romContainer : tableModel.getRoms().values()) {
+		for(RomContainer romContainer : tableModel.getRoms().values().stream()
+                .filter(r->r.getConsole().isSelected())
+					.collect(Collectors.toList())) {
 			checkAbort();
 			progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 			for(RomVersion romVersion : romContainer.getVersions()) {

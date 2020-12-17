@@ -38,7 +38,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param callback  
 	 * @param displayRefresh  
 	 */
-	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh) {
+	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh, String buttonString) {
 		super(parent, modal);
 		initComponents();
 		Arrays.asList(Console.values()).
@@ -51,10 +51,10 @@ public class DialogConsole extends javax.swing.JDialog {
 		}
 		jListConsoles.setModel(model);
 		this.callback = callback;
+        jButtonAction.setText(buttonString);
 		if(!displayRefresh) {
 			jRadioButtonOnlyNew.setVisible(false);
 			jRadioButtonRefreshSelected.setVisible(false);
-			jButton1.setText("Export");
 		}
 	}
 	
@@ -71,7 +71,7 @@ public class DialogConsole extends javax.swing.JDialog {
         jPanelOptionsGenres = new javax.swing.JPanel();
         jScrollPaneOptionsMachines1 = new javax.swing.JScrollPane();
         jListConsoles = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
+        jButtonAction = new javax.swing.JButton();
         jRadioButtonRefreshSelected = new javax.swing.JRadioButton();
         jRadioButtonOnlyNew = new javax.swing.JRadioButton();
 
@@ -82,10 +82,10 @@ public class DialogConsole extends javax.swing.JDialog {
         jListConsoles.setModel(new DefaultListModel());
         jScrollPaneOptionsMachines1.setViewportView(jListConsoles);
 
-        jButton1.setText("List"); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonAction.setText("Action"); // NOI18N
+        jButtonAction.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonActionActionPerformed(evt);
             }
         });
 
@@ -109,7 +109,7 @@ public class DialogConsole extends javax.swing.JDialog {
                             .addComponent(jRadioButtonOnlyNew)
                             .addComponent(jRadioButtonRefreshSelected))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(jButtonAction)))
                 .addContainerGap())
         );
         jPanelOptionsGenresLayout.setVerticalGroup(
@@ -119,7 +119,7 @@ public class DialogConsole extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(jButtonAction)
                         .addGap(13, 13, 13))
                     .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
                         .addComponent(jRadioButtonOnlyNew)
@@ -141,7 +141,7 @@ public class DialogConsole extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonActionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActionActionPerformed
 
 		boolean refresh = getSelectedButtonText(buttonGroupListType).equals("Refresh");
 		
@@ -151,7 +151,7 @@ public class DialogConsole extends javax.swing.JDialog {
 		}
 		dispose();
 		callback.completed(refresh);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonActionActionPerformed
 	
 	private String getSelectedButtonText(ButtonGroup buttonGroup) {
         for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
@@ -169,7 +169,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param callback
 	 * @param displayRefresh
 	 */
-	public static void main(ICallBackConsole callback, boolean displayRefresh) {
+	public static void main(ICallBackConsole callback, boolean displayRefresh, String  buttonString) {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -192,7 +192,7 @@ public class DialogConsole extends javax.swing.JDialog {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh );
+				DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh, buttonString );
 				//Center the dialog
 				dialog.setLocationRelativeTo(dialog.getParent());
 				dialog.setVisible(true);
@@ -202,7 +202,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroupListType;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonAction;
     private static javax.swing.JList jListConsoles;
     private javax.swing.JPanel jPanelOptionsGenres;
     private javax.swing.JRadioButton jRadioButtonOnlyNew;
