@@ -642,13 +642,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonReadGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadGameListActionPerformed
 		disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathExport.getText();
-		File file = new File(exportPath);
-		if(!file.exists()) {
-			enableGUI();
-			Popup.warning("Export path does not exist.");
-			return;
-		}
-		processRead = new ProcessRead(exportPath, progressBar, tableModel, new CallBackProcess());
+//		File file = new File(exportPath);
+//		if(!file.exists()) {
+//			enableGUI();
+//			Popup.warning("Export path does not exist.");
+//			return;
+//		}
+        String sourcePath = jTextFieldPathSource.getText();
+        File sourceFile = new File(sourcePath);
+        if(!sourceFile.exists()) {
+            Popup.warning("Source path does not exist.");
+            enableGUI();
+            return;
+        }
+		processRead = new ProcessRead(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
 		processRead.start();
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 

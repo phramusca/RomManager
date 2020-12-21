@@ -17,6 +17,7 @@
 package rommanager.main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -41,6 +43,7 @@ import rommanager.utils.XML;
  */
 public class ProcessRead extends ProcessAbstract {
 
+    private final String sourcePath;
 	private final String exportPath;
 	private final ProgressBar progressBar;
 	private Map<String, Game> games;
@@ -48,11 +51,13 @@ public class ProcessRead extends ProcessAbstract {
 	private final ICallBackProcess callBack;
 	
 	public ProcessRead(
+            String sourcePath,
 			String exportPath, 
 			ProgressBar progressBar, 
 			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessRead");
+        this.sourcePath = sourcePath;
 		this.exportPath = exportPath;
 		this.progressBar = progressBar;
 		this.tableModel = tableModel;
@@ -65,7 +70,7 @@ public class ProcessRead extends ProcessAbstract {
 			games = new HashMap<>();
 			for(Console console : Console.values()) {
 				checkAbort();
-				read(FilenameUtils.concat(exportPath, console.name()), true);
+				read(console.name(), true);
 			}
 			
 			progressBar.setup(tableModel.getRoms().size());
@@ -95,15 +100,25 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-	private void read(String consolePath, boolean clean) 
+    //FIXME: Rename RecalMan (Recalbox Manager)
+    //FIXME: Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
+    //FIXME: Change export folder to "RecalMan - xxxxx" with xxx the console display name
+    
+	private void read(String consoleName, boolean clean) 
 			throws InterruptedException {
 		try {
-			
-			String filename=FilenameUtils.concat(consolePath, "gamelist.xml");
-			Document doc = XML.open(filename);
+            File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, consoleName), "gamelist.xml"));
+            File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist.xml"));
+            //Get file if it does not exist yet locally
+            //FIXME: Ask user if he wants to overwrite OR show differences and propose how to handle the sync. Meantime, need to delete the local files to refresh
+            //FIXME: Copy (rsync with no delete) all media files from exportPath to sourcePath
+            if(!localFile.exists() && remoteFile.exists()) {
+                FileSystem.copyFile(remoteFile, localFile);
+            }            
+			Document doc = XML.open(localFile.getAbsolutePath());
 			if(doc==null) {
 				Logger.getLogger(ProcessRead.class.getName())
-						.log(Level.SEVERE, "File not found: {0}", filename);
+						.log(Level.SEVERE, "File not found: {0}", localFile.getAbsolutePath());
 				return;
 			}
 			ArrayList<Element> elements = XML.getElements(doc, "game");
@@ -146,22 +161,24 @@ public class ProcessRead extends ProcessAbstract {
 			}
 			
 			if(clean) {
-				// write the content into xml file
-				TransformerFactory transformerFactory = 
-						TransformerFactory.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				DOMSource source = new DOMSource(doc);
-
-				//FIXME 7 Save gamelist-purged.xml to source (back it up first) when really cleaned
-				StreamResult result = new StreamResult(
-						new File("gamelist-purged.xml"));
-				transformer.transform(source, result);
-				StreamResult consoleResult = new StreamResult(System.out);
-				transformer.transform(source, consoleResult);
+				//FIXME: Either fix this feature or remove it
+//				TransformerFactory transformerFactory = 
+//						TransformerFactory.newInstance();
+//				Transformer transformer = transformerFactory.newTransformer();
+//				DOMSource source = new DOMSource(doc);
+//                File cleanGameListXml = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist-clean.xml"));
+//				StreamResult result = new StreamResult(cleanGameListXml);
+//				transformer.transform(source, result);
+//				StreamResult consoleResult = new StreamResult(System.out);
+//				transformer.transform(source, consoleResult);
 			}
-		} catch (TransformerException ex) {
-			Logger.getLogger(ProcessRead.class.getName())
-					.log(Level.SEVERE, null, ex);
-		} 
+//		} catch (TransformerException ex) {
+//			Logger.getLogger(ProcessRead.class.getName())
+//					.log(Level.SEVERE, null, ex);
+		} catch (IOException ex) { 
+            Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (OutOfMemoryError ex) { 
+            Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
+        } 
 	}
 }
