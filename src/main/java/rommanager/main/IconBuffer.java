@@ -52,7 +52,6 @@ public class IconBuffer {
      */
     public static final int ICON_WIDTH = 105;
     
-	//FIXME 1 Is file used ?
     /**
      * Get cover icon from cache if exists, from internet if not
 	 * @param key
@@ -72,9 +71,12 @@ public class IconBuffer {
                 ICONS.put(key, icon);
                 return icon;
             }
-            icon= readIcon(key, file);
-            if(icon!=null) {
-                ICONS.put(key, icon);
+            if(!file.equals("")) {
+                icon= readIcon(key, file);
+                if(icon!=null) {
+                    ICONS.put(key, icon);
+                    icon=null; //to avoid errors OutOfMemoryError: Java heap space
+                }
             }
         }
         return icon;

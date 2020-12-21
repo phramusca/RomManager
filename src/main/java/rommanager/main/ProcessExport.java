@@ -157,6 +157,7 @@ public class ProcessExport extends ProcessAbstract {
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
 									}
+                                    //FIXME: Zip sometimes contains 0b files :( Only over sshfs ?
 									if(romContainer.getConsole().isZip()) {
 										if(zipFile(unzippedFile, exportFileName)) {
 											unzippedFile.delete();

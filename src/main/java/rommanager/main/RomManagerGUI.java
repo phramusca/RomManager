@@ -32,11 +32,13 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import rommanager.utils.ProcessAbstract;
-//FIXME 4 Reset (clear) rom jList on jTable lost selection
+
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
@@ -371,12 +373,17 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTableRom.setAutoCreateColumnsFromModel(false);
         jTableRom.setModel(new rommanager.main.TableModelRom());
         jTableRom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTableRomMousePressed(evt);
+        jTableRom.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTableRomFocusLost(evt);
             }
+        });
+        jTableRom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableRomMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTableRomMousePressed(evt);
             }
         });
         jScrollPaneCheckTags1.setViewportView(jTableRom);
@@ -753,6 +760,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
             filter(false);
         }
     }//GEN-LAST:event_jListFilterRatingValueChanged
+
+    private void jTableRomFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTableRomFocusLost
+        int selectedRow = jTableRom.getSelectedRow(); 		
+        if(selectedRow<0) { 			
+			DefaultListModel model = (DefaultListModel)jListVersions.getModel();
+                model.clear();
+		}
+    }//GEN-LAST:event_jTableRomFocusLost
     
 	private class SaveOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
