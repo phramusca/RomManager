@@ -98,6 +98,10 @@ public class ProcessRead extends ProcessAbstract {
 			}
 			tableModel.fireTableDataChanged();
 			
+            progressBar.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
+			progressBar.reset();
+            
 			Popup.info("Reading complete.");
 			progressBar.reset();
 		} catch (InterruptedException ex) {
@@ -116,6 +120,7 @@ public class ProcessRead extends ProcessAbstract {
         document.appendChild(root);
         
         //FIXME 9 Include <folder> entries if we want to send back entries when local modifications will be available to the user
+        //FIXME 9 Make a sync process to sync metadata (rating, ...) from/to local/recalbox
         
         for(Game game: games.values()) {
             Element gameElement = document.createElement("game");

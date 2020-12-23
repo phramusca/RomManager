@@ -87,7 +87,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		
 		disableGUI("Reading ods file: ");
 		new ReadOds(() -> {
-            readGamelist();
+            enableGUI();
         }, jTextFieldPathSource.getText()).start();
     }
 
@@ -657,8 +657,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	
     private void jButtonReadGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadGameListActionPerformed
 		readGamelist();
-        
-        //FIXME 0 Save ODS
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 
     private void readGamelist() {

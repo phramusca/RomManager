@@ -58,7 +58,7 @@ public class RomManagerOds {
 			ProgressBar progressBar, 
 			boolean open, String sourceFolder) {
 		
-        int nbColumns=22;
+        int nbColumns=25;
         int nbRows=0;
         for(RomContainer romContainer : model.getRoms().values()) {
             nbRows+=romContainer.getVersions().size();
