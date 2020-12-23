@@ -1,3 +1,4 @@
+rommanager/main/TableRowFilter$1.class
 rommanager/main/RomContainer.class
 rommanager/main/GoodToolsConfigOds.class
 rommanager/main/ProcessExport.class
@@ -29,6 +30,7 @@ rommanager/main/RomManagerGUI$3.class
 rommanager/main/RomContainer7z.class
 rommanager/main/RomManagerGUI$14.class
 rommanager/main/RomContainerFlat.class
+rommanager/main/RomManagerGUI$17.class
 rommanager/main/RomManagerGUI$ReadOds.class
 rommanager/utils/StringManager.class
 rommanager/main/RomManagerGUI$9.class
@@ -43,6 +45,7 @@ rommanager/main/RomManagerGUI$11.class
 rommanager/main/DialogConsole.class
 rommanager/main/ProcessList.class
 rommanager/main/DialogConsole$1.class
+rommanager/main/TableRowFilter$ExportFilesNumber.class
 rommanager/utils/FileSystem$1.class
 rommanager/utils/Options.class
 rommanager/main/ProcessSetScore.class

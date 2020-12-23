@@ -30,6 +30,7 @@ public class TableRowFilter extends RowFilter {
     private String console = null;
     private String genre = null;
     private String rating = null;
+    private ExportFilesNumber exportFilesNumber = ExportFilesNumber.ALL;
 
 	/**
 	 *
@@ -69,14 +70,19 @@ public class TableRowFilter extends RowFilter {
             this.console=genre;
         }
     }
-    // FIXME 6 Add GUI filter on number of files exported (only <=0 ; 1 and >1)
+    
+    public void displayByNumberExportFiles(ExportFilesNumber exportFilesNumber) {
+        this.exportFilesNumber=exportFilesNumber;
+    }
+    
     @Override
     public boolean include(Entry entry) {
         RomContainer romFile = (RomContainer) entry.getValue(6);
         
         return isToDisplayConsole(romFile.getConsoleStr())
                 && isToDisplayGenre(romFile.getGame().getGenre())
-                && isToDisplayRating(String.valueOf(romFile.getGame().getRating()));
+                && isToDisplayRating(String.valueOf(romFile.getGame().getRating()))
+                && isToDisplayNumberExportFiles(romFile.getExportableVersions().size());
     } 
     
     private boolean isToDisplayConsole(String console) {
@@ -90,5 +96,31 @@ public class TableRowFilter extends RowFilter {
     private boolean isToDisplayRating(String rating) {
         return this.rating==null ? true : rating.equals(this.rating);
     }
+
+    private boolean isToDisplayNumberExportFiles(int size) {
+        switch(exportFilesNumber) {
+            case ALL:
+                return true;
+            case LESS_OR_EQUAL_ZERO:
+                return size<=0;
+            case MORE_THAN_ONE:
+                return size>1;
+            case MORE_THAN_ZERO:
+                return size>0;
+            case ONE:
+                return size==1;
+        }
+        // Should never happen, 
+        // but in case it does, 
+        // we do not want to hide 
+        return true; 
+    }
     
+    public enum ExportFilesNumber {
+        ALL,
+        LESS_OR_EQUAL_ZERO,
+        MORE_THAN_ZERO,
+        ONE,
+        MORE_THAN_ONE
+    }
 }

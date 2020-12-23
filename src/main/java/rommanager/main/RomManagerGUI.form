@@ -293,19 +293,22 @@
                           <Component id="jScrollPaneSelectGenre1" alignment="1" max="32767" attributes="0"/>
                           <Component id="jScrollPaneSelectGenre4" alignment="1" max="32767" attributes="0"/>
                           <Component id="jScrollPaneSelectGenre2" max="32767" attributes="0"/>
+                          <Component id="jScrollPaneSelectGenre5" alignment="1" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPaneSelectGenre1" pref="131" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre1" pref="97" max="32767" attributes="2"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre2" pref="131" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre2" pref="102" max="32767" attributes="2"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre4" pref="133" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre4" pref="96" max="32767" attributes="2"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jScrollPaneSelectGenre5" pref="94" max="32767" attributes="2"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -373,6 +376,29 @@
                   </Properties>
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterRatingValueChanged"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+                  </AuxValues>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JScrollPane" name="jScrollPaneSelectGenre5">
+              <AuxValues>
+                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+              </AuxValues>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Component class="javax.swing.JList" name="jListFilterNumberFilesExport">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new DefaultListModel()" type="code"/>
+                    </Property>
+                    <Property name="selectionMode" type="int" value="0"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterNumberFilesExportValueChanged"/>
                   </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>

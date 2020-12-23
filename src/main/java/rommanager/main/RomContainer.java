@@ -44,11 +44,11 @@ public abstract class RomContainer {
         return versions;
     }
 	 
-	public List<String> getExportableFilenames(String exportPath) {
-		return versions.stream().filter(r->r.isExportable())
-				.map(r->r.getExportFilename(this, exportPath))
-				.collect(Collectors.toList());
-	}
+//	public List<String> getExportableFilenames(String exportPath) {
+//		return versions.stream().filter(r->r.isExportable())
+//				.map(r->r.getExportFilename(this, exportPath))
+//				.collect(Collectors.toList());
+//	}
 
 	 public void addVersion(RomVersion version) {
 		versions.add(version);
