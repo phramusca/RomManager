@@ -19,9 +19,16 @@ package rommanager.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,12 +50,44 @@ public class XML {
 			doc.getDocumentElement().normalize();
 			return doc;
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			//Proper error handling. filename is displayed in ex, so no need to add it again
-//			Popup.error(ex); 
+			Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
         }
 	}
 
+    public static Document newDoc() {
+        try {
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
+            return document;
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public static void save(String filename, Document document) {
+        save(new File(filename), document);
+    }
+    
+    public static void save(File filename, Document document) {
+        try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource domSource = new DOMSource(document);
+			StreamResult streamResult = new StreamResult(filename);
+			// If you use
+			// StreamResult result = new StreamResult(System.out);
+			// the output will be pushed to the standard output ...
+			// You can use that for debugging 
+			transformer.transform(domSource, streamResult);
+			System.out.println("Done creating XML File");
+		} catch (TransformerException ex) {
+			Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+		}
+    }
+    
 	public static String getNodeValue(Document doc, String TagNameLev1, String TagNameLev2) {
 		NodeList nodeLst = doc.getElementsByTagName(TagNameLev1);
 		Node fstNode = nodeLst.item(0);

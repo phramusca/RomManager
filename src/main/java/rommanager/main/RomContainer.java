@@ -89,7 +89,7 @@ public abstract class RomContainer {
 				game = games.get(0);
 			}
 		}
-		return game==null?new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false):game;
+		return game==null?new Game("","","", "", "", "", "", -1, "","", "", "", "", "", -1, "", false):game;
 	}
 
 	public void setToCopyTrue() {

@@ -26,34 +26,40 @@ import org.apache.commons.io.FilenameUtils;
 public class Game {
 
 	private final String path;
+    private final String hash; //Not used
 	private final String name;
 	private final String desc;
 	private final String image;
+    private final String video; //Not used
 	private final String thumbnail; //Not used
 	private final float rating;
 	private final String releaseDate;
 	private final String developer;
 	private final String publisher;
 	private final String genre;
+    private final String genreId; //Not used
 	private final String players;
 	private final int playcount;
 	private final String lastplayed;
 	private final boolean favorite;
 
-	public Game(String path, String name, String desc, String image, 
-			String thumbnail, float rating, String releaseDate, 
-			String developer, String publisher, String genre, String players, 
-			int playcount, String lastplayed, boolean favorite) {
+	public Game(String path, String hash, String name, String desc, String image, 
+            String video, String thumbnail, float rating, String releaseDate, 
+			String developer, String publisher, String genre, String genreId, 
+            String players, int playcount, String lastplayed, boolean favorite) {
 		this.path = path;
+        this.hash = hash;
 		this.name = name;
 		this.desc = desc;
 		this.image = image;
+        this.video = video;
 		this.thumbnail = thumbnail;
 		this.rating = rating;
 		this.releaseDate = releaseDate;
 		this.developer = developer;
 		this.publisher = publisher;
 		this.genre = genre;
+        this.genreId = genreId;
 		this.players = players;
 		this.playcount = playcount;
 		this.lastplayed = lastplayed;
@@ -91,6 +97,10 @@ public class Game {
 	public String getGenre() {
 		return genre;
 	}
+    
+    public String getGenreId() {
+		return genreId;
+	}
 
 	public String getPlayers() {
 		return players;
@@ -100,6 +110,10 @@ public class Game {
 		return favorite;
 	}
 
+    public String getVideo() {
+		return video;
+	}
+    
 	public String getThumbnail() {
 		return thumbnail;
 	}
@@ -142,6 +156,10 @@ public class Game {
 
 	public String getPath() {
 		return path;
+	}
+    
+    public String getHash() {
+		return hash;
 	}
 
 	public String getImage() {

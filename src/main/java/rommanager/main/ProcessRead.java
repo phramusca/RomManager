@@ -17,21 +17,14 @@
 package rommanager.main;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -46,7 +39,6 @@ public class ProcessRead extends ProcessAbstract {
     private final String sourcePath;
 	private final String exportPath;
 	private final ProgressBar progressBar;
-	private Map<String, Game> games;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
@@ -64,15 +56,30 @@ public class ProcessRead extends ProcessAbstract {
 		this.callBack = callBack;
 	}
 
+    //FIXME 7 Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
+    //FIXME 0 Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
+    
 	@Override
 	public void run() {
 		try {
-			games = new HashMap<>();
+            //Read all gamelist.xml files from both local and export folders
+			Map<String, Game> games = new HashMap<>();
 			for(Console console : Console.values()) {
 				checkAbort();
-				read(console.name(), true);
+                File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
+                File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
+                Map<String, Game> gamesLocal = read(localFile);
+                Map<String, Game> gamesRemote = read(remoteFile);
+                progressBar.setup(tableModel.getRoms().size());
+                for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
+                    gamesLocal.putIfAbsent(entrySet.getKey(), entrySet.getValue());
+                    progressBar.progress(entrySet.getValue().getName());
+                }
+                save(gamesLocal, localFile);
+                games.putAll(gamesLocal);
 			}
 			
+            //Match gamelist.xml read with local files and display information
 			progressBar.setup(tableModel.getRoms().size());
 			String consolePath;
 			for(RomContainer romContainer : tableModel.getRoms().values()) {
@@ -102,83 +109,117 @@ public class ProcessRead extends ProcessAbstract {
 
     //FIXME 8 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
     
-	private void read(String consoleName, boolean clean) 
-			throws InterruptedException {
-		try {
-            File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, consoleName), "gamelist.xml"));
-            File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist.xml"));
-            //Get file if it does not exist yet locally
-            //FIXME 7 Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
-            //FIXME 0 Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
-            //FIXME 0 Need to keep gamelist.xml info !!!! As if roms are removed from exportPath, recalbox now cleans gamelist.xml, so date changes and so we are overwriting existing with a nearly empty one :(
-            if(remoteFile.exists()
-                    && (!localFile.exists() || remoteFile.lastModified()>localFile.lastModified())) {
-                FileSystem.copyFile(remoteFile, localFile);
-            }            
-			Document doc = XML.open(localFile.getAbsolutePath());
-			if(doc==null) {
-				Logger.getLogger(ProcessRead.class.getName())
-						.log(Level.SEVERE, "File not found: {0}", localFile.getAbsolutePath());
-				return;
-			}
-			ArrayList<Element> elements = XML.getElements(doc, "game");
-			progressBar.setup(elements.size());
-			int playCounter;
-			float ratingLocal;
-			for(Element element : elements) {
-				checkAbort();
-				String pc = XML.getElementValue(element, "playcount");
-				playCounter=pc.equals("")?-1:Integer.valueOf(pc);
+    private void save(Map<String, Game> games, File gamelistXmlFile) {
 
-				String r = XML.getElementValue(element, "rating");
-				ratingLocal=r.equals("")?-1:Float.valueOf(r);
+        Document document = XML.newDoc();
+        Element root = document.createElement("gameList");
+        document.appendChild(root);
+        
+        //FIXME 9 Include <folder> entries if we want to send back entries when local modifications will be available to the user
+        
+        for(Game game: games.values()) {
+            Element gameElement = document.createElement("game");
+            root.appendChild(gameElement);
 
-				Game game = new Game(XML.getElementValue(element, "path"),
-						XML.getElementValue(element, "name"),
-						XML.getElementValue(element, "desc"),
-						XML.getElementValue(element, "image"),
-						XML.getElementValue(element, "thumbnail"),
-						ratingLocal,
-						XML.getElementValue(element, "releaseDate"),
-						XML.getElementValue(element, "developer"),
-						XML.getElementValue(element, "publisher"),
-						XML.getElementValue(element, "genre"),
-						XML.getElementValue(element, "players"),
-						playCounter,
-						XML.getElementValue(element, "lastplayed"),
-						Boolean.parseBoolean(
-								XML.getElementValue(element, "favorite")));
-
-//				if(clean && !game.exists(rootPath)) {
-//					// ??? How to remove the node  [Why not  recreating the file ?]
-////					doc.removeChild(element);
-////					doc.getElementsByTagName("game").item(0).removeChild(element);
-//				} else {
-//					games.put(FilenameUtils.getName(game.getPath()), game);
-//				}
-				games.put(FilenameUtils.getBaseName(game.getPath()), game);
-				progressBar.progress(game.getName());
-			}
-			
-			if(clean) {
-				//FIXME 0 Either fix this feature or remove it
-//				TransformerFactory transformerFactory = 
-//						TransformerFactory.newInstance();
-//				Transformer transformer = transformerFactory.newTransformer();
-//				DOMSource source = new DOMSource(doc);
-//                File cleanGameListXml = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist-clean.xml"));
-//				StreamResult result = new StreamResult(cleanGameListXml);
-//				transformer.transform(source, result);
-//				StreamResult consoleResult = new StreamResult(System.out);
-//				transformer.transform(source, consoleResult);
-			}
-//		} catch (TransformerException ex) {
-//			Logger.getLogger(ProcessRead.class.getName())
-//					.log(Level.SEVERE, null, ex);
-		} catch (IOException ex) { 
-            Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (OutOfMemoryError ex) { 
-            Logger.getLogger(ProcessRead.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+            Element path = document.createElement("path");
+            path.appendChild(document.createTextNode(game.getPath()));
+            gameElement.appendChild(path);
+            
+            Element hash = document.createElement("hash");
+            hash.appendChild(document.createTextNode(game.getHash()));
+            gameElement.appendChild(hash);
+            
+            Element players = document.createElement("players");
+            players.appendChild(document.createTextNode(game.getPlayers()));
+            gameElement.appendChild(players);
+            
+            Element genreid = document.createElement("genreid");
+            genreid.appendChild(document.createTextNode(game.getGenreId()));
+            gameElement.appendChild(genreid);
+            
+            Element genre = document.createElement("genre");
+            genre.appendChild(document.createTextNode(game.getGenre()));
+            gameElement.appendChild(genre);
+            
+            Element publisher = document.createElement("publisher");
+            publisher.appendChild(document.createTextNode(game.getPublisher()));
+            gameElement.appendChild(publisher);
+            
+            Element developer = document.createElement("developer");
+            developer.appendChild(document.createTextNode(game.getDeveloper()));
+            gameElement.appendChild(developer);
+            
+            Element releasedate = document.createElement("releasedate");
+            releasedate.appendChild(document.createTextNode(game.getReleaseDate()));
+            gameElement.appendChild(releasedate);
+            
+            Element video = document.createElement("video");
+            video.appendChild(document.createTextNode(game.getVideo()));
+            gameElement.appendChild(video);
+            
+            Element thumbnail = document.createElement("thumbnail");
+            thumbnail.appendChild(document.createTextNode(game.getThumbnail()));
+            gameElement.appendChild(thumbnail);
+            
+            Element image = document.createElement("image");
+            image.appendChild(document.createTextNode(game.getImage()));
+            gameElement.appendChild(image);
+            
+            Element desc = document.createElement("desc");
+            desc.appendChild(document.createTextNode(game.getDesc()));
+            gameElement.appendChild(desc);
+            
+            Element name = document.createElement("name");
+            name.appendChild(document.createTextNode(game.getName()));
+            gameElement.appendChild(name);
+        }
+        XML.save(gamelistXmlFile, document);
+    }
+    
+	private Map<String, Game> read(File gamelistXmlFile) throws InterruptedException {
+		Map<String, Game> games = new HashMap<>();
+        if(!gamelistXmlFile.exists()) {
+            Logger.getLogger(ProcessRead.class.getName())
+                    .log(Level.WARNING, "File not found: {0}", gamelistXmlFile.getAbsolutePath());
+            return games;
+        }
+        Document doc = XML.open(gamelistXmlFile.getAbsolutePath());
+        if(doc==null) {
+            Logger.getLogger(ProcessRead.class.getName())
+                    .log(Level.SEVERE, "Error with: Document doc = XML.open(\"{0}\")", gamelistXmlFile.getAbsolutePath());
+            return games;
+        }
+        ArrayList<Element> elements = XML.getElements(doc, "game");
+        progressBar.setup(elements.size());
+        int playCounter;
+        float ratingLocal;
+        for(Element element : elements) {
+            checkAbort();
+            String pc = XML.getElementValue(element, "playcount");
+            playCounter=pc.equals("")?-1:Integer.valueOf(pc);
+            String r = XML.getElementValue(element, "rating");
+            ratingLocal=r.equals("")?-1:Float.valueOf(r);
+            Game game = new Game(XML.getElementValue(element, "path"),
+                    XML.getElementValue(element, "hash"),
+                    XML.getElementValue(element, "name"),
+                    XML.getElementValue(element, "desc"),
+                    XML.getElementValue(element, "image"),
+                    XML.getElementValue(element, "video"),
+                    XML.getElementValue(element, "thumbnail"),
+                    ratingLocal,
+                    XML.getElementValue(element, "releaseDate"),
+                    XML.getElementValue(element, "developer"),
+                    XML.getElementValue(element, "publisher"),
+                    XML.getElementValue(element, "genre"),
+                    XML.getElementValue(element, "genreId"),
+                    XML.getElementValue(element, "players"),
+                    playCounter,
+                    XML.getElementValue(element, "lastplayed"),
+                    Boolean.parseBoolean(
+                            XML.getElementValue(element, "favorite")));
+            games.put(FilenameUtils.getBaseName(game.getPath()), game);
+            progressBar.progress(game.getName());
+        }
+        return games;
 	}
 }

@@ -71,7 +71,7 @@ public class RomManagerOds {
 				
 				Game game = romVersion.getGame();
 				if(game==null) {
-					game = new Game("", "", "", "", "", -1, "", "", "", "", "", -1, "", false);
+					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false);
 				}
 				
                 data[i++] = new Object[] { 
@@ -96,7 +96,10 @@ public class RomManagerOds {
 					game.getLastplayed(),
 					game.getPlaycount(),
 					game.getThumbnail(),
-					game.getPath()
+					game.getPath(),
+                    game.getHash(),
+                    game.getVideo(),
+                    game.getGenreId()
 				};
             }
         }
@@ -124,6 +127,9 @@ public class RomManagerOds {
 		columns[i++] = "Play Count";
 		columns[i++] = "Thumbnail";
 		columns[i++] = "Path";
+        columns[i++] = "Hash";
+        columns[i++] = "Video";
+        columns[i++] = "GenreId";
         TableModel docModel = new DefaultTableModel(data, columns);
 		File odsFile = new File(FilenameUtils.concat(sourceFolder, DOC_FILE+"_"+DateTime.getCurrentLocal(DateTime.DateTimeFormat.FILE)+".ods"));
         if(odsFile.exists()) {
@@ -200,6 +206,9 @@ public class RomManagerOds {
 				int playcount = Integer.valueOf(row.getValue(i++));
 				String thumbnail = row.getValue(i++);
 				String path = row.getValue(i++);
+                String hash = row.getValue(i++);
+                String video = row.getValue(i++);
+                String genreId = row.getValue(i++);
 				model.addRow(console, filename);
 				RomVersion romVersion = new RomVersion(
 						FilenameUtils.getBaseName(filename),
@@ -208,9 +217,9 @@ public class RomManagerOds {
 						attributes, 
 						score, errorLevel, isExportable);
 				
-				Game game = new Game(path, gameName, desc, image, 
-					thumbnail, rating, releaseDate, 
-					developer, publisher, genre, players, 
+				Game game = new Game(path, hash, gameName, desc, image, 
+					video,thumbnail, rating, releaseDate, 
+					developer, publisher, genre, genreId,players, 
 					playcount, lastplayed, isFavorite);
 				
 				IconBuffer.getCoverIcon(game.getName(), "", true);

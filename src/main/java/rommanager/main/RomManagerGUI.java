@@ -44,7 +44,7 @@ import rommanager.utils.ProcessAbstract;
  */
 public class RomManagerGUI extends javax.swing.JFrame {
 
-    private final ProgressBar progressBar;
+    private final ProgressBar progressBar; //FIXME 1 Add another (more?) progress bar for console.values() progress
     private static TableModelRom tableModel;
     
 	private ProcessList processList;
@@ -657,6 +657,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	
     private void jButtonReadGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadGameListActionPerformed
 		readGamelist();
+        
+        //FIXME 0 Save ODS
     }//GEN-LAST:event_jButtonReadGameListActionPerformed
 
     private void readGamelist() {
