@@ -86,13 +86,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jSplitPane1.setResizeWeight(1);
 		
 		disableGUI("Reading ods file: ");
-		new ReadOds(new ICallBackProcess() {
-            @Override
-            public void completed() {
-                readGamelist();
-            }
+		new ReadOds(() -> {
+            readGamelist();
         }, jTextFieldPathSource.getText()).start();
-        
     }
 
 	/**
@@ -114,9 +110,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
         DefaultListModel model = new DefaultListModel();
         if(sort) { Collections.sort(list); }
         model.addElement("All");
-        for(String element : list) {
+        list.forEach(element -> {
             model.addElement(element);
-        }
+        });
         return model;
     }
 	
@@ -528,8 +524,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				List<String> consoles=tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
 				List<String> genres=tableModel.getRoms().values().stream().map(r -> r.getGame().getGenre()).distinct().collect(Collectors.toList());
 				List<String> ratings=tableModel.getRoms().values().stream().map(r -> String.valueOf(r.getGame().getRating())).distinct().collect(Collectors.toList());
-                List<ExportFilesNumber> exportFilesNumbers = new ArrayList<>();
-
                 DefaultListModel model = new DefaultListModel();
                 for(ExportFilesNumber element : ExportFilesNumber.values()) {
                     model.addElement(element);
@@ -730,7 +724,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private class CallBackDialogConsoleScore implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh) {
-            //FIXME 12 option : set best as exportable OR leave exportable flag unchanged
+            //FIXME 6 option : set best as exportable OR leave exportable flag unchanged
             int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
             "Please Confirm",  //NOI18N
             JOptionPane.YES_NO_OPTION);

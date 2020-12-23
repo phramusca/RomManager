@@ -100,7 +100,7 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-    //FIXME: Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
+    //FIXME 8 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
     
 	private void read(String consoleName, boolean clean) 
 			throws InterruptedException {
@@ -108,8 +108,9 @@ public class ProcessRead extends ProcessAbstract {
             File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, consoleName), "gamelist.xml"));
             File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist.xml"));
             //Get file if it does not exist yet locally
-            //FIXME: Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
-            //FIXME: Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
+            //FIXME 7 Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
+            //FIXME 0 Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
+            //FIXME 0 Need to keep gamelist.xml info !!!! As if roms are removed from exportPath, recalbox now cleans gamelist.xml, so date changes and so we are overwriting existing with a nearly empty one :(
             if(remoteFile.exists()
                     && (!localFile.exists() || remoteFile.lastModified()>localFile.lastModified())) {
                 FileSystem.copyFile(remoteFile, localFile);
@@ -160,7 +161,7 @@ public class ProcessRead extends ProcessAbstract {
 			}
 			
 			if(clean) {
-				//FIXME: Either fix this feature or remove it
+				//FIXME 0 Either fix this feature or remove it
 //				TransformerFactory transformerFactory = 
 //						TransformerFactory.newInstance();
 //				Transformer transformer = transformerFactory.newTransformer();

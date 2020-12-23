@@ -36,7 +36,7 @@ public class RomContainerFlat extends RomContainer {
 	@Override
 	public void setBestExportable() {
 		for(RomVersion version : versions) {
-			//FIXME 8 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
+			//FIXME 3 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
 			version.setExportable(version.getErrorLevel()==0);
 		}
 	}
