@@ -100,9 +100,7 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-    //FIXME: Rename RecalMan (Recalbox Manager)
     //FIXME: Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
-    //FIXME: Change export folder to "RecalMan - xxxxx" with xxx the console display name
     
 	private void read(String consoleName, boolean clean) 
 			throws InterruptedException {
@@ -110,9 +108,10 @@ public class ProcessRead extends ProcessAbstract {
             File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, consoleName), "gamelist.xml"));
             File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, consoleName), "gamelist.xml"));
             //Get file if it does not exist yet locally
-            //FIXME: Ask user if he wants to overwrite OR show differences and propose how to handle the sync. Meantime, need to delete the local files to refresh
-            //FIXME: Copy (rsync with no delete) all media files from exportPath to sourcePath
-            if(!localFile.exists() && remoteFile.exists()) {
+            //FIXME: Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
+            //FIXME: Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
+            if(remoteFile.exists()
+                    && (!localFile.exists() || remoteFile.lastModified()>localFile.lastModified())) {
                 FileSystem.copyFile(remoteFile, localFile);
             }            
 			Document doc = XML.open(localFile.getAbsolutePath());

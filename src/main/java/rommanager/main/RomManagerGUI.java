@@ -87,7 +87,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jSplitPane1.setResizeWeight(1);
 		
 		disableGUI("Reading ods file: ");
-		new ReadOds(new CallBackProcess(), jTextFieldPathSource.getText()).start();
+		new ReadOds(new ICallBackProcess() {
+            @Override
+            public void completed() {
+                readGamelist();
+            }
+        }, jTextFieldPathSource.getText()).start();
+        
     }
 
 	/**
@@ -540,12 +546,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processExport = new ProcessExport(
-				sourcePath, 
-				exportPath, 
-				progressBar, 
-				tableModel, 
-				new CallBackProcess());
+		processExport = new ProcessExport(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
 		DialogConsole.main(new CallBackDialogConsoleExport(), false, "Sync");
@@ -640,7 +641,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
     private void jButtonReadGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadGameListActionPerformed
-		disableGUI("Reading gamelist.xml : ");
+		readGamelist();
+    }//GEN-LAST:event_jButtonReadGameListActionPerformed
+
+    private void readGamelist() {
+        disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathExport.getText();
 //		File file = new File(exportPath);
 //		if(!file.exists()) {
@@ -657,8 +662,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }
 		processRead = new ProcessRead(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
 		processRead.start();
-    }//GEN-LAST:event_jButtonReadGameListActionPerformed
-
+    }
+    
     private void jButtonOptionSelectFolderExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderExportActionPerformed
         String selectedFolder=selectFolder(jTextFieldPathExport.getText());
         if(!selectedFolder.equals("")) {  //NOI18N
