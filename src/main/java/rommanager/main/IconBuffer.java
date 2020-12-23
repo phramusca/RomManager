@@ -61,20 +61,21 @@ public class IconBuffer {
      */
     public static ImageIcon getCoverIcon(String key, String file, boolean readIfNotFound) {
 		if(ICONS.containsKey(key)) {
-            return ICONS.get(key);
+            return readIconFromCache(key);
+//            return ICONS.get(key);
         }
         ImageIcon icon=null;
         if(readIfNotFound) {
             //Icon not found, retrieving it and add it to the map
             icon= readIconFromCache(key);
             if(icon!=null) {
-                ICONS.put(key, icon);
+                ICONS.put(key, null);
                 return icon;
             }
             if(!file.equals("")) {
                 icon= readIcon(key, file);
                 if(icon!=null) {
-                    ICONS.put(key, icon);
+                    ICONS.put(key, null);
                     icon=null; //to avoid errors OutOfMemoryError: Java heap space
                 }
             }
@@ -122,6 +123,8 @@ public class IconBuffer {
             Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
         catch (IOException ex) {
+			Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
+		}catch (NullPointerException ex) {
 			Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
 		}
         return icon;
