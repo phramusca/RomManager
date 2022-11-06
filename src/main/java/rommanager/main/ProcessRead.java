@@ -72,10 +72,12 @@ public class ProcessRead extends ProcessAbstract {
                 Map<String, Game> gamesRemote = read(remoteFile);
                 progressBar.setup(tableModel.getRoms().size());
                 for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
+                    //FIXME 0 What if game info changed on recalbox ? Nothing => Need to at least overwrite local for now and allow both ways sync later
+                    //FIXME 0 What if game info changed locally ? Nothing as local is not (yet) deitable. If so need to allow both ways sync
                     gamesLocal.putIfAbsent(entrySet.getKey(), entrySet.getValue());
                     progressBar.progress(entrySet.getValue().getName());
                 }
-                save(gamesLocal, localFile);
+                save(gamesLocal, localFile); //FIXME 0 Do we really need to save here since it is saved in ods ??
                 games.putAll(gamesLocal);
 			}
 			

@@ -864,6 +864,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(RomManagerGUI.class.getName())
 					.log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
 
         java.awt.EventQueue.invokeLater(() -> {
 			RomManagerGUI panel = new RomManagerGUI();

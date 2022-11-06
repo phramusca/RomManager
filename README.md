@@ -2,7 +2,7 @@
 
 ## Features
 
-- Scan full rom sets 
+- Scan full rom sets
 - Set score, based on your preferences
 - Sync selected rom version(s) to given destination
 - Read gamelist.xml to get game info (cover, name, description, ...)
@@ -20,8 +20,8 @@ At startup [RomManager.ods](#RomManager-ods) is read and displayed.
 
 1. Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
 1. Set exportable:
-    * all good dsk (amstrad) files.
-    * only best rom version (highest score) for other consoles.
+    - all good dsk (amstrad) files.
+    - only best rom version (highest score) for other consoles.
 1. Create a new revision of [RomManager.ods](#RomManager-ods) output file.
 
 ### Sync
@@ -30,9 +30,9 @@ Export selected rom versions to [Destination folder](#destination-folder), remov
 
 ### Read gamelist.xml
 
-Read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table. 
+Read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table.
 
-The [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating. 
+The [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating.
 
 Note that [RomManager.ods](#RomManager-ods) is NOT (yet) updated.
 
@@ -40,22 +40,23 @@ Note that [RomManager.ods](#RomManager-ods) is NOT (yet) updated.
 
 ### <a name="roms-source-folder"></a>  Roms Source folder
 
-Select folder containing roms. 
+Select folder containing roms.
 
 It must include subfolders:
 
-* named as in [Supported consoles](#supported-consoles) list.
-* containing 7z files (or .dsk files for Amstrad CPC (amstradcpc) only)
+- named as in [Supported consoles](#supported-consoles) list.
+- containing 7z files (or .dsk files for Amstrad CPC (amstradcpc) only)
 
 ### <a name="destination-folder"></a> Destination folder
 
 Select folder where to:
-* export selected roms
-* read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) files
+
+- export selected roms
+- read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) files
 
 ### <a name="GoodToolsConfig"></a> GoodToolsConfig.ods
 
-This configures how scores are computed. 
+This configures how scores are computed.
 
 **French / Europe games favored by default. Change it as desired !**
 
@@ -65,11 +66,9 @@ This configures how scores are computed.
 | ALL | Score by code. Note: also include some language codes! |
 | README | More information |
 
-## 
-
 ### <a name="RomManager-ods"></a> RomManager.ods
 
-Output file, after "Scan Source" and "Set Score". 
+Output file, after "Scan Source" and "Set Score".
 
 Read at startup (cheap but convenient sort of database).
 
@@ -82,6 +81,7 @@ Read at startup (cheap but convenient sort of database).
 | amstradcpc | Amstrad CPC |
 | apple2 | Apple 2 |
 | atari2600 | Atari 2600 |
+| atari5200 | Atari 5200 |
 | atari7800 | Atari 7800 |
 | atarist | Atari ST |
 | c64 | Commodore 64 |
@@ -93,6 +93,7 @@ Read at startup (cheap but convenient sort of database).
 | gba | Nintendo Game Boy Advance |
 | gbc | Nintendo Game Boy Color |
 | gw | Nintendo Game & Watch |
+| jaguar | Atari Jaguar |
 | lynx | Atari Lynx |
 | mame | MAME (Arcade) |
 | mastersystem | Sega Master System |
