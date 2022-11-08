@@ -27,7 +27,7 @@ public enum Console {
 	amstradcpc("Amstrad CPC"),
 	apple2("Apple 2"),
 	atari2600("Atari 2600"),
-    atari5200("Atari 5200"),
+    atari5200("Atari 5200", false, false),
 	atari7800("Atari 7800"),
 	atarist("Atari ST"),
 	c64("Commodore 64"),
@@ -46,9 +46,9 @@ public enum Console {
 	gbc("Nintendo Game Boy Color"),
 	gw("Nintendo Game & Watch"),
 	//imageviewer("Visionneur screenshot (PAS une console)"),
-    jaguar("Atari Jaguar"),
+    jaguar("Atari Jaguar", false, false),
 	//lutro("Libreto lua games (PAS une console)"),
-	lynx("Atari Lynx"),
+	lynx("Atari Lynx", false ,false),
 	mame("MAME (Arcade)"),
 	mastersystem("Sega Master System"),
 	megadrive("Sega Megadrive"),
@@ -56,7 +56,7 @@ public enum Console {
 	msx("Machines with Software eXchangeability"),
 	msx1("Machines with Software eXchangeability"),
 	msx2("Machines with Software eXchangeability"),
-	n64("Nintendo 64", false),
+	n64("Nintendo 64", false, true),
 	nds("CHANGEME"),
 	neogeo("SNK Neo Geo"),
 	nes("Nintendo Entertainment System"),
@@ -78,24 +78,26 @@ public enum Console {
 	vectrex("Vectrex"),
 	virtualboy("Nintendo Virtual Boy"),
 	wii("Nintendo Wii"),
-	wswan("WonderSwan"),
-	wswanc("WonderSwan Color"),
+	wswan("Bandai WonderSwan", true, false),
+	wswanc("Bandai WonderSwan Color", true, false),
 	x68000("Sharp X68000 (L’Arcade à la maison)"),
 	zx81("ZX81 (Ordinateur personnel)"),
-	zxspectrum("ZX Spectrum (Ordianteur personnel)");
+	zxspectrum("ZX Spectrum (Ordinateur personnel)");
 
 	private final String name;
 	private int nbFiles;
 	private boolean isSelected;
 	private boolean zip;
+    private boolean excludeUnknownAttributes;
 
 	private Console(String name) {
-		this(name, true);
+		this(name, true, true);
 	}
 
-	private Console(String name, boolean zip) {
+	private Console(String name, boolean zip, boolean excludeUnknownAttributes) {
 		this.name = name;
 		this.zip = zip;
+        this.excludeUnknownAttributes = excludeUnknownAttributes;
 	}
 
 	public void setNbFiles(int nbFiles) {
@@ -120,6 +122,10 @@ public enum Console {
 
 	public boolean isZip() {
 		return zip;
+	}
+    
+    public boolean excludeUnknownAttributes() {
+		return excludeUnknownAttributes;
 	}
 
 	@Override

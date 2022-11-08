@@ -50,15 +50,16 @@ public class RomVersion {
      * Create a Rom Version, read from fileSystem
      * @param name
      * @param filename
+     * @param excludeUnknownAttributes
      */
-    public RomVersion(String name, String filename) {
+    public RomVersion(String name, String filename, Console console) {
         this.filename = filename;
         System.out.println("name="+name);
         System.out.println("version="+filename);
         attributes = new ArrayList<>();
         alternativeName = "";
 		this.name=name;
-        setScore();
+        setScore(console);
     }
 
 	/**
@@ -101,7 +102,7 @@ public class RomVersion {
 		this.exportable = isExportable;
 	}
 
-	public final void setScore() {
+	public final void setScore(Console console) {
 		try {
 			attributes = new ArrayList<>();
 			score=0;
@@ -199,7 +200,22 @@ public class RomVersion {
 									.log(Level.WARNING, attribute.toString(), ex);
 						}
 						
-					}
+					} 
+                    if(attribute.getRaw().equals("[M]")) {
+                        if(console.equals(Console.gbc)) {
+                            //FIXME: Move to gb
+                        }
+                        else if(console.equals(Console.wswanc)) {
+                            //FIXME: Move to wswan
+                        }
+                    } else {
+                        if(console.equals(Console.gb)) {
+                            //FIXME: Move to gbc
+                        } else if (console.equals(Console.wswan)) {
+                            //FIXME: Move to wswanc
+                        }
+                    }
+                    
 					//TODO: Manage specific codes:
 //					\(\d*k\) 	1	ROM size in kilobits 
 //					\(\d*Mbit\) 	1	ROM size in megabits 
@@ -215,15 +231,17 @@ public class RomVersion {
 //					\[h\d*C\]		-1000	Hacked internal cartridge information.
 				}
 			}	
-			if(found<attributes.size()) {
-				this.score-=20;
-			}
-			if(attributes.size()<=0) {
-				this.score-=10;
-				if(!filename.equals(name)) {
-					alternativeName = FilenameUtils.getBaseName(filename);
-				}
-			}
+            if(console.excludeUnknownAttributes()) {
+                if(found<attributes.size()) {
+                    this.score-=20;
+                }
+                if(attributes.size()<=0) {
+                    this.score-=10;
+                }
+            }
+			if(attributes.size()<=0 && !filename.equals(name)) {
+                alternativeName = FilenameUtils.getBaseName(filename);
+            }
 			errorLevel=score>=40?0:
 				score>0?1:
 				score<0?2:3;

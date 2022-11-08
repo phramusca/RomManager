@@ -49,7 +49,8 @@ public class RomContainer7z extends RomContainer {
                 progressBar.setString(msg+" : "+name);
                 versions.add(new RomVersion(
                         FilenameUtils.getBaseName(filename), 
-                        name));
+                        name,
+                        console));
                 entry = sevenZFile.getNextEntry();
             }
         }
@@ -67,7 +68,7 @@ public class RomContainer7z extends RomContainer {
 				bestScore=version.getScore();
 			} 
 		}
-		if(bestVersion!=null && bestVersion.getScore()>0) {
+		if(bestVersion!=null && bestVersion.getScore()>=0) {
 			bestVersion.setExportable(true);
 		}
 	}

@@ -58,7 +58,7 @@ public class ProcessRead extends ProcessAbstract {
 
     //FIXME 7 Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
     //FIXME 0 Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
-    
+
 	@Override
 	public void run() {
 		try {

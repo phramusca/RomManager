@@ -213,7 +213,8 @@ public class ProcessList extends ProcessAbstract {
 												.substring(rootPath.length()+1);
 								containerAmstrad.addVersion(new RomVersion(
 										romName,
-										versionPath));
+										versionPath,
+                                        Console.amstradcpc));
 							}
 						} catch (IOException ex) {
 							Logger.getLogger(ProcessList.class.getName())

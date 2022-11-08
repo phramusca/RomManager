@@ -68,7 +68,7 @@ public class ProcessSetScore extends ProcessAbstract {
 			progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 			for(RomVersion romVersion : romContainer.getVersions()) {
 				checkAbort();
-				romVersion.setScore();
+				romVersion.setScore(romContainer.console);
 				romVersion.setExportable(false);
 			}
 			romContainer.setBestExportable();
