@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import static rommanager.main.ProcessList.allowedExtensions;
 import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
@@ -132,9 +131,8 @@ public class ProcessExport extends ProcessAbstract {
 							FilenameUtils.concat(
 									exportPath, romContainer.getConsole().name()), 
 							romContainer.getConsole().getName());
-                    String ext = FilenameUtils.getExtension(filename);
-                    if(ext.equals("7z")) {
-                        String exportFileName = FilenameUtils.concat(
+					if(FilenameUtils.getExtension(filename).equals("7z")) {
+						String exportFileName = FilenameUtils.concat(
 										exportFolder, 
 										FilenameUtils.getBaseName(
 												romVersion.getFilename())
@@ -170,14 +168,15 @@ public class ProcessExport extends ProcessAbstract {
 								entry = sevenZFile.getNextEntry();
 							}
 						}
-                    } else if(allowedExtensions.contains(ext)) {
-                        File exportFile=new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
+					} else if(FilenameUtils.getExtension(filename).equals("dsk")) {
+						File exportFile=new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
 						if(exportFile.exists()) {
 							continue;
 						}
 						FileSystem.copyFile(
-								new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename())), exportFile);
-                    }
+								new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename())), 
+								exportFile);
+					}
 				}
 			}
 			Popup.info("Export complete.");

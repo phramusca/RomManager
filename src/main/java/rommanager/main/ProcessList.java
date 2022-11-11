@@ -18,7 +18,6 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -38,17 +37,6 @@ public class ProcessList extends ProcessAbstract {
 	private final ProgressBar progressBar;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
-    private	boolean refresh;
-	private final Map<String, RomContainerFlat> flatContainers = new HashMap<>();
-    private static int nbFiles=0;
-	
-    public static final ArrayList<String> allowedExtensions = new ArrayList<String>() {
-        {
-            add("7z");
-            add("dsk"); //amstradcpc
-            add("vb"); // virtualboy
-        }
-    };	
 		
 	public ProcessList(
 			String sourcePath, 
@@ -100,7 +88,9 @@ public class ProcessList extends ProcessAbstract {
 		}
 		progressBar.reset();
 	}
-
+	
+	boolean refresh;
+	
 	private void list(Console console, String path) throws InterruptedException {
 		File file = new File(path);
         if(!file.exists()) {
@@ -117,23 +107,24 @@ public class ProcessList extends ProcessAbstract {
 			tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
 		}
 		browseFoldersFS(console, path, new File(path));
-        progressBar.setup(flatContainers.values().size());
-		for(RomContainerFlat romAmstrad : flatContainers.values()) {
+		for(RomContainerFlat romAmstrad : amstradRoms.values()) {
 			checkAbort();
 			romAmstrad.setBestExportable();
 			tableModel.addRow(romAmstrad);
-            String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
-			progressBar.progress(msg);
 		}  
 	}
 	
+	private final Map<String, RomContainerFlat> amstradRoms = new HashMap<>();
+	
+	private static int nbFiles=0;
 	private void browseNbFiles(File path, Console console) {
 		if(path.isDirectory()) {
 			File[] files = path.listFiles((File pathname) -> {
 			String ext = FilenameUtils.getExtension(
 					pathname.getAbsolutePath())
 					.toLowerCase();
-			return allowedExtensions.contains(ext)
+			return ext.equals("7z")
+					|| ext.equals("dsk")
 					|| pathname.isDirectory();
 			});
 			if (files != null && files.length>0) {
@@ -157,7 +148,8 @@ public class ProcessList extends ProcessAbstract {
 			String ext = FilenameUtils.getExtension(
 					pathname.getAbsolutePath())
 					.toLowerCase();
-			return allowedExtensions.contains(ext)
+			return ext.equals("7z")
+					|| ext.equals("dsk")
 					|| pathname.isDirectory();
 		});
 		if (files == null || files.length<=0) {
@@ -174,25 +166,25 @@ public class ProcessList extends ProcessAbstract {
 						file);
 			}
 			else {
-                String ext = FilenameUtils.getExtension(file.getAbsolutePath());
-                if(ext.equals("7z")) {
-                    try {
-                        RomContainer7z romSevenZipFile;
-                        if(!tableModel.getRoms().containsKey(
-                                FilenameUtils.getName(
-                                        file.getAbsolutePath()))) {
-                            romSevenZipFile = 
-                                    new RomContainer7z(
-                                            console, FilenameUtils.getName(file.getAbsolutePath()));
-                            romSevenZipFile.setVersions(progressBar, FilenameUtils.getFullPath(file.getAbsolutePath()));
-                            tableModel.addRow(romSevenZipFile);
-                        } 
-                    } catch (IOException | OutOfMemoryError ex) {
-                        //FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
-                        Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else if(allowedExtensions.contains(ext)) {
-                    //FIXME 3 Manage  other sets no grouped in 7z files, such as :
+				switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+					case "7z":
+						try {
+							RomContainer7z romSevenZipFile;
+							if(!tableModel.getRoms().containsKey(
+									FilenameUtils.getName(
+											file.getAbsolutePath()))) {
+								romSevenZipFile = 
+										new RomContainer7z(
+												console, FilenameUtils.getName(file.getAbsolutePath()));
+								romSevenZipFile.setVersions(progressBar, FilenameUtils.getFullPath(file.getAbsolutePath()));
+								tableModel.addRow(romSevenZipFile);
+							} 
+						} catch (IOException | OutOfMemoryError ex) {
+							//FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
+							Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
+						}	break;
+					
+					//FIXME 3 Manage  other sets no grouped in 7z files, such as :
 					//From /media/raph/Maxtor1/Emulation/Roms/4_Sources => FAIRE MENAGE/archive.org  ___ NOUVEAU   _____ PAS MEME FORMAT  :-(
 						// - GoodNGPxNonGood.7z		ngc. Others ?
 						// - GoodVBoy				vb. Others ?
@@ -201,32 +193,36 @@ public class ProcessList extends ProcessAbstract {
 						// - GoodColNonGood			rom,col. Others ? (Attention, ces roms ne marchent pas)
 						//
 						//=> Maybe dot not check for extension, just default: ?
-                    try {
-                        String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);
-                        if(!tableModel.getRoms().containsKey(romName)) {
-                            RomContainerFlat romContainerFlat;
-                            if(flatContainers.containsKey(romName)) {
-                                romContainerFlat = flatContainers.get(romName);
-                            } else {
-                                romContainerFlat = 
-                                        new RomContainerFlat(
-                                                console,
-                                                romName);
-                                flatContainers.put(romName, romContainerFlat);
-                            }
-                            String versionPath = 
-                                    file.getAbsolutePath()
-                                            .substring(rootPath.length()+1);
-                            romContainerFlat.addVersion(new RomVersion(
-                                    romName,
-                                    versionPath,
-                                    console));
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(ProcessList.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
-                }
+						
+					case "dsk":
+						try {
+							String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()));
+							if(!tableModel.getRoms().containsKey(romName)) {
+								RomContainerFlat containerAmstrad;
+								if(amstradRoms.containsKey(romName)) {
+									containerAmstrad = amstradRoms.get(romName);
+								} else {
+									containerAmstrad = 
+											new RomContainerFlat(
+													console,
+													romName);
+									amstradRoms.put(romName, containerAmstrad);
+								}
+								String versionPath = 
+										file.getAbsolutePath()
+												.substring(rootPath.length()+1);
+								containerAmstrad.addVersion(new RomVersion(
+										romName,
+										versionPath,
+                                        Console.amstradcpc));
+							}
+						} catch (IOException ex) {
+							Logger.getLogger(ProcessList.class.getName())
+									.log(Level.SEVERE, null, ex);
+						}	break;
+					default:
+						break;
+				}
 			}
 		}
     }
