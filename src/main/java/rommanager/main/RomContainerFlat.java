@@ -41,13 +41,13 @@ public class RomContainerFlat extends RomContainer {
 		}
 	}
 	
-	static String getRomName(String filename) {
+	static String getRomName(String filename, String ext) {
 		String romName = filename;
 		int pos = romName.indexOf("(");
 		if(pos>=0) {
 			romName=romName.substring(0, pos).trim();
 		}
-		romName=romName.concat(".dsk");
+		romName=romName.concat(".").concat(ext);
 		return romName;
 	}
 }
