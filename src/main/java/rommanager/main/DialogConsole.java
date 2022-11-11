@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 
 /**
  * A JDialog extension to display an album cover
@@ -155,6 +156,7 @@ public class DialogConsole extends javax.swing.JDialog {
         selectedConsoles.forEach(console -> {
             console.setSelected(true);
         });
+         manualExit = false;
 		dispose();
 		callback.completed(refresh);
     }//GEN-LAST:event_jButtonActionActionPerformed
@@ -170,13 +172,16 @@ public class DialogConsole extends javax.swing.JDialog {
         return null;
     }
 
+    private static boolean manualExit = true;
+    
 	/**
 	 * 
+     * @param parent
 	 * @param callback
 	 * @param displayRefresh
      * @param buttonString
 	 */
-	public static void main(ICallBackConsole callback, boolean displayRefresh, String  buttonString) {
+	public static void main(JFrame parent, ICallBackConsole callback, boolean displayRefresh, String  buttonString) {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -195,17 +200,16 @@ public class DialogConsole extends javax.swing.JDialog {
 		}
 		//</editor-fold>
 
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(() -> {
-            DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh, buttonString );
-            //Center the dialog
-            dialog.setLocationRelativeTo(dialog.getParent());
-           
+        java.awt.EventQueue.invokeLater(() -> {
+            DialogConsole dialog = new DialogConsole(parent, true, callback, displayRefresh, buttonString );
+            dialog.setLocationRelativeTo(parent);
             dialog.addWindowListener(new WindowAdapter()
             {
               public void windowClosed(WindowEvent e)
               {
-                callback.cancelled();
+                  if(manualExit) {
+                      callback.cancelled();
+                  }
               }
             });
             dialog.setVisible(true);

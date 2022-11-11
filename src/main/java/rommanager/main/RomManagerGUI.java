@@ -477,7 +477,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();		
-		DialogConsole.main(new CallBackDialogConsoleScan(), true, "Scan Source");
+		DialogConsole.main(this, new CallBackDialogConsoleScan(), true, "Scan Source");
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
 	private class CallBackDialogConsoleScan implements ICallBackConsole {
@@ -570,7 +570,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processExport = new ProcessExport(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
-		DialogConsole.main(new CallBackDialogConsoleExport(), false, "Sync");
+		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync");
     }//GEN-LAST:event_jButtonExportActionPerformed
 
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
@@ -729,7 +729,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
         processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
         processList.browseNbFiles();
-        DialogConsole.main(new CallBackDialogConsoleScore(), false, "Set Score");
+        DialogConsole.main(this, new CallBackDialogConsoleScore(), false, "Set Score");
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
     private class CallBackDialogConsoleScore implements ICallBackConsole {
