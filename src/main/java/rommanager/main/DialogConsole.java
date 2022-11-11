@@ -20,6 +20,7 @@ package rommanager.main;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.AbstractButton;
@@ -47,7 +48,9 @@ public class DialogConsole extends javax.swing.JDialog {
 		Arrays.asList(Console.values()).
                 forEach(console -> console.setSelected(false));
 		DefaultListModel model = new DefaultListModel();
-		for(Console console : Console.values()) {
+        Console[] consoles = Console.values();
+        Arrays.sort(consoles, Comparator.comparing(Console::getName));
+		for(Console console : consoles) {
 			if(console.getNbFiles()>0) {
 				model.addElement(console);
 			}

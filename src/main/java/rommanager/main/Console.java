@@ -131,5 +131,5 @@ public enum Console {
 	@Override
 	public String toString() {
 		return getName()+" ("+getNbFiles()+")";
-	}	
+	}
 }
