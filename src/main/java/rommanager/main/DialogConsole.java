@@ -212,6 +212,7 @@ public class DialogConsole extends javax.swing.JDialog {
                   }
               }
             });
+            manualExit = true;
             dialog.setVisible(true);
         });
 	}
