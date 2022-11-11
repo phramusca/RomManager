@@ -100,6 +100,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         return getModel(list, true);
     }
 	
+    //FIXME: Use a custom model to avoid the forEach which takes time !
 	/**
 	 *
 	 * @param list
@@ -484,6 +485,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		public void completed(boolean refresh) {
 			processList.start(refresh);
 		}
+
+        @Override
+        public void cancelled() {
+            enableGUI(true);
+        }
 	}
 	
 	private class CallBackProcess implements ICallBackProcess {
@@ -572,6 +578,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		public void completed(boolean refresh) {
 			processExport.start();
 		}
+
+        @Override
+        public void cancelled() {
+            enableGUI(true);
+        }
 	}
 	
 	private void disableGUI(String text) {
@@ -734,6 +745,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 enableGUI();
             }
 		}
+
+        @Override
+        public void cancelled() {
+            enableGUI(true);
+        }
 	}
     
     private void jListVersionsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jListVersionsFocusLost

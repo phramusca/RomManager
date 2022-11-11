@@ -22,4 +22,5 @@ package rommanager.main;
  */
 public interface ICallBackConsole {
 	public void completed(boolean refresh);
+    public void cancelled();
 }

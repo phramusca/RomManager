@@ -17,6 +17,8 @@
 
 package rommanager.main;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -37,6 +39,7 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param modal  
 	 * @param callback  
 	 * @param displayRefresh  
+     * @param buttonString  
 	 */
 	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh, String buttonString) {
 		super(parent, modal);
@@ -146,9 +149,9 @@ public class DialogConsole extends javax.swing.JDialog {
 		boolean refresh = getSelectedButtonText(buttonGroupListType).equals("Refresh");
 		
 		List<Console> selectedConsoles = (List<Console>)jListConsoles.getSelectedValuesList();
-		for(Console console : selectedConsoles) {
-			console.setSelected(true);
-		}
+        selectedConsoles.forEach(console -> {
+            console.setSelected(true);
+        });
 		dispose();
 		callback.completed(refresh);
     }//GEN-LAST:event_jButtonActionActionPerformed
@@ -163,11 +166,12 @@ public class DialogConsole extends javax.swing.JDialog {
         }
         return null;
     }
-	
+
 	/**
 	 * 
 	 * @param callback
 	 * @param displayRefresh
+     * @param buttonString
 	 */
 	public static void main(ICallBackConsole callback, boolean displayRefresh, String  buttonString) {
 		/* Set the Nimbus look and feel */
@@ -189,15 +193,20 @@ public class DialogConsole extends javax.swing.JDialog {
 		//</editor-fold>
 
 		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh, buttonString );
-				//Center the dialog
-				dialog.setLocationRelativeTo(dialog.getParent());
-				dialog.setVisible(true);
-			}
-		});
+		java.awt.EventQueue.invokeLater(() -> {
+            DialogConsole dialog = new DialogConsole(new javax.swing.JFrame(), true, callback, displayRefresh, buttonString );
+            //Center the dialog
+            dialog.setLocationRelativeTo(dialog.getParent());
+           
+            dialog.addWindowListener(new WindowAdapter()
+            {
+              public void windowClosed(WindowEvent e)
+              {
+                callback.cancelled();
+              }
+            });
+            dialog.setVisible(true);
+        });
 	}
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
