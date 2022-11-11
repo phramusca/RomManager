@@ -48,7 +48,7 @@ public enum Console {
 	//imageviewer("Visionneur screenshot (PAS une console)"),
     jaguar("Atari Jaguar", false, false),
 	//lutro("Libreto lua games (PAS une console)"),
-	lynx("Atari Lynx", true ,false),
+	lynx("Atari Lynx", false ,false),
 	mame("MAME (Arcade)"),
 	mastersystem("Sega Master System"),
 	megadrive("Sega Megadrive"),
