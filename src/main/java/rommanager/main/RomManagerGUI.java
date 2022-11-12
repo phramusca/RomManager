@@ -20,6 +20,7 @@ import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -162,6 +163,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
+        jButtonScrap = new javax.swing.JButton();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre1 = new javax.swing.JScrollPane();
@@ -256,6 +258,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jButtonScrap.setText("Scrap");
+        jButtonScrap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonScrapActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -286,6 +295,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                 .addComponent(jButtonExport)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonReadGameList)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonScrap)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -314,7 +325,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonScore)
                     .addComponent(jButtonExport)
                     .addComponent(jButtonReadGameList)
-                    .addComponent(jButtonSave))
+                    .addComponent(jButtonSave)
+                    .addComponent(jButtonScrap))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -818,6 +830,44 @@ public class RomManagerGUI extends javax.swing.JFrame {
             filter(false);
         }
     }//GEN-LAST:event_jListFilterNumberFilesExportValueChanged
+
+    private void jButtonScrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScrapActionPerformed
+        disableGUI("Scraping : ");
+//		ViaFerrataNet via = new ViaFerrataNet(new CallBack(), 
+//				"https://www.viaferrata-fr.net/via-ferrata-10-La-Roche-%E0-l%27Agathe-Th%F4nes-Haute-Savoie.html");
+		JeuxVideos via = new JeuxVideos(new CallBack());
+		via.start();
+    }//GEN-LAST:event_jButtonScrapActionPerformed
+    
+    class CallBack implements ICallBack {
+
+		@Override
+		public void setup(int size) {
+			progressBar.setup(size);
+		}
+		
+		@Override
+		public void read(JeuVideo via) {
+			progressBar.progress(via.title);
+		}
+		
+		@Override
+		public void completed() {
+            enableGUI(true);
+		}
+
+		@Override
+		public void interrupted() {
+			Popup.info("Canceled");
+            enableGUI(true);
+		}
+
+		@Override
+		public void error(IOException ex) {
+            Popup.info("Error: " + ex.getLocalizedMessage());
+			enableGUI(true);
+		}
+	}
     
 	private class SaveOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
@@ -900,6 +950,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonSave;
     private static javax.swing.JButton jButtonScanSource;
     private static javax.swing.JButton jButtonScore;
+    private javax.swing.JButton jButtonScrap;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;
