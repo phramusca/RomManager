@@ -41,7 +41,7 @@ public class JeuxVideos extends ProcessAbstract {
 	 * @param progressBar
 	 */
 	public JeuxVideos(ICallBack progressBar) {
-        super("Thread.ViaFerrataNet");
+        super("Thread.JeuxVideos");
 		this.callback = progressBar;
 	}
 	
@@ -105,5 +105,4 @@ public class JeuxVideos extends ProcessAbstract {
     	}
         return jeux;
 	}
-	
 }
