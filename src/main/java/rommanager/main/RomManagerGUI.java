@@ -863,7 +863,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 
 		@Override
-		public void error(IOException ex) {
+		public void error(Exception ex) {
             Popup.info("Error: " + ex.getLocalizedMessage());
 			enableGUI(true);
 		}

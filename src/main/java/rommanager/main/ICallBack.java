@@ -17,5 +17,5 @@ public interface ICallBack {
 	public void read(JeuVideo jeuVideo);
 	public void completed();
 	public void interrupted();
-	public void error(IOException ex);
+	public void error(Exception ex);
 }

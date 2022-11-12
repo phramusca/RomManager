@@ -18,8 +18,11 @@
 package rommanager.main;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +59,20 @@ public class JeuxVideos extends ProcessAbstract {
     @Override
 	public void run() {
 		this.resetAbort();
-
         try {
+            String readJson = FileSystem.readTextFile(new File("jeuxVideos.json"));
+            Map<String, List<JeuVideo>> readMap = new HashMap<>();
+            if (!readJson.equals("")) {
+                Gson gson = new Gson();
+                Type mapType = new TypeToken<Map<String, List<JeuVideo>>>(){}.getType();
+                readMap = gson.fromJson(readJson, mapType);
+            }
+            
+            //FIXME !!!! Remove " sur GB" for gb, and the same for others
+            //FIXME !!!! Do not read consoles that are in the read map
+            //FIXME !!!! Faire correspondre les entrées du read map et la liste des jeux ET ajouter un tag "Culte jeuxvideo.com"
+            
+            
             jeuxVideos = new HashMap<>();
             for(Console console : Console.values()) {
                 if(console.getIdJeuxVideo() > -1) {
@@ -72,6 +87,8 @@ public class JeuxVideos extends ProcessAbstract {
         } catch (InterruptedException ex) {
             callback.interrupted();
         } catch (IOException ex) {
+            callback.error(ex);
+        } catch (JsonSyntaxException ex) {
             callback.error(ex);
         }
         finally {
