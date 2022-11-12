@@ -17,15 +17,18 @@
 
 package rommanager.main;
 
+import com.google.gson.Gson;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import rommanager.utils.FileSystem;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -35,6 +38,7 @@ import rommanager.utils.ProcessAbstract;
 public class JeuxVideos extends ProcessAbstract {
 	
 	private final ICallBack callback;
+    private Map<String, List<JeuVideo>> jeuxVideos;
     
 	/**
 	 * Creates a new sync process instance  
@@ -46,7 +50,7 @@ public class JeuxVideos extends ProcessAbstract {
 	}
 	
 	/**
-	 * Starts file synchronisation process in a new thread
+	 * 
 	 * Called by MainGUI
 	 */
     @Override
@@ -54,40 +58,54 @@ public class JeuxVideos extends ProcessAbstract {
 		this.resetAbort();
 
         try {
-            List<JeuVideo> psx = read(390); //PSOne
+            jeuxVideos = new HashMap<>();
+            for(Console console : Console.values()) {
+                if(console.getIdJeuxVideo() > -1) {
+                    List<JeuVideo> list = read(console.getIdJeuxVideo()); //PSOne
+                    jeuxVideos.put(console.name(), list);
+                }
+            }
             System.out.println("Fini");
+            Gson gson = new Gson();
+            FileSystem.writeTextFile(new File("jeuxVideos.json"), gson.toJson(jeuxVideos));
+            
         } catch (InterruptedException ex) {
             callback.interrupted();
+        } catch (IOException ex) {
+            callback.error(ex);
         }
         finally {
             callback.completed();
         }
 	}
-	
-	private List<JeuVideo> read(int idMachine) throws InterruptedException {
+ 	
+	private List<JeuVideo> read(int idMachine) throws InterruptedException, IOException {
         List<JeuVideo> read = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 10; i++) { //FIXME: What if more or less pages ?
             read.addAll(read("https://www.jeuxvideo.com/meilleurs/machine-"+idMachine+"/?p="+i));
         }
         return read;
 	}
 		
-	public List<JeuVideo> read(String url) throws InterruptedException {
+	public List<JeuVideo> read(String url) throws InterruptedException, IOException {
 		checkAbort();
         List<JeuVideo> jeux = new ArrayList<>();
-		try {
-			Document doc = Jsoup.connect(url).get();
-			Elements aElements = doc.select(".container__3eUfTL li");
-            for(Element element : aElements) {
-                checkAbort();
-                String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();
-                if(!title.equals("")) {
-                    String description = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(2)").text();
-                    String urlJeuxVideo = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").get(0).absUrl("href");
-                    String releaseDate = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(3)").text();
-                    String rating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)").text();
-                    String userRating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)").text();
-                    jeux.add(new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description));
+        Document doc = Jsoup.connect(url).get();
+        Elements aElements = doc.select(".container__3eUfTL li");
+        callback.setup(aElements.size());
+        for(Element element : aElements) {
+            checkAbort();
+            String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();
+            JeuVideo jeuVideo = new JeuVideo("", "Not found", "", "", "", "");
+            if(!title.equals("")) {
+                String description = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(2)").text();
+                String urlJeuxVideo = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").get(0).absUrl("href");
+                String releaseDate = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(3)").text();
+                String rating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)").text();
+                String userRating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)").text();
+                jeuVideo = new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description);
+                jeux.add(jeuVideo);
+                
 //                    System.out.println("");
 //                    System.out.println("-------------------------");
 //                    System.out.println(title);
@@ -98,11 +116,9 @@ public class JeuxVideos extends ProcessAbstract {
 //                    System.out.println("-------------------------");
 //                    System.out.println("\t"+description);
 //                    System.out.println("-------------------------");
-                }
             }
-		} catch (IndexOutOfBoundsException | IOException ex) {
-			Logger.getLogger(JeuxVideos.class.getName()).log(Level.SEVERE, null, ex);
-    	}
+            callback.read(jeuVideo);
+        }
         return jeux;
 	}
 }

@@ -131,6 +131,10 @@ public enum Console {
 		return excludeUnknownAttributes;
 	}
 
+    public int getIdJeuxVideo() {
+        return idJeuxVideo;
+    }
+    
 	@Override
 	public String toString() {
 		return getName()+" ("+getNbFiles()+")";

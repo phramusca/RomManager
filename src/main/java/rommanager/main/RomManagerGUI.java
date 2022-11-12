@@ -847,8 +847,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		
 		@Override
-		public void read(JeuVideo via) {
-			progressBar.progress(via.title);
+		public void read(JeuVideo jeuVideo) {
+			progressBar.progress(jeuVideo.title);
 		}
 		
 		@Override
