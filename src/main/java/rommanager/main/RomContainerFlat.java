@@ -25,7 +25,7 @@ import java.io.IOException;
 public class RomContainerFlat extends RomContainer {
 
 	/**
-	 * For dsk (Amstrad) files that are not groupped in 7z
+	 * For files that are not groupped in 7z
 	 * @param console
 	 * @param filename
 	 * @throws IOException
@@ -34,11 +34,19 @@ public class RomContainerFlat extends RomContainer {
 		super(console, filename);
 	}
 	@Override
-	public void setBestExportable() {
-		for(RomVersion version : versions) {
-			//FIXME 3 Amstrad: Only extract several if "Disk" inside versions, otherwise do as for 7z: take best version
-			version.setExportable(version.getErrorLevel()==0);
-		}
+	public void setExportableVersions() {
+        switch(console) {
+            case amstradcpc:
+                for(RomVersion version : versions) {
+                    //FIXME 3 Amstrad: Only extract several if "Disk" inside versions, otherwise do as default: take best version
+                    version.setExportable(version.getErrorLevel()==0);
+                }        
+                break;
+            case virtualboy:
+            default:
+                setBestExportable();
+        }
+		
 	}
 	
 	static String getRomName(String filename, String ext) {

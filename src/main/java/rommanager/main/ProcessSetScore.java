@@ -59,7 +59,7 @@ public class ProcessSetScore extends ProcessAbstract {
 		}
 	}
 
-    public void setScore() throws InterruptedException {
+    private void setScore() throws InterruptedException {
 		progressBar.setup(tableModel.getRowCount());
 		for(RomContainer romContainer : tableModel.getRoms().values().stream()
                 .filter(r->r.getConsole().isSelected())
@@ -71,7 +71,7 @@ public class ProcessSetScore extends ProcessAbstract {
 				romVersion.setScore(romContainer.console);
 				romVersion.setExportable(false);
 			}
-			romContainer.setBestExportable();
+			romContainer.setExportableVersions();
 		}
     }
 }

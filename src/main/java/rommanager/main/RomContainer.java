@@ -38,17 +38,26 @@ public abstract class RomContainer {
 		this.console = console;
     }
 	
-	public abstract void setBestExportable();
+	public abstract void setExportableVersions();
 
+    public void setBestExportable() {
+        int bestScore=Integer.MIN_VALUE;
+		RomVersion bestVersion=null;
+		for(RomVersion version : versions) {
+			version.setExportable(false);
+			if(version.getScore()>bestScore) {
+				bestVersion=version;
+				bestScore=version.getScore();
+			} 
+		}
+		if(bestVersion!=null && bestVersion.getScore()>=0) {
+			bestVersion.setExportable(true);
+		}
+    }
+    
 	 public List<RomVersion> getVersions() {
         return versions;
     }
-	 
-//	public List<String> getExportableFilenames(String exportPath) {
-//		return versions.stream().filter(r->r.isExportable())
-//				.map(r->r.getExportFilename(this, exportPath))
-//				.collect(Collectors.toList());
-//	}
 
 	 public void addVersion(RomVersion version) {
 		versions.add(version);

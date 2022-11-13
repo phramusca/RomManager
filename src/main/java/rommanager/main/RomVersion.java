@@ -30,7 +30,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import static rommanager.main.ProcessList.allowedExtensions;
 
 /**
  *
@@ -51,7 +50,7 @@ public class RomVersion {
      * Create a Rom Version, read from fileSystem
      * @param name
      * @param filename
-     * @param excludeUnknownAttributes
+     * @param console
      */
     public RomVersion(String name, String filename, Console console) {
         this.filename = filename;
@@ -202,6 +201,7 @@ public class RomVersion {
 						}
 						
 					} 
+                    //FIXME 2 Split by extension *.gb vs *.gbc AND *.ws vs .wsc
                     if(attribute.getRaw().equals("[M]")) {
                         if(console.equals(Console.gbc)) {
                             //FIXME: Move to gb
@@ -266,29 +266,27 @@ public class RomVersion {
     public String getFilename() {
         return filename;
     }
-	
-	public String getExportFilename(RomContainer rom, String exportPath) {
-		String exportFolder = FilenameUtils.concat(
+    
+    public String getExportFolder(Console console, String exportPath) {
+        return FilenameUtils.concat(
 				FilenameUtils.concat(
-						exportPath, rom.getConsole().name()), 
-				rom.getConsole().getName());
-        String ext = FilenameUtils.getExtension(rom.getFilename());
-        if(ext.equals("7z")) {
-                if(rom.getConsole().isZip()) {
-				return FilenameUtils.concat(
-							exportFolder, 
-							FilenameUtils.getBaseName(
-									filename)
-								.concat(".zip"));
-			} else {
-				return FilenameUtils.concat(
-							exportFolder,
-							filename);
-			}
-        } else if(allowedExtensions.contains(ext)) {
-            return FilenameUtils.concat(exportFolder, filename);
+						exportPath, console.name()), 
+				console.getName());
+    }
+    
+	public String getExportFilename(Console console, String exportPath) {
+        String exportFolder = getExportFolder(console, exportPath);
+        if(console.isZip()) {
+            return FilenameUtils.concat(
+                        exportFolder, 
+                        FilenameUtils.getBaseName(
+                                filename)
+                            .concat(".zip"));
+        } else {
+            return FilenameUtils.concat(
+                        exportFolder,
+                        filename);
         }
-		return "";
 	}
     
     public String getAttributes() {

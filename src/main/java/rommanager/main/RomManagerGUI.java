@@ -777,7 +777,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
         RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
-			romContainer.setBestExportable();
+			romContainer.setExportableVersions();
 			displayVersions(romContainer.getVersions());
 //			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselect line in jtable
 		}

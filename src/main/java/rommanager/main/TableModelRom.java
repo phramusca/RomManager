@@ -210,8 +210,8 @@ public class TableModelRom extends TableModelGeneric {
             if(ext.equals("7z")) {
                 romContainer = new RomContainer7z(console, filename);
             } else if(allowedExtensions.contains(ext)) {
-                String romName = RomContainerFlat.getRomName(filename, ext);
-				romContainer = new RomContainerFlat(console,romName);
+                String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(filename), ext);
+				romContainer = new RomContainerFlat(console, romName);
             }
 			if(romContainer!=null) {
 				roms.put(filename, romContainer);

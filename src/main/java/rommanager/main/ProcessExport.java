@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import static rommanager.main.ProcessList.allowedExtensions;
 import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
@@ -116,7 +115,6 @@ public class ProcessExport extends ProcessAbstract {
 							&& r.getExportableVersions().size()>0)
 					.collect(Collectors.toList());
 			String sourceFolder;
-			String exportFolder;
 			for(RomContainer romContainer : romSourceList) {
 				checkAbort();
 				String filename = romContainer.getFilename();
@@ -126,57 +124,37 @@ public class ProcessExport extends ProcessAbstract {
 							.filter(r -> r.isToCopy())
 							.collect(Collectors.toList())) {
 					checkAbort();
-					sourceFolder = FilenameUtils.concat(
-							sourcePath, romContainer.getConsole().name());
-					exportFolder = FilenameUtils.concat(
-							FilenameUtils.concat(
-									exportPath, romContainer.getConsole().name()), 
-							romContainer.getConsole().getName());
+					sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
+                    File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
+                    File exportFile = new File(romVersion.getExportFilename(romContainer.getConsole(), exportPath));
                     String ext = FilenameUtils.getExtension(filename);
                     if(ext.equals("7z")) {
-                        String exportFileName = FilenameUtils.concat(
-										exportFolder, 
-										FilenameUtils.getBaseName(
-												romVersion.getFilename())
-											.concat(".zip"));
-						
-//						if(new File(exportFileName).exists()) {
-//							continue;
-//						}
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
 							FilenameUtils.concat(sourceFolder, filename)))) {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 							while(entry!=null){
-								if(entry.getName().equals(romVersion.getFilename())) { 
-									File unzippedFile=new File(FilenameUtils.concat(
-													exportFolder,
-													romVersion.getFilename()));
-//									if(unzippedFile.exists()) {
-//										continue;
-//									}
+								if(entry.getName().equals(romVersion.getFilename())) {
+                                    File unzippedFile = new File(FilenameUtils.concat(romVersion.getExportFolder(romContainer.getConsole(), exportPath), romVersion.getFilename()));
 									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
 									}
-                                    //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
-									if(romContainer.getConsole().isZip()) {
-										if(zipFile(unzippedFile, exportFileName)) {
-											unzippedFile.delete();
-										}
-									}									
+                                    if(romContainer.getConsole().isZip()) {
+                                        zipFile(unzippedFile, exportFile.getAbsolutePath());
+                                        unzippedFile.delete();
+                                    }
 									break;
 								}
 								entry = sevenZFile.getNextEntry();
 							}
 						}
-                    } else if(allowedExtensions.contains(ext)) {
-                        File exportFile=new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
-						if(exportFile.exists()) {
-							continue;
-						}
-						FileSystem.copyFile(
-								new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename())), exportFile);
+                    } else if(ProcessList.allowedExtensions.contains(ext)) {
+                        if(romContainer.getConsole().isZip()) {
+                            zipFile(sourceFile, exportFile.getAbsolutePath());
+                        } else {
+                            FileSystem.copyFile(sourceFile, exportFile);
+                        }
                     }
 				}
 			}
@@ -207,17 +185,18 @@ public class ProcessExport extends ProcessAbstract {
 		boolean doCheckLastModified = false;
 		boolean doCheckContent = false;
 
-		for(RomContainer rom : romSourceList) {
-			for(RomVersion romVersion : rom.getToCopyVersions()) {
+		for(RomContainer romContainer : romSourceList) {
+			for(RomVersion romVersion : romContainer.getToCopyVersions()) {
 				this.checkAbort();
 				try {
 				//TODO: maybe support ignoreCase as an option
 	//			if(fileInfo.getRelativeFullPath().equalsIgnoreCase(relativeFullPath)) { return true; }
 				//We want sync to be case sensitive
-					if(romVersion.getExportFilename(rom, exportPath).equals(file.getAbsolutePath())) { 
+                    String exportFilename = romVersion.getExportFilename(romContainer.getConsole(), exportPath);
+					if(exportFilename.equals(file.getAbsolutePath())) { 
 						File fileSource = new File(FilenameUtils.concat(
 								sourcePath, romVersion.getFilename()));
-						File fileDestination = new File(romVersion.getExportFilename(rom, exportPath));
+						File fileDestination = new File(exportFilename);
 						if(!doCheckLength || fileSource.length()==fileDestination.length()) {
 							if(!doCheckLastModified || fileSource.lastModified()==fileDestination.lastModified() ) {
 									if(!doCheckContent || 
@@ -270,6 +249,7 @@ public class ProcessExport extends ProcessAbstract {
         }
 	}
 	
+     //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
 	private static boolean zipFile(File inputFile, String zipFilePath) {
         try {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 

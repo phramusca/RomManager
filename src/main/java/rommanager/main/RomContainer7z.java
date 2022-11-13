@@ -54,22 +54,11 @@ public class RomContainer7z extends RomContainer {
                 entry = sevenZFile.getNextEntry();
             }
         }
-		setBestExportable();
+		setExportableVersions();
 	}
 	
 	@Override
-	public final void setBestExportable() {
-		int bestScore=Integer.MIN_VALUE;
-		RomVersion bestVersion=null;
-		for(RomVersion version : versions) {
-			version.setExportable(false);
-			if(version.getScore()>bestScore) {
-				bestVersion=version;
-				bestScore=version.getScore();
-			} 
-		}
-		if(bestVersion!=null && bestVersion.getScore()>=0) {
-			bestVersion.setExportable(true);
-		}
+	public final void setExportableVersions() {
+		setBestExportable();
 	}
 }

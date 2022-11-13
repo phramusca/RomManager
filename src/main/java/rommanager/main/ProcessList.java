@@ -120,7 +120,7 @@ public class ProcessList extends ProcessAbstract {
         progressBar.setup(flatContainers.values().size());
 		for(RomContainerFlat romAmstrad : flatContainers.values()) {
 			checkAbort();
-			romAmstrad.setBestExportable();
+			romAmstrad.setExportableVersions();
 			tableModel.addRow(romAmstrad);
             String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
 			progressBar.progress(msg);
@@ -192,15 +192,6 @@ public class ProcessList extends ProcessAbstract {
                         Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if(allowedExtensions.contains(ext)) {
-                    //FIXME 3 Manage  other sets no grouped in 7z files, such as :
-					//From /media/raph/Maxtor1/Emulation/Roms/4_Sources => FAIRE MENAGE/archive.org  ___ NOUVEAU   _____ PAS MEME FORMAT  :-(
-						// - GoodNGPxNonGood.7z		ngc. Others ?
-						// - GoodVBoy				vb. Others ?
-						// - GoodVect				vec. Others ?
-						// - GoodGenV321 (Latest but Is it really better than GoodGen3.00 ?)
-						// - GoodColNonGood			rom,col. Others ? (Attention, ces roms ne marchent pas)
-						//
-						//=> Maybe dot not check for extension, just default: ?
                     try {
                         String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);
                         if(!tableModel.getRoms().containsKey(romName)) {
@@ -218,7 +209,7 @@ public class ProcessList extends ProcessAbstract {
                                     file.getAbsolutePath()
                                             .substring(rootPath.length()+1);
                             romContainerFlat.addVersion(new RomVersion(
-                                    romName,
+                                    FilenameUtils.getBaseName(romName),
                                     versionPath,
                                     console));
                         }
