@@ -30,6 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import static rommanager.main.ProcessList.allowedExtensions;
 
 /**
  *
@@ -271,8 +272,9 @@ public class RomVersion {
 				FilenameUtils.concat(
 						exportPath, rom.getConsole().name()), 
 				rom.getConsole().getName());
-		if(FilenameUtils.getExtension(rom.getFilename()).equals("7z")) {
-			if(rom.getConsole().isZip()) {
+        String ext = FilenameUtils.getExtension(rom.getFilename());
+        if(ext.equals("7z")) {
+                if(rom.getConsole().isZip()) {
 				return FilenameUtils.concat(
 							exportFolder, 
 							FilenameUtils.getBaseName(
@@ -283,9 +285,9 @@ public class RomVersion {
 							exportFolder,
 							filename);
 			}
-		} else if(FilenameUtils.getExtension(rom.getFilename()).equals("dsk")) {
-			return FilenameUtils.concat(exportFolder, filename);
-		}
+        } else if(allowedExtensions.contains(ext)) {
+            return FilenameUtils.concat(exportFolder, filename);
+        }
 		return "";
 	}
     

@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
+import static rommanager.main.ProcessList.allowedExtensions;
 
 /**
  *
@@ -205,17 +206,13 @@ public class TableModelRom extends TableModelGeneric {
 	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
 			RomContainer romContainer=null;
-			switch(FilenameUtils.getExtension(filename)) {				
-				case "7z":
-					romContainer = new RomContainer7z(console, filename);
-					break;
-				case "dsk":
-					String romName = RomContainerFlat.getRomName(filename);
-					romContainer = new RomContainerFlat(
-													console,
-													romName);
-					break;
-			}
+            String ext = FilenameUtils.getExtension(filename);
+            if(ext.equals("7z")) {
+                romContainer = new RomContainer7z(console, filename);
+            } else if(allowedExtensions.contains(ext)) {
+                String romName = RomContainerFlat.getRomName(filename, ext);
+				romContainer = new RomContainerFlat(console,romName);
+            }
 			if(romContainer!=null) {
 				roms.put(filename, romContainer);
 			}
