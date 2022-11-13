@@ -21,7 +21,7 @@ package rommanager.main;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public enum Console {
-	// 3do(120, "Panasonic 3DO"),  //FIXME Cannot start with a number, but that is folder name :(
+	// 3do(120, "Panasonic 3DO"),  //FIXME 5 Cannot start with a number, but that is folder name :(
 	amiga1200(130, " sur Amiga", "Amiga 1200"),
 	amiga600(130, " sur Amiga", "Amiga 600"),
 	amstradcpc(140, " sur CPC", "Amstrad CPC"),

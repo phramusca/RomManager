@@ -62,20 +62,19 @@ public class JeuxVideos extends ProcessAbstract {
         try {
             //Read cache file
             String readJson = FileSystem.readTextFile(new File("jeuxVideos.json"));
-            Map<String, List<JeuVideo>> readMap = new HashMap<>();
+            jeuxVideos = new HashMap<>();
             if (!readJson.equals("")) {
                 Gson gson = new Gson();
                 Type mapType = new TypeToken<Map<String, List<JeuVideo>>>(){}.getType();
-                readMap = gson.fromJson(readJson, mapType);
+                jeuxVideos = gson.fromJson(readJson, mapType);
             }
             
             //Read info from jeuxvide.com only if not already done
             boolean atLeastOneModif = false;
-            jeuxVideos = new HashMap<>();
             for(Console console : Console.values()) {
                 if(console.getIdJeuxVideo() > -1) {
-                    if(!readMap.containsKey(console.name())) {
-                        List<JeuVideo> list = read(console); //PSOne
+                    if(!jeuxVideos.containsKey(console.name())) {
+                        List<JeuVideo> list = read(console);
                         jeuxVideos.put(console.name(), list);
                         atLeastOneModif = true;
                     }
@@ -110,7 +109,7 @@ public class JeuxVideos extends ProcessAbstract {
         return read;
 	}
 		
-	public List<JeuVideo> read(int page, Console console) throws InterruptedException, IOException {
+	private List<JeuVideo> read(int page, Console console) throws InterruptedException, IOException {
 		checkAbort();
         List<JeuVideo> jeux = new ArrayList<>();
         String url = "https://www.jeuxvideo.com/meilleurs/machine-"+console.getIdJeuxVideo()+"/?p="+page;
