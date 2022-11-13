@@ -24,15 +24,18 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import rommanager.utils.FileSystem;
 import rommanager.utils.ProcessAbstract;
+import rommanager.utils.ProgressBar;
 
 /**
  * Sync process class
@@ -42,30 +45,43 @@ public class JeuxVideos extends ProcessAbstract {
 	
 	private final ICallBack callback;
     private Map<String, List<JeuVideo>> jeuxVideos;
+    private final TableModelRom tableModel;
+    private final ProgressBar progressBar;
+    private final String sourcePath;
     
 	/**
 	 * Creates a new sync process instance  
-	 * @param progressBar
+	 * @param callback
+     * @param tableModel
+     * @param progressBar
+     * @param sourcePath
 	 */
-	public JeuxVideos(ICallBack progressBar) {
+	public JeuxVideos(ICallBack callback, TableModelRom tableModel, ProgressBar progressBar, String sourcePath) {
         super("Thread.JeuxVideos");
-		this.callback = progressBar;
+		this.callback = callback;
+        this.tableModel = tableModel;
+        this.progressBar = progressBar;
+        this.sourcePath = sourcePath;
 	}
 	
     @Override
 	public void run() {
 		this.resetAbort();
         try {
-            //Read cache file
-            String readJson = FileSystem.readTextFile(new File("jeuxVideos.json"));
             jeuxVideos = new HashMap<>();
-            if (!readJson.equals("")) {
-                Gson gson = new Gson();
-                Type mapType = new TypeToken<Map<String, List<JeuVideo>>>(){}.getType();
-                jeuxVideos = gson.fromJson(readJson, mapType);
+            
+            //Read cache file
+            File file = new File("jeuxVideos.json");
+            if(file.exists()) {
+                String readJson = FileSystem.readTextFile(file);
+                if (!readJson.equals("")) {
+                    Gson gson = new Gson();
+                    Type mapType = new TypeToken<Map<String, List<JeuVideo>>>(){}.getType();
+                    jeuxVideos = gson.fromJson(readJson, mapType);
+                }
             }
             
-            //Read info from jeuxvide.com only if not already done
+            //Read info from jeuxvideo.com only if not already done
             boolean atLeastOneModif = false;
             for(Console console : Console.values()) {
                 if(console.getIdJeuxVideo() > -1) {
@@ -83,17 +99,38 @@ public class JeuxVideos extends ProcessAbstract {
                 FileSystem.writeTextFile(new File("jeuxVideos.json"), gson.toJson(jeuxVideos));
             }
             
-            //FIXME !!!! Faire correspondre les entrées du read map et la liste des jeux ET ajouter un tag "Culte jeuxvideo.com"
-            //FIXME !!!! GUI (enable/ disable)
-            
-            
+            //Assign read value to rom versions
+            Collection<RomContainer> romCollection = tableModel.getRoms().values();
+            callback.setup(romCollection.size());
+            String tagJeuxVideo = "Culte JeuxVideo.com";
+            for(RomContainer romContainer : romCollection) {
+                checkAbort();
+                callback.read(new JeuVideo("", romContainer.getFilename(), "", "", "", ""));
+                List<JeuVideo> consoleJeuVideos = null;
+                if(jeuxVideos.containsKey(romContainer.getConsole().name())) {
+                    consoleJeuVideos = jeuxVideos.get(romContainer.getConsole().name());
+                }
+                for(RomVersion romVersion : romContainer.getVersions()) {
+                    if(consoleJeuVideos != null) {
+                        boolean anyMatch = consoleJeuVideos.stream().anyMatch(r -> r.title.equals(romVersion.getName()));
+                        if(anyMatch) {
+                            JeuVideo jeuVideo = consoleJeuVideos.stream().filter(r -> r.title.equals(romVersion.getName())).collect(Collectors.toList()).get(0);
+                            romVersion.addTag(tagJeuxVideo);
+                            romVersion.setJeuVideo(jeuVideo);
+                        }
+                    }
+                }
+            }
+            progressBar.setIndeterminate("Saving ods file");
+            RomManagerOds.createFile(tableModel, progressBar, sourcePath);
+            progressBar.reset();
         } catch (InterruptedException ex) {
             callback.interrupted();
         } catch (IOException | JsonSyntaxException ex) {
             callback.error(ex);
         }
         finally {
-            callback.completed();
+			callback.completed();
         }
 	}
  	
@@ -108,7 +145,9 @@ public class JeuxVideos extends ProcessAbstract {
         }
         return readAll;
 	}
-		
+	
+    private static final String RELEASE_DATE_PREFIX = "Sortie: ";
+    
 	private List<JeuVideo> read(int page, Console console) throws InterruptedException, IOException {
 		checkAbort();
         List<JeuVideo> jeux = new ArrayList<>();
@@ -121,13 +160,17 @@ public class JeuxVideos extends ProcessAbstract {
             String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();
             JeuVideo jeuVideo = new JeuVideo("", "Not found", "", "", "", "");
             if(!title.equals("")) {
-                int indexOf = title.indexOf(console.getSuffixJeuxVideo());
-                if(indexOf>-1) {
-                    title = title.substring(0, indexOf);
+                int indexOfSuffix = title.indexOf(console.getSuffixJeuxVideo());
+                if(indexOfSuffix>-1) {
+                    title = title.substring(0, indexOfSuffix);
                 }
                 String description = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(2)").text();
                 String urlJeuxVideo = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").get(0).absUrl("href");
                 String releaseDate = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(3)").text();
+                int indexOfReleaseDatePrefix = releaseDate.indexOf(RELEASE_DATE_PREFIX);
+                if(indexOfReleaseDatePrefix>-1) {
+                    releaseDate = releaseDate.substring(RELEASE_DATE_PREFIX.length());
+                }
                 String rating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)").text();
                 String userRating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)").text();
                 jeuVideo = new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description);

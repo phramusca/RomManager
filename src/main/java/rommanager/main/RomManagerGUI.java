@@ -20,7 +20,6 @@ import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -163,7 +162,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
-        jButtonScrap = new javax.swing.JButton();
+        jButtonReadJeuxVideo = new javax.swing.JButton();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre1 = new javax.swing.JScrollPane();
@@ -258,10 +257,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonScrap.setText("Scrap");
-        jButtonScrap.addActionListener(new java.awt.event.ActionListener() {
+        jButtonReadJeuxVideo.setText("Read jeuxvideo.com");
+        jButtonReadJeuxVideo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonScrapActionPerformed(evt);
+                jButtonReadJeuxVideoActionPerformed(evt);
             }
         });
 
@@ -295,8 +294,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                 .addComponent(jButtonExport)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonReadGameList)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButtonScrap)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonReadJeuxVideo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -326,7 +325,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonExport)
                     .addComponent(jButtonReadGameList)
                     .addComponent(jButtonSave)
-                    .addComponent(jButtonScrap))
+                    .addComponent(jButtonReadJeuxVideo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -614,6 +613,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jButtonScore.setEnabled(enable);
 		jButtonExport.setEnabled(enable);
 		jButtonReadGameList.setEnabled(enable);
+        jButtonReadJeuxVideo.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
 		
 		jButtonOptionSelectFolderExport.setEnabled(enable);
@@ -831,16 +831,17 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jListFilterNumberFilesExportValueChanged
 
-    private void jButtonScrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScrapActionPerformed
-        disableGUI("Scraping : ");
-//		ViaFerrataNet via = new ViaFerrataNet(new CallBack(), 
-//				"https://www.viaferrata-fr.net/via-ferrata-10-La-Roche-%E0-l%27Agathe-Th%F4nes-Haute-Savoie.html");
-		JeuxVideos via = new JeuxVideos(new CallBack());
-		via.start();
-    }//GEN-LAST:event_jButtonScrapActionPerformed
+    private void jButtonReadJeuxVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJeuxVideoActionPerformed
+        disableGUI("Reading jeuxvideo.com : ");
+        String sourcePath = jTextFieldPathSource.getText();
+		JeuxVideos jeuxVideos = new JeuxVideos(new CallBack(), tableModel, progressBar, sourcePath);
+		jeuxVideos.start();
+    }//GEN-LAST:event_jButtonReadJeuxVideoActionPerformed
     
     class CallBack implements ICallBack {
 
+        //FIXME: Remove setup and read methods, use progressBar instead
+        
 		@Override
 		public void setup(int size) {
 			progressBar.setup(size);
@@ -947,10 +948,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;
+    private static javax.swing.JButton jButtonReadJeuxVideo;
     private static javax.swing.JButton jButtonSave;
     private static javax.swing.JButton jButtonScanSource;
     private static javax.swing.JButton jButtonScore;
-    private javax.swing.JButton jButtonScrap;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;

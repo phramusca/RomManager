@@ -42,4 +42,27 @@ public class JeuVideo {
         return "JeuVideo{" + "url=" + url + ", title=" + title + ", description=" + description + ", releaseDate=" + releaseDate + ", rating=" + rating + ", userRating=" + userRating + '}';
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public String getUserRating() {
+        return userRating;
+    }   
 }

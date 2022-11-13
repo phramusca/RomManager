@@ -18,6 +18,7 @@ package rommanager.main;
 
 import rommanager.utils.Popup;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,9 @@ public class RomVersion {
 	private int errorLevel;
 	private boolean exportable;
 	private Game game;
+    private JeuVideo jeuVideo;
 	private boolean toCopy;
+    private List<String> tags = new ArrayList<>();
 	
     /**
      * Create a Rom Version, read from fileSystem
@@ -71,12 +74,14 @@ public class RomVersion {
 	 * @param score
 	 * @param errorLevel
 	 * @param isExportable
+     * @param tags
 	 */
 	public RomVersion(String name, String filename, String alternativeName, 
 			String attributes,
 			int score, 
 			int errorLevel, 
-			boolean isExportable) {
+			boolean isExportable,
+            String tags) {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
@@ -100,6 +105,9 @@ public class RomVersion {
 		this.score = score;
 		this.errorLevel = errorLevel;
 		this.exportable = isExportable;
+        if(!tags.trim().equals("")) {
+            this.tags = Arrays.asList(tags.split(","));
+        }
 	}
 
 	public final void setScore(Console console) {
@@ -384,11 +392,19 @@ public class RomVersion {
 	public void setGame(Game game) {
 		this.game=game;
 	}
-
+    
 	public Game getGame() {
 		return game;
 	}
 
+    public JeuVideo getJeuVideo() {
+        return jeuVideo;
+    }
+
+    public void setJeuVideo(JeuVideo jeuVideo) {
+        this.jeuVideo = jeuVideo;
+    }
+    
 	void setToCopy(boolean toCopy) {
 		this.toCopy = toCopy;
 	}
@@ -396,4 +412,18 @@ public class RomVersion {
 	boolean isToCopy() {
 		return toCopy;
 	}
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    void addTag(String tag) {
+        if(!tags.contains(tag)) {
+            tags.add(tag);
+        }
+    }
 }
