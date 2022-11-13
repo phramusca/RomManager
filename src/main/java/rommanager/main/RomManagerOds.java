@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.commons.io.FilenameUtils;
@@ -58,7 +59,7 @@ public class RomManagerOds {
 			ProgressBar progressBar, 
 			boolean open, String sourceFolder) {
 		
-        int nbColumns=25;
+        int nbColumns=32;
         int nbRows=0;
         for(RomContainer romContainer : model.getRoms().values()) {
             nbRows+=romContainer.getVersions().size();
@@ -73,6 +74,11 @@ public class RomManagerOds {
 				if(game==null) {
 					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false);
 				}
+                
+                JeuVideo jeuVideo = romVersion.getJeuVideo();
+                if(jeuVideo == null) {
+                    jeuVideo = new JeuVideo("", "", "", "", "", "");
+                }
 				
                 data[i++] = new Object[] { 
 					romContainer.getConsole().name(),
@@ -99,7 +105,14 @@ public class RomManagerOds {
 					game.getPath(),
                     game.getHash(),
                     game.getVideo(),
-                    game.getGenreId()
+                    game.getGenreId(),
+                    romVersion.getTags().stream().collect(Collectors.joining(",")),
+                    jeuVideo.getUrl(),
+                    jeuVideo.getTitle(),
+                    jeuVideo.getReleaseDate(),
+                    jeuVideo.getRating(),
+                    jeuVideo.getUserRating(),
+                    jeuVideo.getDescription()
 				};
             }
         }
@@ -113,6 +126,7 @@ public class RomManagerOds {
         columns[i++] = "Score";
 		columns[i++] = "Error Level";
 		columns[i++] = "Export";
+        
 		columns[i++] = "Name";
 		columns[i++] = "Description";
 		columns[i++] = "Genre";
@@ -130,6 +144,16 @@ public class RomManagerOds {
         columns[i++] = "Hash";
         columns[i++] = "Video";
         columns[i++] = "GenreId";
+        
+        columns[i++] = "Tags";
+        
+        columns[i++] = "JeuxVideo.com";
+        columns[i++] = "Title";
+        columns[i++] = "Release Date";
+        columns[i++] = "Rating";
+        columns[i++] = "User Rating";
+        columns[i++] = "Description";
+                
         TableModel docModel = new DefaultTableModel(data, columns);
 		File odsFile = new File(FilenameUtils.concat(sourceFolder, DOC_FILE+"_"+DateTime.getCurrentLocal(DateTime.DateTimeFormat.FILE)+".ods"));
         if(odsFile.exists()) {
@@ -209,21 +233,33 @@ public class RomManagerOds {
                 String hash = row.getValue(i++);
                 String video = row.getValue(i++);
                 String genreId = row.getValue(i++);
+                String tags = row.getValue(i++);
+                
+                String url = row.getValue(i++);
+                String title = row.getValue(i++);
+                String releaseDateJeuVideo = row.getValue(i++);
+                String ratingJeuVideo = row.getValue(i++);
+                String userRating = row.getValue(i++);
+                String description = row.getValue(i++);
+                
 				model.addRow(console, filename);
 				RomVersion romVersion = new RomVersion(
 						FilenameUtils.getBaseName(filename),
 						version, 
 						alternativeName, 
 						attributes, 
-						score, errorLevel, isExportable);
+						score, errorLevel, isExportable, tags);
 				
 				Game game = new Game(path, hash, gameName, desc, image, 
 					video,thumbnail, rating, releaseDate, 
-					developer, publisher, genre, genreId,players, 
+					developer, publisher, genre, genreId, players, 
 					playcount, lastplayed, isFavorite);
-				
 				IconBuffer.getCoverIcon(game.getName(), "", true);
 				romVersion.setGame(game);
+                
+                JeuVideo jeuVideo = new JeuVideo(url, title, releaseDateJeuVideo, ratingJeuVideo, userRating, description);
+                romVersion.setJeuVideo(jeuVideo);
+                
 				model.getRoms().get(filename).getVersions().add(romVersion);
 				progressBar.progress(filename);
 			}

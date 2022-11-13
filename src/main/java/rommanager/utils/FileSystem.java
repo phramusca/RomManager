@@ -17,7 +17,12 @@
 
 package rommanager.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -68,6 +73,25 @@ public class FileSystem {
 			destFile=replaceHome(destFile);
 			
 			FileUtils.copyFile(sourceFile, destFile, true);
+    }
+    
+    public static void writeTextFile(File file, String text) throws IOException {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsolutePath(), false))) {
+            out.write(text);
+            out.flush();
+        }
+    }
+    
+    public static String readTextFile(File file) throws FileNotFoundException, IOException {
+        StringBuilder text = new StringBuilder();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = br.readLine()) != null) {
+            text.append(line);
+            text.append('\n');
+        }
+        br.close();
+        return text.toString();
     }
 
 	public static File replaceHome(File file) {

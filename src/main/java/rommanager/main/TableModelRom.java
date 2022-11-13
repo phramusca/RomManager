@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
+import static rommanager.main.ProcessList.allowedExtensions;
 
 /**
  *
@@ -123,6 +124,7 @@ public class TableModelRom extends TableModelGeneric {
 			case 0: return icon!= null ? icon: new ImageIcon();
 			case 1: 
 				String name = romContainer.getGame().getName();
+                name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 3 Do not set Name column in ods file if not from game (gamelist.xml)
 				name=name.equals("")?romContainer.getFilename():name;
 				return "<html>"+name+"</html>";
 			case 2: 
@@ -134,7 +136,7 @@ public class TableModelRom extends TableModelGeneric {
 						.append(romContainer.getGame().getDeveloper()).append(" / ")
 						.append(romContainer.getGame().getPublisher())
 							.append("<BR/>").append("<BR/>")
-						.append(romContainer.getGame().getDesc())
+						.append(romContainer.getGame().getDesc().equals("")?romContainer.getJeuVideo().getDescription():romContainer.getGame().getDesc())
 						.append("</html>");
 				return builder.toString();
 			case 3: return romContainer.getConsoleStr();
@@ -205,17 +207,13 @@ public class TableModelRom extends TableModelGeneric {
 	public void addRow(Console console, String filename) throws IOException {
 		if(!roms.containsKey(filename)) {
 			RomContainer romContainer=null;
-			switch(FilenameUtils.getExtension(filename)) {				
-				case "7z":
-					romContainer = new RomContainer7z(console, filename);
-					break;
-				case "dsk":
-					String romName = RomContainerFlat.getRomName(filename);
-					romContainer = new RomContainerFlat(
-													console,
-													romName);
-					break;
-			}
+            String ext = FilenameUtils.getExtension(filename);
+            if(ext.equals("7z")) {
+                romContainer = new RomContainer7z(console, filename);
+            } else if(allowedExtensions.contains(ext)) {
+                String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(filename), ext);
+				romContainer = new RomContainerFlat(console, romName);
+            }
 			if(romContainer!=null) {
 				roms.put(filename, romContainer);
 			}

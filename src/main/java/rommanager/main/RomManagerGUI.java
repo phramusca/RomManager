@@ -100,7 +100,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         return getModel(list, true);
     }
 	
-    //FIXME: Use a custom model to avoid the forEach which takes time !
+    //FIXME 0 Use a custom model to avoid the forEach which takes time !
 	/**
 	 *
 	 * @param list
@@ -162,6 +162,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
+        jButtonReadJeuxVideo = new javax.swing.JButton();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre1 = new javax.swing.JScrollPane();
@@ -256,6 +257,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jButtonReadJeuxVideo.setText("Read jeuxvideo.com");
+        jButtonReadJeuxVideo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReadJeuxVideoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -286,6 +294,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                 .addComponent(jButtonExport)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonReadGameList)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonReadJeuxVideo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -314,7 +324,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonScore)
                     .addComponent(jButtonExport)
                     .addComponent(jButtonReadGameList)
-                    .addComponent(jButtonSave))
+                    .addComponent(jButtonSave)
+                    .addComponent(jButtonReadJeuxVideo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -529,6 +540,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             if(fillLists) {
 				List<String> consoles=tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
 				List<String> genres=tableModel.getRoms().values().stream().map(r -> r.getGame().getGenre()).distinct().collect(Collectors.toList());
+                //FIXME 2 Merge 3 ratings (or distinct ?)
 				List<String> ratings=tableModel.getRoms().values().stream().map(r -> String.valueOf(r.getGame().getRating())).distinct().collect(Collectors.toList());
                 DefaultListModel model = new DefaultListModel();
                 for(ExportFilesNumber element : ExportFilesNumber.values()) {
@@ -602,6 +614,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jButtonScore.setEnabled(enable);
 		jButtonExport.setEnabled(enable);
 		jButtonReadGameList.setEnabled(enable);
+        jButtonReadJeuxVideo.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
 		
 		jButtonOptionSelectFolderExport.setEnabled(enable);
@@ -765,7 +778,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
         RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
-			romContainer.setBestExportable();
+			romContainer.setExportableVersions();
 			displayVersions(romContainer.getVersions());
 //			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselect line in jtable
 		}
@@ -818,6 +831,45 @@ public class RomManagerGUI extends javax.swing.JFrame {
             filter(false);
         }
     }//GEN-LAST:event_jListFilterNumberFilesExportValueChanged
+
+    private void jButtonReadJeuxVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJeuxVideoActionPerformed
+        disableGUI("Reading jeuxvideo.com : ");
+        String sourcePath = jTextFieldPathSource.getText();
+		JeuxVideos jeuxVideos = new JeuxVideos(new CallBack(), tableModel, progressBar, sourcePath);
+		jeuxVideos.start();
+    }//GEN-LAST:event_jButtonReadJeuxVideoActionPerformed
+    
+    class CallBack implements ICallBack {
+
+        //FIXME: Remove setup and read methods, use progressBar instead
+        
+		@Override
+		public void setup(int size) {
+			progressBar.setup(size);
+		}
+		
+		@Override
+		public void read(JeuVideo jeuVideo) {
+			progressBar.progress(jeuVideo.title);
+		}
+		
+		@Override
+		public void completed() {
+            enableGUI(true);
+		}
+
+		@Override
+		public void interrupted() {
+			Popup.info("Canceled");
+            enableGUI(true);
+		}
+
+		@Override
+		public void error(Exception ex) {
+            Popup.info("Error: " + ex.getLocalizedMessage());
+			enableGUI(true);
+		}
+	}
     
 	private class SaveOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
@@ -897,6 +949,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonOptionSelectFolderExport;
     private static javax.swing.JButton jButtonOptionSelectFolderSource;
     private static javax.swing.JButton jButtonReadGameList;
+    private static javax.swing.JButton jButtonReadJeuxVideo;
     private static javax.swing.JButton jButtonSave;
     private static javax.swing.JButton jButtonScanSource;
     private static javax.swing.JButton jButtonScore;
