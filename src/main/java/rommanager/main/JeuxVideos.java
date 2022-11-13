@@ -60,6 +60,7 @@ public class JeuxVideos extends ProcessAbstract {
 	public void run() {
 		this.resetAbort();
         try {
+            //Read cache file
             String readJson = FileSystem.readTextFile(new File("jeuxVideos.json"));
             Map<String, List<JeuVideo>> readMap = new HashMap<>();
             if (!readJson.equals("")) {
@@ -68,27 +69,32 @@ public class JeuxVideos extends ProcessAbstract {
                 readMap = gson.fromJson(readJson, mapType);
             }
             
-            //FIXME !!!! Remove " sur GB" for gb, and the same for others
-            //FIXME !!!! Do not read consoles that are in the read map
-            //FIXME !!!! Faire correspondre les entrées du read map et la liste des jeux ET ajouter un tag "Culte jeuxvideo.com"
-            
-            
+            //Read info from jeuxvide.com only if not already done
+            boolean atLeastOneModif = false;
             jeuxVideos = new HashMap<>();
             for(Console console : Console.values()) {
                 if(console.getIdJeuxVideo() > -1) {
-                    List<JeuVideo> list = read(console.getIdJeuxVideo()); //PSOne
-                    jeuxVideos.put(console.name(), list);
+                    if(!readMap.containsKey(console.name())) {
+                        List<JeuVideo> list = read(console); //PSOne
+                        jeuxVideos.put(console.name(), list);
+                        atLeastOneModif = true;
+                    }
                 }
             }
-            System.out.println("Fini");
-            Gson gson = new Gson();
-            FileSystem.writeTextFile(new File("jeuxVideos.json"), gson.toJson(jeuxVideos));
+            
+            //Save cache file
+            if(atLeastOneModif) {
+                Gson gson = new Gson();
+                FileSystem.writeTextFile(new File("jeuxVideos.json"), gson.toJson(jeuxVideos));
+            }
+            
+            //FIXME !!!! Faire correspondre les entrées du read map et la liste des jeux ET ajouter un tag "Culte jeuxvideo.com"
+            //FIXME !!!! GUI (enable/ disable)
+            
             
         } catch (InterruptedException ex) {
             callback.interrupted();
-        } catch (IOException ex) {
-            callback.error(ex);
-        } catch (JsonSyntaxException ex) {
+        } catch (IOException | JsonSyntaxException ex) {
             callback.error(ex);
         }
         finally {
@@ -96,17 +102,18 @@ public class JeuxVideos extends ProcessAbstract {
         }
 	}
  	
-	private List<JeuVideo> read(int idMachine) throws InterruptedException, IOException {
+	private List<JeuVideo> read(Console console) throws InterruptedException, IOException {
         List<JeuVideo> read = new ArrayList<>();
-        for (int i = 1; i < 10; i++) { //FIXME: What if more or less pages ?
-            read.addAll(read("https://www.jeuxvideo.com/meilleurs/machine-"+idMachine+"/?p="+i));
+        for (int page = 1; page < 10; page++) { //FIXME !!!! What if more or less pages ?
+            read.addAll(read(page, console));
         }
         return read;
 	}
 		
-	public List<JeuVideo> read(String url) throws InterruptedException, IOException {
+	public List<JeuVideo> read(int page, Console console) throws InterruptedException, IOException {
 		checkAbort();
         List<JeuVideo> jeux = new ArrayList<>();
+        String url = "https://www.jeuxvideo.com/meilleurs/machine-"+console.getIdJeuxVideo()+"/?p="+page;
         Document doc = Jsoup.connect(url).get();
         Elements aElements = doc.select(".container__3eUfTL li");
         callback.setup(aElements.size());
@@ -115,6 +122,10 @@ public class JeuxVideos extends ProcessAbstract {
             String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();
             JeuVideo jeuVideo = new JeuVideo("", "Not found", "", "", "", "");
             if(!title.equals("")) {
+                int indexOf = title.indexOf(console.getSuffixJeuxVideo());
+                if(indexOf>-1) {
+                    title = title.substring(0, indexOf);
+                }
                 String description = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(2)").text();
                 String urlJeuxVideo = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").get(0).absUrl("href");
                 String releaseDate = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(3)").text();
@@ -122,17 +133,6 @@ public class JeuxVideos extends ProcessAbstract {
                 String userRating = element.select("div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)").text();
                 jeuVideo = new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description);
                 jeux.add(jeuVideo);
-                
-//                    System.out.println("");
-//                    System.out.println("-------------------------");
-//                    System.out.println(title);
-//                    System.out.println("\t"+urlJeuxVideo);
-//                    System.out.println("\t"+releaseDate);
-//                    System.out.println("\t"+rating);
-//                    System.out.println("\t"+userRating);
-//                    System.out.println("-------------------------");
-//                    System.out.println("\t"+description);
-//                    System.out.println("-------------------------");
             }
             callback.read(jeuVideo);
         }
