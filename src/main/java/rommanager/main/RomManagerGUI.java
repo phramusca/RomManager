@@ -540,6 +540,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             if(fillLists) {
 				List<String> consoles=tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
 				List<String> genres=tableModel.getRoms().values().stream().map(r -> r.getGame().getGenre()).distinct().collect(Collectors.toList());
+                //FIXME 2 Merge 3 ratings (or distinct ?)
 				List<String> ratings=tableModel.getRoms().values().stream().map(r -> String.valueOf(r.getGame().getRating())).distinct().collect(Collectors.toList());
                 DefaultListModel model = new DefaultListModel();
                 for(ExportFilesNumber element : ExportFilesNumber.values()) {

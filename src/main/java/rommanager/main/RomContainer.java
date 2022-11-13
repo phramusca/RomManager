@@ -31,6 +31,7 @@ public abstract class RomContainer {
     List<RomVersion> versions;
 	Console console;
 	private Game game = null;
+    private JeuVideo jeuVideo = null;
 	
 	RomContainer(Console console, String filename) throws IOException {
         this.filename = filename;
@@ -87,7 +88,6 @@ public abstract class RomContainer {
 		return console==null?"Unknown":console.getName();
 	}
 	
-    //FIXME !!! Make and use a getJeuVideo method
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
@@ -101,6 +101,20 @@ public abstract class RomContainer {
 		}
 		return game==null?new Game("","","", "", "", "", "", -1, "","", "", "", "", "", -1, "", false):game;
 	}
+    
+    public JeuVideo getJeuVideo() {
+        if(jeuVideo==null) {
+			List<JeuVideo> jeuxVideos = versions.stream()
+				.filter(v -> v.isExportable() && v.getJeuVideo()!=null && !v.getJeuVideo().getTitle().equals(""))
+				.map(v -> v.getJeuVideo())
+				.collect(Collectors.toList());
+
+            if(jeuxVideos.size()>0) {
+				jeuVideo = jeuxVideos.get(0);
+			}
+		}
+		return jeuVideo==null?new JeuVideo("", "", "", "", "", ""):jeuVideo;
+    }
 
 	public void setToCopyTrue() {
 		versions.forEach(v->v.setToCopy(false));

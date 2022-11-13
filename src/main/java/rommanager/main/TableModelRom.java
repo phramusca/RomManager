@@ -124,6 +124,7 @@ public class TableModelRom extends TableModelGeneric {
 			case 0: return icon!= null ? icon: new ImageIcon();
 			case 1: 
 				String name = romContainer.getGame().getName();
+                name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 3 Do not set Name column in ods file if not from game (gamelist.xml)
 				name=name.equals("")?romContainer.getFilename():name;
 				return "<html>"+name+"</html>";
 			case 2: 
@@ -135,7 +136,7 @@ public class TableModelRom extends TableModelGeneric {
 						.append(romContainer.getGame().getDeveloper()).append(" / ")
 						.append(romContainer.getGame().getPublisher())
 							.append("<BR/>").append("<BR/>")
-						.append(romContainer.getGame().getDesc())
+						.append(romContainer.getGame().getDesc().equals("")?romContainer.getJeuVideo().getDescription():romContainer.getGame().getDesc())
 						.append("</html>");
 				return builder.toString();
 			case 3: return romContainer.getConsoleStr();
