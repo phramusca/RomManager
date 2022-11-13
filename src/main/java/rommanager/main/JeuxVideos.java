@@ -52,10 +52,6 @@ public class JeuxVideos extends ProcessAbstract {
 		this.callback = progressBar;
 	}
 	
-	/**
-	 * 
-	 * Called by MainGUI
-	 */
     @Override
 	public void run() {
 		this.resetAbort();
@@ -102,11 +98,15 @@ public class JeuxVideos extends ProcessAbstract {
 	}
  	
 	private List<JeuVideo> read(Console console) throws InterruptedException, IOException {
-        List<JeuVideo> read = new ArrayList<>();
-        for (int page = 1; page < 10; page++) { //FIXME !!!! What if more or less pages ?
-            read.addAll(read(page, console));
+        List<JeuVideo> readAll = new ArrayList<>();
+        for (int page = 1; page < 100; page++) {
+            List<JeuVideo> readPage = read(page, console);
+            readAll.addAll(readPage);
+            if(readPage.size()<20) { //Nb of games by page
+                return readAll; // Last page, returns
+            }
         }
-        return read;
+        return readAll;
 	}
 		
 	private List<JeuVideo> read(int page, Console console) throws InterruptedException, IOException {
