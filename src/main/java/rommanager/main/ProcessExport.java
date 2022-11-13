@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import static rommanager.main.RomManager.TAG_JEUX_VIDEO;
 import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
@@ -50,6 +51,7 @@ public class ProcessExport extends ProcessAbstract {
 	
 	private List<RomContainer> romSourceList;
 	private List<File> romDestinationList;
+    private boolean onlyCultes;
 	
 	public ProcessExport(
 			String sourcePath, 
@@ -92,10 +94,21 @@ public class ProcessExport extends ProcessAbstract {
 			}
 			
 			//Get source roms & setToCopyTrue(true)
-			romSourceList = tableModel.getRoms().values()
-					.stream().filter(r->r.getConsole().isSelected() && r.getExportableVersions().size()>0)
+            if(onlyCultes) { //FIXME !!!! Handle when consoles with no tag TAG_JEUX_VIDEO at all
+                romSourceList = tableModel.getRoms().values()
+					.stream().filter(r->r.getConsole().isSelected() 
+                            && r.getExportableVersions().size()>0
+                            && r.getExportableVersions().get(0).getTags().contains(TAG_JEUX_VIDEO))
 					.peek(r -> r.setToCopyTrue())
 					.collect(Collectors.toList());
+            } 
+            if(!onlyCultes || romSourceList.size()<=0) {
+                romSourceList = tableModel.getRoms().values()
+					.stream().filter(r->r.getConsole().isSelected() 
+                            && r.getExportableVersions().size()>0)
+					.peek(r -> r.setToCopyTrue())
+					.collect(Collectors.toList());
+            }
 			
 			//Remove files on destination
 			this.checkAbort();
@@ -110,10 +123,6 @@ public class ProcessExport extends ProcessAbstract {
 			}
 
 			//Copy files to destination
-			romSourceList = romSourceList
-					.stream().filter(r->r.getConsole().isSelected() 
-							&& r.getExportableVersions().size()>0)
-					.collect(Collectors.toList());
 			String sourceFolder;
 			for(RomContainer romContainer : romSourceList) {
 				checkAbort();
@@ -168,7 +177,11 @@ public class ProcessExport extends ProcessAbstract {
 			callBack.completed();
 		}
 	}
-	
+
+    public void setOnlyCultes(boolean onlyCultes) {
+        this.onlyCultes = onlyCultes;
+    }
+    
 	//TODO: Use a Map instead ...
 	private boolean searchInSourceList(File file) throws InterruptedException {
 		

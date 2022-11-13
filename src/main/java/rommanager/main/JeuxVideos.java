@@ -33,6 +33,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import static rommanager.main.RomManager.TAG_JEUX_VIDEO;
 import rommanager.utils.FileSystem;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
@@ -102,7 +103,7 @@ public class JeuxVideos extends ProcessAbstract {
             //Assign read value to rom versions
             Collection<RomContainer> romCollection = tableModel.getRoms().values();
             callback.setup(romCollection.size());
-            String tagJeuxVideo = "Culte JeuxVideo.com";
+            
             for(RomContainer romContainer : romCollection) {
                 checkAbort();
                 callback.read(new JeuVideo("", romContainer.getFilename(), "", "", "", ""));
@@ -115,7 +116,7 @@ public class JeuxVideos extends ProcessAbstract {
                         boolean anyMatch = consoleJeuVideos.stream().anyMatch(r -> r.title.equals(romVersion.getName()));
                         if(anyMatch) {
                             JeuVideo jeuVideo = consoleJeuVideos.stream().filter(r -> r.title.equals(romVersion.getName())).collect(Collectors.toList()).get(0);
-                            romVersion.addTag(tagJeuxVideo);
+                            romVersion.addTag(TAG_JEUX_VIDEO);
                             romVersion.setJeuVideo(jeuVideo);
                         }
                     }

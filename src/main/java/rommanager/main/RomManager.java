@@ -25,6 +25,7 @@ import rommanager.utils.Options;
 public class RomManager {
 
     protected static Options options;
+    protected static final String TAG_JEUX_VIDEO = "Culte JeuxVideo.com";
     
     public static void main(String[] args) {
         options = new Options("RomManager.properties");

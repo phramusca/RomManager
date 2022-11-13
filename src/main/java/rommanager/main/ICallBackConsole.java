@@ -21,6 +21,6 @@ package rommanager.main;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public interface ICallBackConsole {
-	public void completed(boolean refresh);
+	public void completed(boolean refresh, boolean onlyCultes);
     public void cancelled();
 }

@@ -42,8 +42,9 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param callback  
 	 * @param displayRefresh  
      * @param buttonString  
+     * @param displayFilter  
 	 */
-	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh, String buttonString) {
+	public DialogConsole(java.awt.Frame parent, boolean modal, ICallBackConsole callback, boolean displayRefresh, String buttonString, boolean displayFilter) {
 		super(parent, modal);
 		initComponents();
 		Arrays.asList(Console.values()).
@@ -63,6 +64,9 @@ public class DialogConsole extends javax.swing.JDialog {
 			jRadioButtonOnlyNew.setVisible(false);
 			jRadioButtonRefreshSelected.setVisible(false);
 		}
+        if(!displayFilter) {
+            jCheckBoxOnlyCultes.setVisible(false);
+        }
 	}
 	
 	/** This method is called from within the constructor to
@@ -81,6 +85,7 @@ public class DialogConsole extends javax.swing.JDialog {
         jButtonAction = new javax.swing.JButton();
         jRadioButtonRefreshSelected = new javax.swing.JRadioButton();
         jRadioButtonOnlyNew = new javax.swing.JRadioButton();
+        jCheckBoxOnlyCultes = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -103,6 +108,9 @@ public class DialogConsole extends javax.swing.JDialog {
         jRadioButtonOnlyNew.setSelected(true);
         jRadioButtonOnlyNew.setText("Only add new"); // NOI18N
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("rommanager/main/Bundle"); // NOI18N
+        jCheckBoxOnlyCultes.setText(bundle.getString("DialogConsole.jCheckBoxOnlyCultes.text")); // NOI18N
+
         javax.swing.GroupLayout jPanelOptionsGenresLayout = new javax.swing.GroupLayout(jPanelOptionsGenres);
         jPanelOptionsGenres.setLayout(jPanelOptionsGenresLayout);
         jPanelOptionsGenresLayout.setHorizontalGroup(
@@ -110,10 +118,13 @@ public class DialogConsole extends javax.swing.JDialog {
             .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPaneOptionsMachines1, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneOptionsMachines1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsGenresLayout.createSequentialGroup()
                         .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButtonOnlyNew)
+                            .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
+                                .addComponent(jRadioButtonOnlyNew)
+                                .addGap(18, 18, 18)
+                                .addComponent(jCheckBoxOnlyCultes))
                             .addComponent(jRadioButtonRefreshSelected))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonAction)))
@@ -129,7 +140,9 @@ public class DialogConsole extends javax.swing.JDialog {
                         .addComponent(jButtonAction)
                         .addGap(13, 13, 13))
                     .addGroup(jPanelOptionsGenresLayout.createSequentialGroup()
-                        .addComponent(jRadioButtonOnlyNew)
+                        .addGroup(jPanelOptionsGenresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jRadioButtonOnlyNew)
+                            .addComponent(jCheckBoxOnlyCultes))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jRadioButtonRefreshSelected))))
         );
@@ -152,13 +165,15 @@ public class DialogConsole extends javax.swing.JDialog {
 
 		boolean refresh = getSelectedButtonText(buttonGroupListType).equals("Refresh");
 		
+        boolean onlyCultes = jCheckBoxOnlyCultes.isSelected();
+        
 		List<Console> selectedConsoles = (List<Console>)jListConsoles.getSelectedValuesList();
         selectedConsoles.forEach(console -> {
             console.setSelected(true);
         });
-         manualExit = false;
+        manualExit = false;
 		dispose();
-		callback.completed(refresh);
+		callback.completed(refresh, onlyCultes);
     }//GEN-LAST:event_jButtonActionActionPerformed
 	
 	private String getSelectedButtonText(ButtonGroup buttonGroup) {
@@ -180,8 +195,9 @@ public class DialogConsole extends javax.swing.JDialog {
 	 * @param callback
 	 * @param displayRefresh
      * @param buttonString
+     * @param displayFilter
 	 */
-	public static void main(JFrame parent, ICallBackConsole callback, boolean displayRefresh, String  buttonString) {
+	public static void main(JFrame parent, ICallBackConsole callback, boolean displayRefresh, String  buttonString, boolean displayFilter) {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -201,7 +217,7 @@ public class DialogConsole extends javax.swing.JDialog {
 		//</editor-fold>
 
         java.awt.EventQueue.invokeLater(() -> {
-            DialogConsole dialog = new DialogConsole(parent, true, callback, displayRefresh, buttonString );
+            DialogConsole dialog = new DialogConsole(parent, true, callback, displayRefresh, buttonString, displayFilter);
             dialog.setLocationRelativeTo(parent);
             dialog.addWindowListener(new WindowAdapter()
             {
@@ -220,6 +236,7 @@ public class DialogConsole extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroupListType;
     private javax.swing.JButton jButtonAction;
+    private javax.swing.JCheckBox jCheckBoxOnlyCultes;
     private static javax.swing.JList jListConsoles;
     private javax.swing.JPanel jPanelOptionsGenres;
     private javax.swing.JRadioButton jRadioButtonOnlyNew;

@@ -488,12 +488,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();		
-		DialogConsole.main(this, new CallBackDialogConsoleScan(), true, "Scan Source");
+		DialogConsole.main(this, new CallBackDialogConsoleScan(), true, "Scan Source", false);
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
 	private class CallBackDialogConsoleScan implements ICallBackConsole {
 		@Override
-		public void completed(boolean refresh) {
+		public void completed(boolean refresh, boolean onlyCultes) {
 			processList.start(refresh);
 		}
 
@@ -582,12 +582,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processExport = new ProcessExport(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
-		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync");
+		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync", true);
     }//GEN-LAST:event_jButtonExportActionPerformed
 
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
 		@Override
-		public void completed(boolean refresh) {
+		public void completed(boolean refresh, boolean onlyCultes) {
+            processExport.setOnlyCultes(onlyCultes);
 			processExport.start();
 		}
 
@@ -742,12 +743,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
         processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
         processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
         processList.browseNbFiles();
-        DialogConsole.main(this, new CallBackDialogConsoleScore(), false, "Set Score");
+        DialogConsole.main(this, new CallBackDialogConsoleScore(), false, "Set Score", false);
     }//GEN-LAST:event_jButtonScoreActionPerformed
 
     private class CallBackDialogConsoleScore implements ICallBackConsole {
 		@Override
-		public void completed(boolean refresh) {
+		public void completed(boolean refresh, boolean onlyCultes) {
             //FIXME 6 option : set best as exportable OR leave exportable flag unchanged
             int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
             "Please Confirm",  //NOI18N
