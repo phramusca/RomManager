@@ -29,6 +29,7 @@ import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -87,7 +88,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		
 		disableGUI("Reading ods file: ");
 		new ReadOds(() -> {
-            enableGUI();
+            enableGuiAndFilter();
         }, jTextFieldPathSource.getText()).start();
     }
 
@@ -483,7 +484,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		File file = new File(sourcePath);
 		if(!file.exists()) {
 			Popup.warning("Source path does not exist.");
-			enableGUI();
+            enableGUI();
 			return;
 		}
 		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
@@ -499,30 +500,72 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         @Override
         public void cancelled() {
-            enableGUI(true);
+            enableGUI();
         }
 	}
 	
 	private class CallBackProcess implements ICallBackProcess {
 		@Override
 		public void completed() {
-			enableGUI();
+			enableGuiAndFilter();
 		}
 	}
-	
-	private static void filter() {
-        filter(true);
+    
+    private static void fillFilters() {
+        isListFilterManualChange = false;
+        fillFilterConsole();
+        fillFilterGenre();
+        fillFilterRating();
+        fillFilterNumberFilesExport();
+        isListFilterManualChange = true;
+    }
+    
+    private static void fillFilterConsole() {
+        List<String> consoles = tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
+        jListFilterConsole.setModel(getModel(consoles));
+        jListFilterConsole.setSelectedIndex(0);
+    }
+    
+    private static DefaultListModel fillFilterGenre() {
+        String selectedConsole = (String) jListFilterConsole.getSelectedValue();
+        List<String> genres = tableModel.getRoms().values().stream()
+                .filter(r -> selectedConsole.equals("All") || r.console.getName().equals(selectedConsole))
+                .map(r -> r.getGame().getGenre())
+                .distinct().collect(Collectors.toList());
+        final DefaultListModel model = getModel(genres);
+        jListFilterGenre.setModel(model);
+        jListFilterGenre.setSelectedIndex(0);
+        return model;
+    }
+    
+    private static void fillFilterRating() {
+        //FIXME 2 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
+        String selectedConsole = (String) jListFilterConsole.getSelectedValue();
+        String selectedGenre = (String) jListFilterGenre.getSelectedValue();
+        List<String> ratings = tableModel.getRoms().values().stream()
+                .filter(r -> (selectedConsole.equals("All") || r.console.getName().equals(selectedConsole))
+                        && (selectedGenre.equals("All") || r.getGame().getGenre().equals(selectedGenre)))
+                .map(r -> String.valueOf(r.getGame().getRating()))
+                .distinct().collect(Collectors.toList());
+        jListFilterRating.setModel(getModel(ratings));
+        jListFilterRating.setSelectedIndex(0);
+    }
+    
+    private static void fillFilterNumberFilesExport() {
+        DefaultListModel model = new DefaultListModel();
+        for(ExportFilesNumber element : ExportFilesNumber.values()) {
+            model.addElement(element);
+        }
+        jListFilterNumberFilesExport.setModel(model);
+        jListFilterNumberFilesExport.setSelectedValue(ExportFilesNumber.MORE_THAN_ZERO, true);
     }
     
 	private static final TableRowFilter filterVideo= new TableRowFilter();
 	
-    private static void filter(boolean fillLists) {
-//        TableRowSorter<TableModelVideo> tableSorter
+    private static void filter() {
         //Enable row tableSorter (cannot be done if model is empty)
         if(tableModel.getRowCount()>0) {
-            //Enable auto sorter
             jTableRom.setAutoCreateRowSorter(true);
-            //Get sorter
             TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
             jTableRom.setRowSorter(tableSorter);
             //Sort by console, name  (Debug display problem before enabling)
@@ -536,27 +579,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 //            tableSorter.setSortable(4, false); // Synopsis
             //Filter, Apply current filter
             tableSorter.setRowFilter(filterVideo);
-
-            if(fillLists) {
-				List<String> consoles=tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
-				List<String> genres=tableModel.getRoms().values().stream().map(r -> r.getGame().getGenre()).distinct().collect(Collectors.toList());
-                //FIXME 2 Merge 3 ratings (or distinct ?)
-				List<String> ratings=tableModel.getRoms().values().stream().map(r -> String.valueOf(r.getGame().getRating())).distinct().collect(Collectors.toList());
-                DefaultListModel model = new DefaultListModel();
-                for(ExportFilesNumber element : ExportFilesNumber.values()) {
-                    model.addElement(element);
-                }
-               
-				jListFilterConsole.setModel(getModel(consoles));
-				jListFilterGenre.setModel(getModel(genres));
-				jListFilterRating.setModel(getModel(ratings));
-                jListFilterNumberFilesExport.setModel(model);
-
-				jListFilterConsole.setSelectedIndex(0);
-				jListFilterGenre.setSelectedIndex(0);
-				jListFilterRating.setSelectedIndex(0);
-                jListFilterNumberFilesExport.setSelectedValue(ExportFilesNumber.MORE_THAN_ZERO, true);
-            }
         }
         else {
             jTableRom.setAutoCreateRowSorter(false);
@@ -594,7 +616,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         @Override
         public void cancelled() {
-            enableGUI(true);
+            enableGUI();
         }
 	}
 	
@@ -605,9 +627,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		enableGUI(false);
 	}
 	
-	public void enableGUI() {
+	public void enableGuiAndFilter() {
 		enableGUI(true);
-		filter();
+		fillFilters();
+        filter();
+	}
+    
+    public void enableGUI() {
+		enableGUI(true);
 	}
 	
 	private static void enableGUI(boolean enable) {
@@ -731,8 +758,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
-	
-        disableGUI("Setting score : ");
+	    disableGUI("Setting score : ");
         String sourcePath = jTextFieldPathSource.getText();
         File file = new File(sourcePath);
         if(!file.exists()) {
@@ -762,7 +788,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         @Override
         public void cancelled() {
-            enableGUI(true);
+            enableGUI();
         }
 	}
     
@@ -797,24 +823,40 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		new SaveOds(new CallBackProcess(), sourcePath).start();
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
+    private static boolean isListFilterManualChange = true;
+    
     private void jListFilterConsoleValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterConsoleValueChanged
         if(jListFilterConsole.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
             filterVideo.displayByConsole((String) jListFilterConsole.getSelectedValue());
-            filter(false);
+            if(isListFilterManualChange) {
+//                ListModel previousFilterGenre = jListFilterGenre.getModel();
+//                DefaultListModel newFilterGenre = fillFilterGenre();
+//                if(newFilterGenre.equals(previousFilterGenre)) {
+//                    
+//                }
+//                filter();
+                fillFilterGenre();
+            }
         }
     }//GEN-LAST:event_jListFilterConsoleValueChanged
 
     private void jListFilterGenreValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterGenreValueChanged
         if(jListFilterGenre.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
             filterVideo.displayByGenre((String) jListFilterGenre.getSelectedValue());
-            filter(false);
+            if(isListFilterManualChange) {
+//                filter();
+                fillFilterRating();
+            }
         }
     }//GEN-LAST:event_jListFilterGenreValueChanged
 
     private void jListFilterRatingValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterRatingValueChanged
         if(jListFilterRating.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
             filterVideo.displayByRating((String) jListFilterRating.getSelectedValue());
-            filter(false);
+            if(isListFilterManualChange) {
+//                filter();
+                fillFilterNumberFilesExport();
+            }
         }
     }//GEN-LAST:event_jListFilterRatingValueChanged
 
@@ -829,18 +871,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jListFilterNumberFilesExportValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterNumberFilesExportValueChanged
         if(jListFilterNumberFilesExport.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
             filterVideo.displayByNumberExportFiles((ExportFilesNumber) jListFilterNumberFilesExport.getSelectedValue());
-            filter(false);
+            if(isListFilterManualChange) {
+                filter();
+            }
         }
     }//GEN-LAST:event_jListFilterNumberFilesExportValueChanged
 
     private void jButtonReadJeuxVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJeuxVideoActionPerformed
         disableGUI("Reading jeuxvideo.com : ");
         String sourcePath = jTextFieldPathSource.getText();
-		JeuxVideos jeuxVideos = new JeuxVideos(new CallBack(), tableModel, progressBar, sourcePath);
+		JeuxVideos jeuxVideos = new JeuxVideos(new CallBackJeuxVideo(), tableModel, progressBar, sourcePath);
 		jeuxVideos.start();
     }//GEN-LAST:event_jButtonReadJeuxVideoActionPerformed
     
-    class CallBack implements ICallBack {
+    class CallBackJeuxVideo implements ICallBack {
 
         //FIXME: Remove setup and read methods, use progressBar instead
         
@@ -856,19 +900,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		
 		@Override
 		public void completed() {
-            enableGUI(true);
+            enableGuiAndFilter();
 		}
 
 		@Override
 		public void interrupted() {
 			Popup.info("Canceled");
-            enableGUI(true);
+            enableGUI();
 		}
 
 		@Override
 		public void error(Exception ex) {
             Popup.info("Error: " + ex.getLocalizedMessage());
-			enableGUI(true);
+			enableGUI();
 		}
 	}
     
