@@ -31,6 +31,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -568,17 +570,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
             jTableRom.setAutoCreateRowSorter(true);
             TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
             jTableRom.setRowSorter(tableSorter);
-            //Sort by console, name  (Debug display problem before enabling)
-//            List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-//            sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-//            sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-//            tableSorter.setSortKeys(sortKeys);
-            //Désactive le tri pour
-//            tableSorter.setSortable(0, false); // Checkbox
-//            tableSorter.setSortable(1, false); // Thumbnail
-//            tableSorter.setSortable(4, false); // Synopsis
             //Filter, Apply current filter
             tableSorter.setRowFilter(filterVideo);
+            //Sort by console, name  (Debug display problem before enabling)
+            List <RowSorter.SortKey> sortKeys = new ArrayList<>();
+            sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+            sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+            tableSorter.setSortKeys(sortKeys);
+            //Désactive le tri pour
+            tableSorter.setSortable(0, false); // Thumbnail
+            tableSorter.setSortable(2, false); // Description
         }
         else {
             jTableRom.setAutoCreateRowSorter(false);
