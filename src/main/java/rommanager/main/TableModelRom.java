@@ -20,6 +20,7 @@ import java.io.IOException;
 import rommanager.utils.TableModelGeneric;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
@@ -33,15 +34,19 @@ import static rommanager.main.ProcessList.allowedExtensions;
 public class TableModelRom extends TableModelGeneric {
 
 	private Map<String, RomContainer> roms;
+    private List<RomContainer> filteredRoms;
 //    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
+    TableFilter tableFilter;
     
     /**
 	 * Create the table model
 	 */
 	public TableModelRom() {
         this.roms = new LinkedHashMap<>();
+        this.filteredRoms = new ArrayList<>();
+        this.tableFilter = new TableFilter();
         setColumns();
 	}
 
@@ -90,7 +95,7 @@ public class TableModelRom extends TableModelGeneric {
 	 * @return
 	 */
 	public RomContainer getRom(int index) {
-		return (new ArrayList<>(roms.values())).get(index);
+        return filteredRoms.get(index);
 	}
 
     /**
@@ -111,7 +116,7 @@ public class TableModelRom extends TableModelGeneric {
     
     @Override
     public int getRowCount() {
-        return this.roms.values().size();
+        return this.filteredRoms.size();
     }
 
     @Override
@@ -183,6 +188,7 @@ public class TableModelRom extends TableModelGeneric {
 	 */
 	public void clear() {
 		this.roms = new LinkedHashMap<>();
+   		this.filteredRoms = new ArrayList<>();
         this.lengthSelected=0;
         this.nbSelected=0;
         //Update table
@@ -219,13 +225,9 @@ public class TableModelRom extends TableModelGeneric {
 			}
 		}
 	}
-	
-	/**
-	 *
-	 * @param file
-	 */
-	public void removeRow(RomContainer7z file){
-		roms.remove(file.getFilename());
-		this.fireTableDataChanged();
+
+    void filter() {
+        this.filteredRoms = tableFilter.getFiltered(roms.values());
+        this.fireTableDataChanged();
     }
 }

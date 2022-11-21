@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 phramusca ( https://github.com/phramusca/JaMuz/ )
+ * Copyright (C) 2022 raph
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package rommanager.main;
 
-import javax.swing.RowFilter;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
- * @author phramusca ( https://github.com/phramusca/JaMuz/ )
+ * @author raph
  */
-
-//TODO: Include this in TableModelRom, so we can refresh table (fire) when filter changes
-public class TableRowFilter extends RowFilter {
+public class TableFilter {
 
     private String console = null;
     private String genre = null;
@@ -60,14 +60,14 @@ public class TableRowFilter extends RowFilter {
     
 	/**
 	 *
-	 * @param genre
+	 * @param console
 	 */
-	public void displayByConsole(String genre) {
-        if(genre.equals("All")) {
+	public void displayByConsole(String console) {
+        if(console.equals("All")) {
             this.console=null;
         }
         else {
-            this.console=genre;
+            this.console=console;
         }
     }
     
@@ -75,45 +75,40 @@ public class TableRowFilter extends RowFilter {
         this.exportFilesNumber=exportFilesNumber;
     }
     
-    @Override
-    public boolean include(Entry entry) {
-        RomContainer romFile = (RomContainer) entry.getValue(6);
-        
-        return isToDisplayConsole(romFile.getConsoleStr())
-                && isToDisplayGenre(romFile.getGame().getGenre())
-                && isToDisplayRating(String.valueOf(romFile.getGame().getRating()))
-                && isToDisplayNumberExportFiles(romFile.getExportableVersions().size());
-    } 
-    
-    private boolean isToDisplayConsole(String console) {
-        return this.console==null ? true : console.equals(this.console);
-    }
-    
-    private boolean isToDisplayGenre(String genre) {
-        return this.genre==null ? true : genre.equals(this.genre);
-    }
-    
-    private boolean isToDisplayRating(String rating) {
-        return this.rating==null ? true : rating.equals(this.rating);
-    }
-
-    private boolean isToDisplayNumberExportFiles(int size) {
+    List<RomContainer> getFiltered(Collection<RomContainer> values) {
+        Stream<RomContainer> stream = values.stream();
+        if(this.console!=null) {
+            stream = stream.filter(r -> r.console.getName().equals(this.console));
+        }
+        if(this.genre!=null) {
+            stream = stream.filter(r -> r.getGame().getGenre().equals(this.genre));
+        }
+        if(this.rating!=null) {
+            stream = stream.filter(r -> String.valueOf(r.getGame().getRating()).equals(this.rating));
+        }
         switch(exportFilesNumber) {
             case ALL:
-                return true;
+                break;
             case LESS_OR_EQUAL_ZERO:
-                return size<=0;
+                stream = stream.filter(r -> r.getExportableVersions().size()<=0);
+                break;
             case MORE_THAN_ONE:
-                return size>1;
+                stream = stream.filter(r -> r.getExportableVersions().size()>1);
+                break;
             case MORE_THAN_ZERO:
-                return size>0;
+                stream = stream.filter(r -> r.getExportableVersions().size()>0);
+                break;
             case ONE:
-                return size==1;
+                stream = stream.filter(r -> r.getExportableVersions().size()==1);
+                break;
         }
-        // Should never happen, 
-        // but in case it does, 
-        // we do not want to hide 
-        return true; 
+        stream = stream.sorted((RomContainer o1, RomContainer o2) -> {
+            int ConsoleCompare = o1.console.getName().compareTo(o2.console.getName());
+            return (ConsoleCompare == 0)
+                    ? o1.getGame().getName().compareTo(o2.getGame().getName())
+                    : ConsoleCompare;
+        });
+        return stream.collect(Collectors.toList());
     }
     
     public enum ExportFilesNumber {

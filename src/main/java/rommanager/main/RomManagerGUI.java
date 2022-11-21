@@ -29,16 +29,12 @@ import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
-import rommanager.main.TableRowFilter.ExportFilesNumber;
+import rommanager.main.TableFilter.ExportFilesNumber;
 import rommanager.utils.ProcessAbstract;
 
 /**
@@ -561,31 +557,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterNumberFilesExport.setModel(model);
         jListFilterNumberFilesExport.setSelectedValue(ExportFilesNumber.MORE_THAN_ZERO, true);
     }
-    
-	private static final TableRowFilter filterVideo= new TableRowFilter();
-	
-    private static void filter() {
-        //Enable row tableSorter (cannot be done if model is empty)
-        if(tableModel.getRowCount()>0) {
-            jTableRom.setAutoCreateRowSorter(true);
-            TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
-            jTableRom.setRowSorter(tableSorter);
-            //Filter, Apply current filter
-            tableSorter.setRowFilter(filterVideo);
-            //Sort by console, name  (Debug display problem before enabling)
-            List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-            sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-            sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-            tableSorter.setSortKeys(sortKeys);
-            //Désactive le tri pour
-            tableSorter.setSortable(0, false); // Thumbnail
-            tableSorter.setSortable(2, false); // Description
-        }
-        else {
-            jTableRom.setAutoCreateRowSorter(false);
-        }
-    }
-	
+
     private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
         disableGUI("Exporting : ");
 		String exportPath = jTextFieldPathExport.getText();
@@ -631,7 +603,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	public void enableGuiAndFilter() {
 		enableGUI(true);
 		fillFilters();
-        filter();
+        tableModel.filter();
 	}
     
     public void enableGUI() {
@@ -828,14 +800,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     
     private void jListFilterConsoleValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterConsoleValueChanged
         if(jListFilterConsole.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
-            filterVideo.displayByConsole((String) jListFilterConsole.getSelectedValue());
+            tableModel.tableFilter.displayByConsole((String) jListFilterConsole.getSelectedValue());
             if(isListFilterManualChange) {
-//                ListModel previousFilterGenre = jListFilterGenre.getModel();
-//                DefaultListModel newFilterGenre = fillFilterGenre();
-//                if(newFilterGenre.equals(previousFilterGenre)) {
-//                    
-//                }
-//                filter();
                 fillFilterGenre();
             }
         }
@@ -843,9 +809,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void jListFilterGenreValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterGenreValueChanged
         if(jListFilterGenre.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
-            filterVideo.displayByGenre((String) jListFilterGenre.getSelectedValue());
+            tableModel.tableFilter.displayByGenre((String) jListFilterGenre.getSelectedValue());
             if(isListFilterManualChange) {
-//                filter();
                 fillFilterRating();
             }
         }
@@ -853,9 +818,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void jListFilterRatingValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterRatingValueChanged
         if(jListFilterRating.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
-            filterVideo.displayByRating((String) jListFilterRating.getSelectedValue());
+            tableModel.tableFilter.displayByRating((String) jListFilterRating.getSelectedValue());
             if(isListFilterManualChange) {
-//                filter();
                 fillFilterNumberFilesExport();
             }
         }
@@ -871,9 +835,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void jListFilterNumberFilesExportValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterNumberFilesExportValueChanged
         if(jListFilterNumberFilesExport.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
-            filterVideo.displayByNumberExportFiles((ExportFilesNumber) jListFilterNumberFilesExport.getSelectedValue());
+            tableModel.tableFilter.displayByNumberExportFiles((ExportFilesNumber) jListFilterNumberFilesExport.getSelectedValue());
             if(isListFilterManualChange) {
-                filter();
+                tableModel.filter();
             }
         }
     }//GEN-LAST:event_jListFilterNumberFilesExportValueChanged
