@@ -43,7 +43,8 @@ import rommanager.utils.ProcessAbstract;
  */
 public class RomManagerGUI extends javax.swing.JFrame {
 
-    private final ProgressBar progressBar; //FIXME 1 Add another (more?) progress bar for console.values() progress
+    private final ProgressBar progressBarGame;
+    private final ProgressBar progressBarConsole;
     private static TableModelRom tableModel;
     
 	private ProcessList processList;
@@ -60,7 +61,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jTextFieldPathExport.setText(RomManager.options.get("romset.exportPath"));
 		jTextFieldPathSource.setText(RomManager.options.get("romset.sourcePath"));
         
-        progressBar = (ProgressBar)jProgressBar1;
+        progressBarGame = (ProgressBar)jProgressBarGame;
+        progressBarConsole = (ProgressBar)jProgressBarConsole;
         
 		jTableRom.setRowHeight(IconBuffer.ICON_HEIGHT);
 		
@@ -125,7 +127,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		@Override
 		public void run() {
-			RomManagerOds.readFile(tableModel, progressBar, sourceFolder);
+			RomManagerOds.readFile(tableModel, progressBarGame, sourceFolder);
 			callBack.completed();
 		}
 	}
@@ -152,7 +154,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonOptionSelectFolderSource = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jProgressBar1 = new ProgressBar();
+        jProgressBarGame = new ProgressBar();
         jButtonScanSource = new javax.swing.JButton();
         jButtonScore = new javax.swing.JButton();
         jButtonExport = new javax.swing.JButton();
@@ -161,6 +163,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
         jButtonReadJeuxVideo = new javax.swing.JButton();
+        jProgressBarConsole = new ProgressBar();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre1 = new javax.swing.JScrollPane();
@@ -206,8 +209,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jLabel2.setText("Destination folder:");
 
-        jProgressBar1.setString(""); // NOI18N
-        jProgressBar1.setStringPainted(true);
+        jProgressBarGame.setString(""); // NOI18N
+        jProgressBarGame.setStringPainted(true);
 
         jButtonScanSource.setText("Scan Source"); // NOI18N
         jButtonScanSource.addActionListener(new java.awt.event.ActionListener() {
@@ -262,6 +265,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jProgressBarConsole.setString(""); // NOI18N
+        jProgressBarConsole.setStringPainted(true);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -269,35 +275,37 @@ public class RomManagerGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabelAction, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextFieldPathSource)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonOptionSelectFolderSource))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jTextFieldPathSource)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonOptionSelectFolderSource))
+                            .addComponent(jTextFieldPathExport)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextFieldPathExport)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(84, 84, 84)
+                                .addGap(123, 123, 123)
                                 .addComponent(jButtonScanSource)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonScore)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonExport)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(18, 18, 18)
                                 .addComponent(jButtonReadGameList)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonReadJeuxVideo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(3, 3, 3)))
+                                .addComponent(jButtonReadJeuxVideo))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabelAction)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jProgressBarConsole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
+                                    .addComponent(jProgressBarGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButtonAbort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButtonOptionSelectFolderExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -324,11 +332,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonReadGameList)
                     .addComponent(jButtonSave)
                     .addComponent(jButtonReadJeuxVideo))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonAbort)
-                    .addComponent(jLabelAction))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jProgressBarConsole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jProgressBarGame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelAction)))
+                    .addComponent(jButtonAbort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -384,13 +396,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+                .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
         );
 
         jSplitPane2.setLeftComponent(jPanel3);
@@ -437,14 +449,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButtonAuto)
                 .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jButtonAuto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
         );
 
         jSplitPane1.setRightComponent(jPanel2);
@@ -484,7 +496,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
 			return;
 		}
-		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
 		processList.browseNbFiles();		
 		DialogConsole.main(this, new CallBackDialogConsoleScan(), true, "Scan Source", false);
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
@@ -573,8 +585,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processExport = new ProcessExport(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
-		processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+		processExport = new ProcessExport(sourcePath, exportPath, progressBarGame, tableModel, new CallBackProcess());
+		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
 		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync", true);
     }//GEN-LAST:event_jButtonExportActionPerformed
@@ -699,7 +711,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-		processRead = new ProcessRead(sourcePath, exportPath, progressBar, tableModel, new CallBackProcess());
+		processRead = new ProcessRead(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
 		processRead.start();
     }
     
@@ -738,8 +750,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-        processSetScore = new ProcessSetScore(progressBar, tableModel, new CallBackProcess(), sourcePath);
-        processList = new ProcessList(sourcePath, progressBar, tableModel, new CallBackProcess());
+        processSetScore = new ProcessSetScore(progressBarGame, tableModel, new CallBackProcess(), sourcePath);
+        processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
         processList.browseNbFiles();
         DialogConsole.main(this, new CallBackDialogConsoleScore(), false, "Set Score", false);
     }//GEN-LAST:event_jButtonScoreActionPerformed
@@ -844,7 +856,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonReadJeuxVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJeuxVideoActionPerformed
         disableGUI("Reading jeuxvideo.com : ");
         String sourcePath = jTextFieldPathSource.getText();
-		JeuxVideos jeuxVideos = new JeuxVideos(new CallBackJeuxVideo(), tableModel, progressBar, sourcePath);
+		JeuxVideos jeuxVideos = new JeuxVideos(new CallBackJeuxVideo(), tableModel, progressBarGame, sourcePath);
 		jeuxVideos.start();
     }//GEN-LAST:event_jButtonReadJeuxVideoActionPerformed
     
@@ -854,12 +866,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
         
 		@Override
 		public void setup(int size) {
-			progressBar.setup(size);
+			progressBarGame.setup(size);
 		}
 		
 		@Override
 		public void read(JeuVideo jeuVideo) {
-			progressBar.progress(jeuVideo.title);
+			progressBarGame.progress(jeuVideo.title);
 		}
 		
 		@Override
@@ -890,9 +902,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 		@Override
 		public void run() {
-			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar, sourceFolder);
-			progressBar.reset();
+			progressBarGame.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBarGame, sourceFolder);
+			progressBarGame.reset();
 			callBack.completed();
 		}
 	}
@@ -973,7 +985,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private static javax.swing.JProgressBar jProgressBar1;
+    private static javax.swing.JProgressBar jProgressBarConsole;
+    private static javax.swing.JProgressBar jProgressBarGame;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JScrollPane jScrollPaneCheckTags1;
     private javax.swing.JScrollPane jScrollPaneSelectGenre1;

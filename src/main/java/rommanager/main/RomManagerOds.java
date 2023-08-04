@@ -176,8 +176,8 @@ public class RomManagerOds {
     }
     
 	public static void readFile( 
-			TableModelRom model, 
-			ProgressBar progressBar, String sourceFolder) {
+			TableModelRom model,
+			ProgressBar progressBarGame, String sourceFolder) {
 	
 		//TODO Eventually Let user choose ods file !
 		// Currently, it opens latest one
@@ -201,7 +201,7 @@ public class RomManagerOds {
 			SpreadSheet spreadSheet = SpreadSheet.createFromFile(odsFile);
 			Sheet sheet = spreadSheet.getSheet(SHEET_NAME);
 			int nRowCount = sheet.getRowCount();
-			progressBar.setup(nRowCount-1);	
+			progressBarGame.setup(nRowCount-1);	
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
 				Console console=null;
@@ -266,9 +266,9 @@ public class RomManagerOds {
                 romVersion.setJeuVideo(jeuVideo);
                 
 				model.getRoms().get(filename).getVersions().add(romVersion);
-				progressBar.progress(filename);
+				progressBarGame.progress(filename);
 			}
-			progressBar.reset();
+			progressBarGame.reset();
 		} catch (IOException ex) {
 			Logger.getLogger(RomManagerOds.class.getName())
 					.log(Level.SEVERE, null, ex);

@@ -38,20 +38,23 @@ public class ProcessRead extends ProcessAbstract {
 
     private final String sourcePath;
 	private final String exportPath;
-	private final ProgressBar progressBar;
+    private final ProgressBar progressBarConsole;
+	private final ProgressBar progressBarGame;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
 	public ProcessRead(
             String sourcePath,
 			String exportPath, 
-			ProgressBar progressBar, 
+            ProgressBar progressBarConsole, 
+			ProgressBar progressBarGame, 
 			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessRead");
         this.sourcePath = sourcePath;
 		this.exportPath = exportPath;
-		this.progressBar = progressBar;
+        this.progressBarConsole = progressBarConsole;
+		this.progressBarGame = progressBarGame;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 	}
@@ -63,8 +66,10 @@ public class ProcessRead extends ProcessAbstract {
 		try {
             //Read all gamelist.xml files from both local and export folders
 			Map<String, Game> games = new HashMap<>();
+            progressBarConsole.setup(Console.values().length);
 			for(Console console : Console.values()) {
 				checkAbort();
+                progressBarConsole.progress(console.getName());
 //                File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
 //                Map<String, Game> gamesLocal = read(localFile);
@@ -84,9 +89,10 @@ public class ProcessRead extends ProcessAbstract {
 //                save(gamesLocal, localFile);
                 games.putAll(gamesRemote);
 			}
-			
+			progressBarConsole.reset();
+            
             //Match gamelist.xml read with local files and display information
-			progressBar.setup(tableModel.getRoms().size());
+			progressBarGame.setup(tableModel.getRoms().size());
 			String consolePath;
 			for(RomContainer romContainer : tableModel.getRoms().values()) {
 				checkAbort();
@@ -102,16 +108,16 @@ public class ProcessRead extends ProcessAbstract {
 						romVersion.setGame(game);
 					}
 				}
-				progressBar.progress(romContainer.getFilename());
+				progressBarGame.progress(romContainer.getFilename());
 			}
 			tableModel.fireTableDataChanged();
 			
-            progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
-			progressBar.reset();
+            progressBarGame.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
+			progressBarGame.reset();
             
 			Popup.info("Reading complete.");
-			progressBar.reset();
+			progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} finally {
@@ -203,7 +209,7 @@ public class ProcessRead extends ProcessAbstract {
             return games;
         }
         ArrayList<Element> elements = XML.getElements(doc, "game");
-        progressBar.setup(elements.size());
+        progressBarGame.setup(elements.size());
         int playCounter;
         float ratingLocal;
         for(Element element : elements) {
@@ -234,7 +240,7 @@ public class ProcessRead extends ProcessAbstract {
                             XML.getElementValue(element, "favorite")),
                     timestamp);
             games.put(FilenameUtils.getBaseName(game.getPath()), game);
-            progressBar.progress(game.getName());
+            progressBarGame.progress(game.getName());
         }
         return games;
 	}

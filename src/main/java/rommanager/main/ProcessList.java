@@ -35,7 +35,8 @@ import rommanager.utils.ProgressBar;
 public class ProcessList extends ProcessAbstract {
 
 	private final String sourcePath;
-	private final ProgressBar progressBar;
+    private final ProgressBar progressBarConsole;
+	private final ProgressBar progressBarGame;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
     private	boolean refresh;
@@ -49,15 +50,18 @@ public class ProcessList extends ProcessAbstract {
             add("vb"); // virtualboy
         }
     };	
+    
 		
 	public ProcessList(
 			String sourcePath, 
+            ProgressBar progressBarConsole, 
 			ProgressBar progressBar, 
 			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessList");
 		this.sourcePath = sourcePath;
-		this.progressBar = progressBar;
+		this.progressBarConsole = progressBarConsole;
+        this.progressBarGame = progressBar;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 	}
@@ -73,9 +77,11 @@ public class ProcessList extends ProcessAbstract {
 					nbSelected+=console.getNbFiles();
 				}
 			}
-			progressBar.setup(nbSelected);
+			progressBarGame.setup(nbSelected);
+            progressBarConsole.setup(Console.values().length);
 			for(Console console : Console.values()) {
-				checkAbort();
+                checkAbort();
+                progressBarConsole.progress(console.getName());
 				if(console.isSelected()) {
 					list(console, FilenameUtils.concat(sourcePath, console.name()));
 				}
@@ -84,21 +90,22 @@ public class ProcessList extends ProcessAbstract {
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} finally {
-			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
-			progressBar.reset();
+			progressBarConsole.reset();
+            progressBarGame.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
+			progressBarGame.reset();
 			callBack.completed();
 		}
 	}
 	
 	void browseNbFiles() {				
-		progressBar.setIndeterminate("Getting number of files");
+		progressBarGame.setIndeterminate("Getting number of files");
 		for(Console console : Console.values()) {
 			nbFiles=0;
 			browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
 			console.setNbFiles(nbFiles);
 		}
-		progressBar.reset();
+		progressBarGame.reset();
 	}
 
 	private void list(Console console, String path) throws InterruptedException {
@@ -117,13 +124,13 @@ public class ProcessList extends ProcessAbstract {
 			tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
 		}
 		browseFoldersFS(console, path, new File(path));
-        progressBar.setup(flatContainers.values().size());
+        progressBarGame.setup(flatContainers.values().size());
 		for(RomContainerFlat romAmstrad : flatContainers.values()) {
 			checkAbort();
 			romAmstrad.setExportableVersions();
 			tableModel.addRow(romAmstrad);
             String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
-			progressBar.progress(msg);
+			progressBarGame.progress(msg);
 		}  
 	}
 	
@@ -166,7 +173,7 @@ public class ProcessList extends ProcessAbstract {
 		for (File file : files) {
 			checkAbort();
 			String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
-			progressBar.progress(msg);
+			progressBarGame.progress(msg);
 			if (file.isDirectory()) {
 				browseFoldersFS(
 						console,
@@ -184,7 +191,7 @@ public class ProcessList extends ProcessAbstract {
                             romSevenZipFile = 
                                     new RomContainer7z(
                                             console, FilenameUtils.getName(file.getAbsolutePath()));
-                            romSevenZipFile.setVersions(progressBar, FilenameUtils.getFullPath(file.getAbsolutePath()));
+                            romSevenZipFile.setVersions(progressBarGame, FilenameUtils.getFullPath(file.getAbsolutePath()));
                             tableModel.addRow(romSevenZipFile);
                         } 
                     } catch (IOException | OutOfMemoryError ex) {
