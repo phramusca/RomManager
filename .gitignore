@@ -31,3 +31,5 @@ RomManager*.ods
 target/
 
 jeuxVideos.json
+
+*.ods#

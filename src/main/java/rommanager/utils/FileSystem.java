@@ -90,13 +90,13 @@ public class FileSystem {
     
     public static String readTextFile(File file) throws FileNotFoundException, IOException {
         StringBuilder text = new StringBuilder();
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = br.readLine()) != null) {
-            text.append(line);
-            text.append('\n');
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
         }
-        br.close();
         return text.toString();
     }
 

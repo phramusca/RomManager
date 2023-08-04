@@ -19,6 +19,7 @@ package rommanager.main;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
@@ -50,7 +51,7 @@ public class RomContainer7z extends RomContainer {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             String name;
             String msg = progressBar.getString();
-            List<Console> moveTo = new ArrayList<>();
+            LinkedHashSet<Console> moveTo = new LinkedHashSet<>();
             while(entry!=null){
                 name=entry.getName();
                 progressBar.setString(msg+" : "+name);
@@ -58,16 +59,26 @@ public class RomContainer7z extends RomContainer {
                         FilenameUtils.getBaseName(filename), 
                         name,
                         console);
-                //TODO: What if moveTo differs from on entry to another in the same zip ?
-                if(romVersion.getMoveTo() != null) {
-                    moveTo.add(romVersion.getMoveTo());
+                String ext = FilenameUtils.getExtension(name);
+                switch (ext) {
+                    case "gb":
+                        moveTo.add(Console.gb);
+                        break;
+                    case "gbc":
+                        moveTo.add(Console.gbc);
+                        break;
+                    case "ws":
+                        moveTo.add(Console.wswan);
+                        break;
+                    case "wsc":
+                        moveTo.add(Console.wswanc);
+                        break;
                 }
                 versions.add(romVersion);
                 entry = sevenZFile.getNextEntry();
             }
-            moveTo = moveTo.stream().distinct().collect(Collectors.toList());
             if(!moveTo.isEmpty()) {
-                Console moveToConsole = moveTo.get(0);
+                Console moveToConsole = moveTo.stream().findFirst().get();
                 if(moveTo.size()>1) {
                     //Prefer the color version
                     if(moveTo.contains(Console.gb) && moveTo.contains(Console.gbc)) {
