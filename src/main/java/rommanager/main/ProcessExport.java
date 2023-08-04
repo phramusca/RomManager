@@ -150,7 +150,7 @@ public class ProcessExport extends ProcessAbstract {
 										out.write(content);
 									}
                                     if(romContainer.getConsole().isZip()) {
-                                        zipFile(unzippedFile, exportFile.getAbsolutePath());
+                                        FileSystem.zipFile(unzippedFile, exportFile.getAbsolutePath());
                                         unzippedFile.delete();
                                     }
 									break;
@@ -160,7 +160,7 @@ public class ProcessExport extends ProcessAbstract {
 						}
                     } else if(ProcessList.allowedExtensions.contains(ext)) {
                         if(romContainer.getConsole().isZip()) {
-                            zipFile(sourceFile, exportFile.getAbsolutePath());
+                            FileSystem.zipFile(sourceFile, exportFile.getAbsolutePath());
                         } else {
                             FileSystem.copyFile(sourceFile, exportFile);
                         }
@@ -261,28 +261,4 @@ public class ProcessExport extends ProcessAbstract {
             } 
         }
 	}
-	
-     //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
-	private static boolean zipFile(File inputFile, String zipFilePath) {
-        try {
-			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 
-					ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
-				
-				ZipEntry zipEntry = new ZipEntry(inputFile.getName());
-				zipOutputStream.putNextEntry(zipEntry);
-				FileInputStream fileInputStream = new FileInputStream(inputFile);
-				byte[] buf = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = fileInputStream.read(buf)) > 0) {
-					zipOutputStream.write(buf, 0, bytesRead);
-				}
-				zipOutputStream.closeEntry();
-			}
-            System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath);
-			return true;
-        } catch (IOException ex) {
-            Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
-			return false;
-        }
-    }
 }

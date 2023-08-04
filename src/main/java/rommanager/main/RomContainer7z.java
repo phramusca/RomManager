@@ -18,9 +18,14 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
+import rommanager.utils.FileSystem;
+import rommanager.utils.Popup;
 import rommanager.utils.ProgressBar;
 
 /**
@@ -40,18 +45,47 @@ public class RomContainer7z extends RomContainer {
     }
 
     public void setVersions(ProgressBar progressBar, String path) throws IOException, OutOfMemoryError {
-        try (SevenZFile sevenZFile = new SevenZFile(new File(FilenameUtils.concat(path, filename)))) {
+        File sourceFile = new File(FilenameUtils.concat(path, filename));
+        try (SevenZFile sevenZFile = new SevenZFile(sourceFile)) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             String name;
             String msg = progressBar.getString();
+            List<Console> moveTo = new ArrayList<>();
             while(entry!=null){
                 name=entry.getName();
                 progressBar.setString(msg+" : "+name);
-                versions.add(new RomVersion(
+                RomVersion romVersion = new RomVersion(
                         FilenameUtils.getBaseName(filename), 
                         name,
-                        console));
+                        console);
+                //TODO: What if moveTo differs from on entry to another in the same zip ?
+                if(romVersion.getMoveTo() != null) {
+                    moveTo.add(romVersion.getMoveTo());
+                }
+                versions.add(romVersion);
                 entry = sevenZFile.getNextEntry();
+            }
+            moveTo = moveTo.stream().distinct().collect(Collectors.toList());
+            if(!moveTo.isEmpty()) {
+                Console moveToConsole = moveTo.get(0);
+                if(moveTo.size()>1) {
+                    //Prefer the color version
+                    if(moveTo.contains(Console.gb) && moveTo.contains(Console.gbc)) {
+                        moveToConsole = Console.gbc;
+                    }
+                    else if(moveTo.contains(Console.wswan) && moveTo.contains(Console.wswanc)) {
+                        moveToConsole = Console.wswanc;
+                    }
+                    else {
+                        Popup.warning("Bad moveTo"); //FIXME
+                    }
+                }
+                if(!console.equals(moveToConsole)) {
+                    File destFile = new File(sourceFile.getAbsolutePath().replace("/"+console.name()+"/", "/"+moveToConsole.name()+"/"));
+                    if(FileSystem.moveFile(sourceFile, destFile)) {
+                        console = moveToConsole;
+                    }
+                }
             }
         }
 		setExportableVersions();

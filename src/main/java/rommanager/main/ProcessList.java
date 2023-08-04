@@ -125,10 +125,10 @@ public class ProcessList extends ProcessAbstract {
 		}
 		browseFoldersFS(console, path, new File(path));
         progressBarGame.setup(flatContainers.values().size());
-		for(RomContainerFlat romAmstrad : flatContainers.values()) {
+		for(RomContainerFlat romContainerFlat : flatContainers.values()) {
 			checkAbort();
-			romAmstrad.setExportableVersions();
-			tableModel.addRow(romAmstrad);
+			romContainerFlat.setExportableVersions();
+			tableModel.addRow(romContainerFlat);
             String msg=console.getName()+" \\ "+FilenameUtils.getName(file.getAbsolutePath());
 			progressBarGame.progress(msg);
 		}  

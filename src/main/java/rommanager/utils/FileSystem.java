@@ -20,7 +20,9 @@ package rommanager.utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,6 +32,10 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 
@@ -151,4 +157,28 @@ public class FileSystem {
 
 	   return size.get();
    }
+   
+    //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
+	public static boolean zipFile(File inputFile, String zipFilePath) {
+        try {
+			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 
+					ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
+				
+				ZipEntry zipEntry = new ZipEntry(inputFile.getName());
+				zipOutputStream.putNextEntry(zipEntry);
+				FileInputStream fileInputStream = new FileInputStream(inputFile);
+				byte[] buf = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = fileInputStream.read(buf)) > 0) {
+					zipOutputStream.write(buf, 0, bytesRead);
+				}
+				zipOutputStream.closeEntry();
+			}
+            System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath);
+			return true;
+        } catch (IOException ex) {
+            Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+        }
+    }
 }

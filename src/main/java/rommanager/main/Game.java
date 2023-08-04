@@ -30,14 +30,13 @@ public class Game {
 	private final String name;
 	private final String desc;
 	private final String image;
-    //FIXME 1 handle "ZZZ(notgame)" in thumbnail, images and videos
     private final String video; //Not used
 	private final String thumbnail; //Not used
 	private final float rating;
 	private final String releaseDate;
 	private final String developer;
 	private final String publisher;
-	private final String genre;
+	private final String genre; //FIXME 0 genre split by "," => genreS
     private final String genreId; //Not used
 	private final String players;
 	private final int playcount;

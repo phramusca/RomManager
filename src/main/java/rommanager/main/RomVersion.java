@@ -48,6 +48,7 @@ public class RomVersion {
     private JeuVideo jeuVideo;
 	private boolean toCopy;
     private List<String> tags = new ArrayList<>();
+    private Console moveTo;
 	
     /**
      * Create a Rom Version, read from fileSystem
@@ -62,6 +63,7 @@ public class RomVersion {
         attributes = new ArrayList<>();
         alternativeName = "";
 		this.name=name;
+        moveTo = null;
         setScore(console);
     }
 
@@ -111,7 +113,8 @@ public class RomVersion {
 	}
 
 	public final void setScore(Console console) {
-		try {
+        try {
+            
 			attributes = new ArrayList<>();
 			score=0;
             String attrWork = "";
@@ -209,21 +212,6 @@ public class RomVersion {
 						}
 						
 					} 
-                    //FIXME 2 Split by extension *.gb vs *.gbc AND *.ws vs .wsc
-                    if(attribute.getRaw().equals("[M]")) {
-                        if(console.equals(Console.gbc)) {
-                            //FIXME 9 Move to gb
-                        }
-                        else if(console.equals(Console.wswanc)) {
-                            //FIXME 9 Move to wswan
-                        }
-                    } else {
-                        if(console.equals(Console.gb)) {
-                            //FIXME 9 Move to gbc
-                        } else if (console.equals(Console.wswan)) {
-                            //FIXME 9 Move to wswanc
-                        }
-                    }
                     
 					//TODO: Manage specific codes:
 //					\(\d*k\) 	1	ROM size in kilobits 
@@ -239,7 +227,26 @@ public class RomVersion {
 //					\[h\d*+\d*C\] 	-1000	Hacked internal cartridge information; #th variant 
 //					\[h\d*C\]		-1000	Hacked internal cartridge information.
 				}
-			}	
+			}
+            
+            if(attributes.stream().map(t->t.getRaw()).collect(Collectors.toList()).contains("[C]")) {
+                if(console.equals(Console.gb) || console.equals(Console.gbc)) {
+                    moveTo = Console.gbc;
+                }
+            }
+            else if(attributes.stream().map(t->t.getRaw()).collect(Collectors.toList()).contains("[M]")) {
+                if(console.equals(Console.gbc) || console.equals(Console.gb)) {
+                    moveTo = Console.gb;
+                }
+                else if(console.equals(Console.wswanc) || console.equals(Console.wswan)) {
+                    moveTo = Console.wswan;
+                }
+            } else {
+                if (console.equals(Console.wswan) || console.equals(Console.wswanc)) {
+                    moveTo = Console.wswanc;
+                }
+            }
+            
             if(console.excludeUnknownAttributes()) {
                 if(found<attributes.size()) {
                     this.score-=20;
@@ -260,7 +267,7 @@ public class RomVersion {
             Popup.error(ex);
         }
 	}
-	
+	    
 	private List<Attribute> contains(String regex) {
 		return attributes.stream()
 			.filter(a -> a.getRaw().matches(regex))
@@ -421,6 +428,10 @@ public class RomVersion {
         return name;
     }
 
+    public Console getMoveTo() {
+        return moveTo;
+    }
+    
     void addTag(String tag) {
         if(!tags.contains(tag)) {
             tags.add(tag);

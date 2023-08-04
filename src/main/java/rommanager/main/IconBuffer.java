@@ -60,9 +60,8 @@ public class IconBuffer {
      * @return
      */
     public static ImageIcon getCoverIcon(String key, String file, boolean readIfNotFound) {
-		if(ICONS.containsKey(key)) {
+        if(ICONS.containsKey(key)) {
             return readIconFromCache(key);
-//            return ICONS.get(key);
         }
         ImageIcon icon=null;
         if(readIfNotFound) {
@@ -104,7 +103,7 @@ public class IconBuffer {
     private static ImageIcon readIcon(String key, String file) {
         ImageIcon icon=null;
         try {
-			File iconFile = new File(file);
+            File iconFile = new File(file);
 			if(!iconFile.exists()) {
                 return icon;
             }
