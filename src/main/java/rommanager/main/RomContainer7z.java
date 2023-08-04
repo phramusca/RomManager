@@ -80,7 +80,7 @@ public class RomContainer7z extends RomContainer {
             if(!moveTo.isEmpty()) {
                 Console moveToConsole = moveTo.stream().findFirst().get();
                 if(moveTo.size()>1) {
-                    //Prefer the color version
+                    //Prefer the color version //TODO: Offer the choice. Sometimes color is not the best choice (japan only, hack,...)
                     if(moveTo.contains(Console.gb) && moveTo.contains(Console.gbc)) {
                         moveToConsole = Console.gbc;
                     }
