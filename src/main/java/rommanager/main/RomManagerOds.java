@@ -59,7 +59,7 @@ public class RomManagerOds {
 			ProgressBar progressBar, 
 			boolean open, String sourceFolder) {
 		
-        int nbColumns=32;
+        int nbColumns=33;
         int nbRows=0;
         for(RomContainer romContainer : model.getRoms().values()) {
             nbRows+=romContainer.getVersions().size();
@@ -72,7 +72,7 @@ public class RomManagerOds {
 				
 				Game game = romVersion.getGame();
 				if(game==null) {
-					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false);
+					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false, 0);
 				}
                 
                 JeuVideo jeuVideo = romVersion.getJeuVideo();
@@ -112,7 +112,8 @@ public class RomManagerOds {
                     jeuVideo.getReleaseDate(),
                     jeuVideo.getRating(),
                     jeuVideo.getUserRating(),
-                    jeuVideo.getDescription()
+                    jeuVideo.getDescription(),
+                    game.GetTimeStamp()
 				};
             }
         }
@@ -153,6 +154,8 @@ public class RomManagerOds {
         columns[i++] = "Rating";
         columns[i++] = "User Rating";
         columns[i++] = "Description";
+        
+        columns[i++] = "TimeStamp";
                 
         TableModel docModel = new DefaultTableModel(data, columns);
 		File odsFile = new File(FilenameUtils.concat(sourceFolder, DOC_FILE+"_"+DateTime.getCurrentLocal(DateTime.DateTimeFormat.FILE)+".ods"));
@@ -212,14 +215,14 @@ public class RomManagerOds {
 				String version = row.getValue(2);
 				String alternativeName = row.getValue(3);
 				String attributes = row.getValue(4);
-				int score = Integer.valueOf(row.getValue(5));
-				int errorLevel = Integer.valueOf(row.getValue(6));
+				int score = Integer.parseInt(row.getValue(5));
+				int errorLevel = Integer.parseInt(row.getValue(6));
 				boolean isExportable = Boolean.parseBoolean(row.getValue(7));
 				int i =8;
 				String gameName = row.getValue(i++);
 				String desc = row.getValue(i++);
 				String genre = row.getValue(i++);
-				float rating = Float.valueOf(row.getValue(i++));
+				float rating = Float.parseFloat(row.getValue(i++));
 				boolean isFavorite = Boolean.parseBoolean(row.getValue(i++));
 				String players = row.getValue(i++);
 				String developer = row.getValue(i++);
@@ -227,7 +230,7 @@ public class RomManagerOds {
 				String image = row.getValue(i++);
 				String releaseDate = row.getValue(i++);
 				String lastplayed = row.getValue(i++);
-				int playcount = Integer.valueOf(row.getValue(i++));
+				int playcount = Integer.parseInt(row.getValue(i++));
 				String thumbnail = row.getValue(i++);
 				String path = row.getValue(i++);
                 String hash = row.getValue(i++);
@@ -242,6 +245,8 @@ public class RomManagerOds {
                 String userRating = row.getValue(i++);
                 String description = row.getValue(i++);
                 
+                Long timestamp = Long.valueOf(row.getValue(i++));
+                
 				model.addRow(console, filename);
 				RomVersion romVersion = new RomVersion(
 						FilenameUtils.getBaseName(filename),
@@ -253,7 +258,7 @@ public class RomManagerOds {
 				Game game = new Game(path, hash, gameName, desc, image, 
 					video,thumbnail, rating, releaseDate, 
 					developer, publisher, genre, genreId, players, 
-					playcount, lastplayed, isFavorite);
+					playcount, lastplayed, isFavorite, timestamp);
 				IconBuffer.getCoverIcon(game.getName(), "", true);
 				romVersion.setGame(game);
                 

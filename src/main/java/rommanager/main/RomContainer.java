@@ -95,11 +95,11 @@ public abstract class RomContainer {
 				.map(v -> v.getGame())
 				.collect(Collectors.toList());
 		
-			if(games.size()>0) {
+			if(!games.isEmpty()) {
 				game = games.get(0);
 			}
 		}
-		return game==null?new Game("","","", "", "", "", "", -1, "","", "", "", "", "", -1, "", false):game;
+		return game==null?new Game("","","", "", "", "", "", -1, "","", "", "", "", "", -1, "", false, 0):game;
 	}
     
     public JeuVideo getJeuVideo() {
@@ -109,7 +109,7 @@ public abstract class RomContainer {
 				.map(v -> v.getJeuVideo())
 				.collect(Collectors.toList());
 
-            if(jeuxVideos.size()>0) {
+            if(!jeuxVideos.isEmpty()) {
 				jeuVideo = jeuxVideos.get(0);
 			}
 		}

@@ -536,7 +536,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
     
     private static void fillFilterRating() {
-        //FIXME 2 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
+        //FIXME 3 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         List<String> ratings = tableModel.getRoms().values().stream()
@@ -747,7 +747,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private class CallBackDialogConsoleScore implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh, boolean onlyCultes) {
-            //FIXME 6 option : set best as exportable OR leave exportable flag unchanged
+            //FIXME 7 option : set best as exportable OR leave exportable flag unchanged
             int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to set score ? It will RESET ALL your selections !!!",  //NOI18N
             "Please Confirm",  //NOI18N
             JOptionPane.YES_NO_OPTION);
@@ -850,7 +850,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     
     class CallBackJeuxVideo implements ICallBack {
 
-        //FIXME 3 Remove setup and read methods, use progressBar instead
+        //FIXME 4 Remove setup and read methods, use progressBar instead
         
 		@Override
 		public void setup(int size) {

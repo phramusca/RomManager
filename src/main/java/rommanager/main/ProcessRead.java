@@ -56,8 +56,7 @@ public class ProcessRead extends ProcessAbstract {
 		this.callBack = callBack;
 	}
 
-    //FIXME 7 Ask user if he wants to overwrite OR show differences and propose how to handle the sync.
-    //FIXME 0 Copy (rsync with no delete) all media files from exportPath to sourcePath (update IconBuffer accordingly)
+    //FIXME 3 Ask user if he wants to overwrite OR show differences (what fields could we update ? only rating ?) and propose how to handle the sync.
 
 	@Override
 	public void run() {
@@ -66,19 +65,24 @@ public class ProcessRead extends ProcessAbstract {
 			Map<String, Game> games = new HashMap<>();
 			for(Console console : Console.values()) {
 				checkAbort();
-                File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
+//                File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
-                Map<String, Game> gamesLocal = read(localFile);
+//                Map<String, Game> gamesLocal = read(localFile);
                 Map<String, Game> gamesRemote = read(remoteFile);
-                progressBar.setup(tableModel.getRoms().size());
-                for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
-                    //FIXME 0 What if game info changed on recalbox ? Nothing => Need to at least overwrite local for now and allow both ways sync later
-                    //FIXME 0 What if game info changed locally ? Nothing as local is not (yet) editable. If so need to allow both ways sync
-                    gamesLocal.putIfAbsent(entrySet.getKey(), entrySet.getValue());
-                    progressBar.progress(entrySet.getValue().getName());
-                }
-                save(gamesLocal, localFile); //FIXME 0 Do we really need to save here since it is saved in ods ??
-                games.putAll(gamesLocal);
+//                progressBar.setup(tableModel.getRoms().size());
+//                for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
+////                    Game gameRemote = entrySet.getValue();
+////                    if(gamesLocal.containsKey(entrySet.getKey())) {
+////                        Game gameLocal = gamesLocal.get(entrySet.getKey());
+////                        if(gameRemote.GetTimeStamp() > gameLocal.GetTimeStamp()) {
+////                            
+////                        }
+////                    }
+////                    gamesLocal.put(entrySet.getKey(), gameRemote);
+//                    progressBar.progress(entrySet.getValue().getName());
+//                }
+//                save(gamesLocal, localFile);
+                games.putAll(gamesRemote);
 			}
 			
             //Match gamelist.xml read with local files and display information
@@ -92,7 +96,9 @@ public class ProcessRead extends ProcessAbstract {
 					String key = FilenameUtils.getBaseName(romVersion.getFilename());
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
-						IconBuffer.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
+                        if(!game.getImage().isBlank()) {
+                            IconBuffer.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
+                        }
 						romVersion.setGame(game);
 					}
 				}
@@ -202,10 +208,12 @@ public class ProcessRead extends ProcessAbstract {
         float ratingLocal;
         for(Element element : elements) {
             checkAbort();
+            long timestamp = Long.parseLong(XML.getAttribute(element, "timestamp"));
             String pc = XML.getElementValue(element, "playcount");
-            playCounter=pc.equals("")?-1:Integer.valueOf(pc);
+            playCounter=pc.equals("")?-1:Integer.parseInt(pc);
             String r = XML.getElementValue(element, "rating");
-            ratingLocal=r.equals("")?-1:Float.valueOf(r);
+            ratingLocal=r.equals("")?-1:Float.parseFloat(r);
+            //FIXME 9 Read <region> and <ratio>
             Game game = new Game(XML.getElementValue(element, "path"),
                     XML.getElementValue(element, "hash"),
                     XML.getElementValue(element, "name"),
@@ -218,12 +226,13 @@ public class ProcessRead extends ProcessAbstract {
                     XML.getElementValue(element, "developer"),
                     XML.getElementValue(element, "publisher"),
                     XML.getElementValue(element, "genre"),
-                    XML.getElementValue(element, "genreId"),
+                    XML.getElementValue(element, "genreid"),
                     XML.getElementValue(element, "players"),
                     playCounter,
                     XML.getElementValue(element, "lastplayed"),
                     Boolean.parseBoolean(
-                            XML.getElementValue(element, "favorite")));
+                            XML.getElementValue(element, "favorite")),
+                    timestamp);
             games.put(FilenameUtils.getBaseName(game.getPath()), game);
             progressBar.progress(game.getName());
         }

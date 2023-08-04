@@ -121,9 +121,7 @@ public class IconBuffer {
 		} catch (IIOException ex) {
             Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch (IOException ex) {
-			Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
-		}catch (NullPointerException ex) {
+        catch (IOException | NullPointerException ex) {
 			Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
 		}
         return icon;

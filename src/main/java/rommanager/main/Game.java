@@ -30,6 +30,7 @@ public class Game {
 	private final String name;
 	private final String desc;
 	private final String image;
+    //FIXME 1 handle "ZZZ(notgame)" in thumbnail, images and videos
     private final String video; //Not used
 	private final String thumbnail; //Not used
 	private final float rating;
@@ -42,11 +43,13 @@ public class Game {
 	private final int playcount;
 	private final String lastplayed;
 	private final boolean favorite;
+    private final long timestamp;
 
 	public Game(String path, String hash, String name, String desc, String image, 
             String video, String thumbnail, float rating, String releaseDate, 
 			String developer, String publisher, String genre, String genreId, 
-            String players, int playcount, String lastplayed, boolean favorite) {
+            String players, int playcount, String lastplayed, boolean favorite,
+            long timestamp) {
 		this.path = path;
         this.hash = hash;
 		this.name = name;
@@ -64,6 +67,7 @@ public class Game {
 		this.playcount = playcount;
 		this.lastplayed = lastplayed;
 		this.favorite = favorite;
+        this.timestamp = timestamp;
 	}
 
 	public boolean delete(String rootPath) {
@@ -165,4 +169,8 @@ public class Game {
 	public String getImage() {
 		return image;
 	}
+
+    public long GetTimeStamp() {
+        return timestamp;
+    }
 }
