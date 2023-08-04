@@ -94,10 +94,10 @@ public class ProcessExport extends ProcessAbstract {
 			}
 			
 			//Get source roms & setToCopyTrue(true)
-            if(onlyCultes) { //FIXME !!!! Handle when consoles with no tag TAG_JEUX_VIDEO at all
+            if(onlyCultes) { //TODO: Handle when consoles with no tag TAG_JEUX_VIDEO at all
                 romSourceList = tableModel.getRoms().values()
 					.stream().filter(r->r.getConsole().isSelected() 
-                            && r.getExportableVersions().size()>0
+                            && !r.getExportableVersions().isEmpty()
                             && r.getExportableVersions().get(0).getTags().contains(TAG_JEUX_VIDEO))
 					.peek(r -> r.setToCopyTrue())
 					.collect(Collectors.toList());
@@ -105,7 +105,7 @@ public class ProcessExport extends ProcessAbstract {
             if(!onlyCultes || romSourceList.size()<=0) {
                 romSourceList = tableModel.getRoms().values()
 					.stream().filter(r->r.getConsole().isSelected() 
-                            && r.getExportableVersions().size()>0)
+                            && !r.getExportableVersions().isEmpty())
 					.peek(r -> r.setToCopyTrue())
 					.collect(Collectors.toList());
             }

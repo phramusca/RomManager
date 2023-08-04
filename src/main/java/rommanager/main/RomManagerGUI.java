@@ -99,7 +99,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
         return getModel(list, true);
     }
 	
-    //FIXME 0 Use a custom model to avoid the forEach which takes time !
 	/**
 	 *
 	 * @param list
@@ -851,7 +850,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     
     class CallBackJeuxVideo implements ICallBack {
 
-        //FIXME: Remove setup and read methods, use progressBar instead
+        //FIXME 3 Remove setup and read methods, use progressBar instead
         
 		@Override
 		public void setup(int size) {

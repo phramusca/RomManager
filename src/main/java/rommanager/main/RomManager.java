@@ -16,7 +16,9 @@
  */
 package rommanager.main;
 
+import java.io.File;
 import rommanager.utils.Options;
+import rommanager.utils.Popup;
 
 /**
  *
@@ -30,6 +32,11 @@ public class RomManager {
     public static void main(String[] args) {
         options = new Options("RomManager.properties");
         options.read();
+        File cachePath = new File("cache");
+        if(!cachePath.exists() && !cachePath.mkdirs()) {
+            Popup.error("Error creating cache folder.");
+            System.exit(1);
+        }
         RomManagerGUI.main(args);
     }
 }

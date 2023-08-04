@@ -212,16 +212,16 @@ public class RomVersion {
                     //FIXME 2 Split by extension *.gb vs *.gbc AND *.ws vs .wsc
                     if(attribute.getRaw().equals("[M]")) {
                         if(console.equals(Console.gbc)) {
-                            //FIXME: Move to gb
+                            //FIXME 9 Move to gb
                         }
                         else if(console.equals(Console.wswanc)) {
-                            //FIXME: Move to wswan
+                            //FIXME 9 Move to wswan
                         }
                     } else {
                         if(console.equals(Console.gb)) {
-                            //FIXME: Move to gbc
+                            //FIXME 9 Move to gbc
                         } else if (console.equals(Console.wswan)) {
-                            //FIXME: Move to wswanc
+                            //FIXME 9 Move to wswanc
                         }
                     }
                     
