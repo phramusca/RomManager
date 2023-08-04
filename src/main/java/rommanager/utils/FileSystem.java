@@ -159,7 +159,7 @@ public class FileSystem {
    }
    
     //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
-	public static boolean zipFile(File inputFile, String zipFilePath) {
+	public static boolean zipFile(File inputFile, File zipFilePath) {
         try {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 
 					ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
@@ -174,7 +174,7 @@ public class FileSystem {
 				}
 				zipOutputStream.closeEntry();
 			}
-            System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath);
+            System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath.getAbsolutePath());
 			return true;
         } catch (IOException ex) {
             Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, null, ex);

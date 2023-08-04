@@ -18,14 +18,17 @@ package rommanager.main;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
@@ -118,7 +121,9 @@ public class ProcessExport extends ProcessAbstract {
 				if(!searchInSourceList(file)) {
 					//Not a file to be copied, removing it on destination
 					file.delete();
-				}
+				} else {
+                    // FIXME !!! Check destination file
+                }
 				progressBar.progress(file.getAbsolutePath());
 			}
 
@@ -148,9 +153,39 @@ public class ProcessExport extends ProcessAbstract {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
-									}
+									} catch (FileNotFoundException ex) {
+                                        Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    boolean isExportFileValid = true;
                                     if(romContainer.getConsole().isZip()) {
-                                        FileSystem.zipFile(unzippedFile, exportFile.getAbsolutePath());
+                                        if(!FileSystem.zipFile(unzippedFile, exportFile)) {
+                                            isExportFileValid = false;
+                                        } else {
+                                            //Check zipped file
+                                            try {
+                                                ZipFile zipFile = new ZipFile(exportFile);
+                                                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                                                if(entries.hasMoreElements()){
+                                                    ZipEntry exportEntry = entries.nextElement();
+                                                    if(!exportEntry.getName().equals(romVersion.getFilename()) 
+                                                            || exportEntry.getSize()!= unzippedFile.length()
+                                                            || exportEntry.getCrc() != entry.getCrcValue()) {
+                                                        isExportFileValid = false;
+                                                    }
+                                                    if(entries.hasMoreElements()) {
+                                                        isExportFileValid = false;
+                                                    }
+                                                } else {
+                                                    isExportFileValid = false;
+                                                }
+                                            } catch (IOException ex) {
+                                                Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+                                                isExportFileValid = false;
+                                            }
+                                        }
+                                        if(!isExportFileValid && exportFile.exists()) {
+                                            exportFile.delete();
+                                        }
                                         unzippedFile.delete();
                                     }
 									break;
