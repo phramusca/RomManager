@@ -122,6 +122,7 @@ public class ProcessExport extends ProcessAbstract {
             progressBarGame.setup(romDestinationList.size());
             progressBarConsole.progress("Checking files on destination");
             int nbAlreadyExported=0;
+            int nbDeleted=0;
 			for (File file : romDestinationList) {
 				this.checkAbort();
                 Pair<RomContainer, RomVersion> pair = searchInSourceList(file);
@@ -132,6 +133,7 @@ public class ProcessExport extends ProcessAbstract {
 				} else {
                     //Not a file to be copied, or it is a bad file: removing it on destination
                     file.delete();
+                    nbDeleted++;
                 }
 				progressBarGame.progress(file.getAbsolutePath());
 			}
@@ -199,7 +201,7 @@ public class ProcessExport extends ProcessAbstract {
 				}
 			}
             
-			Popup.info("Export complete.\n"+nbAlreadyExported+" already exported\n"+nbExported+" exported / "+nbToCopy+"\n"+nbFailed+" error(s)");
+			Popup.info("Export complete.\n"+nbAlreadyExported+" already exported\n"+nbExported+" exported / "+nbToCopy+"\n"+nbFailed+" error(s)\n"+nbDeleted+" deleted");
 			progressBarConsole.reset();
             progressBarGame.reset();
 		} catch (InterruptedException ex) {
