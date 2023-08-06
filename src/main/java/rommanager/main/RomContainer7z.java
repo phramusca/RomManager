@@ -85,7 +85,7 @@ public class RomContainer7z extends RomContainer {
                         moveToConsole = Console.wswanc;
                     }
                     else {
-                        Popup.warning("Bad moveTo"); //FIXME 9
+                        Popup.warning("Bad moveTo"); //FIXME 9 Bad moveTo
                     }
                 }
                 if(!console.equals(moveToConsole)) {

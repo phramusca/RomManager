@@ -45,7 +45,8 @@ import rommanager.utils.ProgressBar;
 public class ProcessExport extends ProcessAbstract {
 
 	private final String exportPath;
-	private final ProgressBar progressBar;
+    private final ProgressBar progressBarConsole;
+	private final ProgressBar progressBarGame;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	private final String sourcePath;
@@ -57,13 +58,15 @@ public class ProcessExport extends ProcessAbstract {
 	public ProcessExport(
 			String sourcePath, 
 			String exportPath, 
-			ProgressBar progressBar, 
+            ProgressBar progressBarConsole, 
+			ProgressBar progressBarGame, 
 			TableModelRom tableModel, 
 			ICallBackProcess callBack) {
 		super("Thread.ProcessExport");
 		this.sourcePath = sourcePath;
 		this.exportPath = exportPath;
-		this.progressBar = progressBar;
+        this.progressBarConsole = progressBarConsole;
+		this.progressBarGame = progressBarGame;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 	}
@@ -71,13 +74,15 @@ public class ProcessExport extends ProcessAbstract {
 	@Override
 	public void run() {
 		try {
-			
+            progressBarConsole.setup(3);
 			List<Console> consoles = tableModel.getRoms().values().stream()
 					.map(v -> v.getConsole())
 					.distinct()
 					.collect(Collectors.toList());
 			
 			//Get files currently on destination
+            progressBarConsole.progress("Listing files on destination");
+            progressBarGame.setup(consoles.size());
 			romDestinationList = new ArrayList<>();
 			for(Console console : consoles) {
 				checkAbort();
@@ -92,6 +97,7 @@ public class ProcessExport extends ProcessAbstract {
 						browseFS(new File(consolePath));
 					}
 				}
+                progressBarGame.progress(console.getName());
 			}
 			
 			//Get source roms & setToCopyTrue(true)
@@ -113,8 +119,9 @@ public class ProcessExport extends ProcessAbstract {
 			
 			//Remove files on destination and exclude already exported
 			this.checkAbort();
+            progressBarGame.setup(romDestinationList.size());
+            progressBarConsole.progress("Checking files on destination");
             int nbAlreadyExported=0;
-			progressBar.setup(romSourceList.size() + romDestinationList.size());
 			for (File file : romDestinationList) {
 				this.checkAbort();
                 Pair<RomContainer, RomVersion> pair = searchInSourceList(file);
@@ -126,17 +133,19 @@ public class ProcessExport extends ProcessAbstract {
                     //Not a file to be copied, or it is a bad file: removing it on destination
                     file.delete();
                 }
-				progressBar.progress(file.getAbsolutePath());
+				progressBarGame.progress(file.getAbsolutePath());
 			}
 
 			//Copy (not already exported) files to destination
+            Long nbToCopy = romSourceList.stream().flatMap(r->r.versions.stream()).filter(v->v.isToCopy()).count();
+            progressBarGame.setup(nbToCopy.intValue());
+            progressBarConsole.progress("Exporting files to destination");
 			String sourceFolder;
             int nbFailed=0;
             int nbExported=0;
 			for(RomContainer romContainer : romSourceList) {
 				checkAbort();
 				String filename = romContainer.getFilename();
-				progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				for(RomVersion romVersion : 
 						romContainer.getVersions().stream()							
 							.filter(r -> r.isToCopy())
@@ -186,11 +195,13 @@ public class ProcessExport extends ProcessAbstract {
                             exportFile.delete();
                         }
                     }
+                    progressBarGame.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 				}
 			}
-            long nbToCopy = romSourceList.stream().flatMap(r->r.versions.stream()).filter(v->v.isToCopy()).count();
+            
 			Popup.info("Export complete.\n"+nbAlreadyExported+" already exported\n"+nbExported+" exported / "+nbToCopy+"\n"+nbFailed+" error(s)");
-			progressBar.reset();
+			progressBarConsole.reset();
+            progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} catch (IOException ex) {

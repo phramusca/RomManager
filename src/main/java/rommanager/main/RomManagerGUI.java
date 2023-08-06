@@ -584,7 +584,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processExport = new ProcessExport(sourcePath, exportPath, progressBarGame, tableModel, new CallBackProcess());
+		processExport = new ProcessExport(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
 		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
 		processList.browseNbFiles();
 		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync", true);
