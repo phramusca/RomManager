@@ -59,7 +59,7 @@ public class ProcessRead extends ProcessAbstract {
 		this.callBack = callBack;
 	}
 
-    //FIXME 3 Ask user if he wants to overwrite OR show differences (what fields could we update ? only rating ?) and propose how to handle the sync.
+    //FIXME 3 Ask user if he wants to overwrite OR show differences (what fields could we update ? only rating ? favorite, ... ?) and propose how to handle the sync.
 
 	@Override
 	public void run() {

@@ -25,7 +25,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class Game {
 
-    
+    //FIXME 2 Use unused fields (display and/or filter)
     
 	private final String path;
     private final String hash; //Not used
@@ -38,7 +38,7 @@ public class Game {
 	private final String releaseDate;//Not used
 	private final String developer;
 	private final String publisher;
-	private final String genre; //FIXME 2 genre split by "," => genreS
+	private final String genre; //FIXME 1 genre split by "," => genreS
     private final String genreId; //Not used
 	private final String players;//Not used
 	private final int playcount;//Not used
