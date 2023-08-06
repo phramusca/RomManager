@@ -31,7 +31,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import static rommanager.main.RomManager.TAG_JEUX_VIDEO;
 import rommanager.utils.FileSystem;
@@ -112,13 +111,12 @@ public class ProcessExport extends ProcessAbstract {
 					.collect(Collectors.toList());
             }
 			
-			//Remove files on destination
+			//Remove files on destination and exclude already exported
 			this.checkAbort();
             int nbAlreadyExported=0;
 			progressBar.setup(romSourceList.size() + romDestinationList.size());
 			for (File file : romDestinationList) {
 				this.checkAbort();
-//                Thread.sleep(500);
                 Pair<RomContainer, RomVersion> pair = searchInSourceList(file);
 				if(pair != null && checkFile(pair.fst, pair.snd)) {
                     //Already exported
@@ -131,7 +129,7 @@ public class ProcessExport extends ProcessAbstract {
 				progressBar.progress(file.getAbsolutePath());
 			}
 
-			//Copy files to destination
+			//Copy (not already exported) files to destination
 			String sourceFolder;
             int nbFailed=0;
             int nbExported=0;
@@ -154,53 +152,19 @@ public class ProcessExport extends ProcessAbstract {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 							while(entry!=null){
 								if(entry.getName().equals(romVersion.getFilename())) {
-                                    boolean isExportFileValid = true;
                                     File unzippedFile = new File(FilenameUtils.concat(romVersion.getExportFolder(romContainer.getConsole(), exportPath), romVersion.getFilename()));
 									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
 										out.write(content);
                                         out.close();
+                                        if(romContainer.getConsole().isZip()) {
+                                            FileSystem.zipFile(unzippedFile, exportFile);
+                                            unzippedFile.delete();
+                                        }
 									} catch (FileNotFoundException ex) {
                                         Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
-                                        isExportFileValid = false;
-                                        nbFailed++;
                                     }
-                                    if(isExportFileValid) {
-                                         if(romContainer.getConsole().isZip()) {
-                                            if(!FileSystem.zipFile(unzippedFile, exportFile) || !checkFile(exportFile, entry)) {
-                                                nbFailed++;
-                                                if(exportFile.exists()) {
-                                                    exportFile.delete();
-                                                }
-                                            } else {
-                                                nbExported++;
-                                            }
-                                            unzippedFile.delete();
-                                        } else {
-                                            if(unzippedFile.exists()) {
-                                                if (unzippedFile.length() == entry.getSize()) {
-                                                    nbExported++;
-                                                } else {
-                                                    unzippedFile.delete();
-                                                    nbFailed++;
-                                                }    
-                                            } else {
-                                                nbFailed++;
-                                            }
-                                        }
-                                    } else {
-                                        if(unzippedFile.exists()) {
-                                            if (unzippedFile.length() == entry.getSize()) {
-                                                nbExported++;
-                                            } else {
-                                                unzippedFile.delete();
-                                                nbFailed++;
-                                            }    
-                                        } else {
-                                            nbFailed++;
-                                        }
-                                    }                                 
 									break;
 								}
 								entry = sevenZFile.getNextEntry();
@@ -212,6 +176,14 @@ public class ProcessExport extends ProcessAbstract {
                             FileSystem.zipFile(sourceFile, exportFile);
                         } else {
                             FileSystem.copyFile(sourceFile, exportFile);
+                        }
+                    }
+                    if(checkFile(romContainer, romVersion)) {
+                        nbExported++;
+                    } else {
+                        nbFailed++;
+                        if(exportFile.exists()) {
+                            exportFile.delete();
                         }
                     }
 				}
