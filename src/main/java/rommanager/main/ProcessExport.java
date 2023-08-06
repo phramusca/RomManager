@@ -218,7 +218,7 @@ public class ProcessExport extends ProcessAbstract {
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
         if(containerFileExtension.equals("7z")) {
             if(romContainer.getConsole().isZip()) {
-                return exportFile.exists() && checkFile(exportFile, romVersion.getName(), romVersion.getCrcValue(), romVersion.getSize());
+                return exportFile.exists() && checkFile(exportFile, romVersion.getFilename(), romVersion.getCrcValue(), romVersion.getSize());
             } else {
                 return exportFile.exists() && (exportFile.length() == romVersion.getSize());
             }
