@@ -158,7 +158,6 @@ public class FileSystem {
 	   return size.get();
    }
    
-    //FIXME 2 Zip sometimes contains 0b files :( Only over sshfs ?
 	public static boolean zipFile(File inputFile, File zipFilePath) {
         try {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath); 
