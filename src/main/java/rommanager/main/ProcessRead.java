@@ -219,7 +219,6 @@ public class ProcessRead extends ProcessAbstract {
             playCounter=pc.equals("")?-1:Integer.parseInt(pc);
             String r = XML.getElementValue(element, "rating");
             ratingLocal=r.equals("")?-1:Float.parseFloat(r);
-            //FIXME 9 Read <region> and <ratio>
             Game game = new Game(XML.getElementValue(element, "path"),
                     XML.getElementValue(element, "hash"),
                     XML.getElementValue(element, "name"),
@@ -236,9 +235,12 @@ public class ProcessRead extends ProcessAbstract {
                     XML.getElementValue(element, "players"),
                     playCounter,
                     XML.getElementValue(element, "lastplayed"),
-                    Boolean.parseBoolean(
-                            XML.getElementValue(element, "favorite")),
-                    timestamp);
+                    Boolean.parseBoolean(XML.getElementValue(element, "favorite")),
+                    timestamp,
+                    Boolean.parseBoolean(XML.getElementValue(element, "hidden")),
+                    Boolean.parseBoolean(XML.getElementValue(element, "adult")),
+                    XML.getElementValue(element, "ratio"),
+                    XML.getElementValue(element, "region"));
             games.put(FilenameUtils.getBaseName(game.getPath()), game);
             progressBarGame.progress(game.getName());
         }

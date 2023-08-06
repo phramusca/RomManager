@@ -55,7 +55,9 @@ public class RomContainer7z extends RomContainer {
                 RomVersion romVersion = new RomVersion(
                         FilenameUtils.getBaseName(filename), 
                         name,
-                        console);
+                        console,
+                        entry.getCrcValue(),
+                        entry.getSize());
                 String ext = FilenameUtils.getExtension(name);
                 switch (ext) {
                     case "gb":

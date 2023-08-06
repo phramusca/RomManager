@@ -25,6 +25,8 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class Game {
 
+    
+    
 	private final String path;
     private final String hash; //Not used
 	private final String name;
@@ -33,22 +35,26 @@ public class Game {
     private final String video; //Not used
 	private final String thumbnail; //Not used
 	private final float rating;
-	private final String releaseDate;
+	private final String releaseDate;//Not used
 	private final String developer;
 	private final String publisher;
-	private final String genre; //FIXME 0 genre split by "," => genreS
+	private final String genre; //FIXME 2 genre split by "," => genreS
     private final String genreId; //Not used
-	private final String players;
-	private final int playcount;
-	private final String lastplayed;
-	private final boolean favorite;
-    private final long timestamp;
+	private final String players;//Not used
+	private final int playcount;//Not used
+	private final String lastplayed;//Not used
+	private final boolean favorite;//Not used
+    private final long timestamp;//Not used
+    private final boolean hidden;//Not used
+    private final boolean adult;//Not used
+    private final String ratio;//Not used
+    private final String region;//Not used
 
 	public Game(String path, String hash, String name, String desc, String image, 
             String video, String thumbnail, float rating, String releaseDate, 
 			String developer, String publisher, String genre, String genreId, 
             String players, int playcount, String lastplayed, boolean favorite,
-            long timestamp) {
+            long timestamp, boolean hidden, boolean adult, String ratio, String region) {
 		this.path = path;
         this.hash = hash;
 		this.name = name;
@@ -67,6 +73,10 @@ public class Game {
 		this.lastplayed = lastplayed;
 		this.favorite = favorite;
         this.timestamp = timestamp;
+        this.hidden = hidden;
+        this.adult = adult;
+        this.ratio = ratio;
+        this.region = region;
 	}
 
 	public boolean delete(String rootPath) {
@@ -169,7 +179,23 @@ public class Game {
 		return image;
 	}
 
-    public long GetTimeStamp() {
+    public long getTimestamp() {
         return timestamp;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public boolean isAdult() {
+        return adult;
+    }
+
+    public String getRatio() {
+        return ratio;
+    }
+
+    public String getRegion() {
+        return region;
     }
 }

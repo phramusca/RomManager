@@ -217,26 +217,14 @@ public class ProcessExport extends ProcessAbstract {
         File exportFile = new File(romVersion.getExportFilename(romContainer.getConsole(), exportPath));
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
         if(containerFileExtension.equals("7z")) {
-            try (SevenZFile sevenZFile = new SevenZFile(new File(
-                FilenameUtils.concat(sourceFolder, romContainer.getFilename())))) {
-                SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-                while(entry!=null){
-                    if(entry.getName().equals(romVersion.getFilename())) {
-                        if(romContainer.getConsole().isZip()) {
-                            sevenZFile.close();
-                            return exportFile.exists() && checkFile(exportFile, entry);
-                        } else {
-                            sevenZFile.close();
-                            return exportFile.exists() && (exportFile.length() == entry.getSize());
-                        }
-                    }
-                    entry = sevenZFile.getNextEntry();
-                }
-                sevenZFile.close();
+            if(romContainer.getConsole().isZip()) {
+                return exportFile.exists() && checkFile(exportFile, romVersion.getName(), romVersion.getCrcValue(), romVersion.getSize());
+            } else {
+                return exportFile.exists() && (exportFile.length() == romVersion.getSize());
             }
         } else if(ProcessList.allowedExtensions.contains(containerFileExtension)) {
             if(romContainer.getConsole().isZip()) {
-                return checkFile(exportFile, sourceFile);
+                return exportFile.exists() && checkFile(exportFile, sourceFile);
             } else {
                 return exportFile.exists() && (exportFile.length() == sourceFile.length());
             }
@@ -271,15 +259,15 @@ public class ProcessExport extends ProcessAbstract {
         return true;
     }
     
-    private boolean checkFile(File exportFile, SevenZArchiveEntry entry) {
+    private boolean checkFile(File exportFile, String name, long crcValue, long size) {
         try {
             ZipFile zipFile = new ZipFile(exportFile);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             if(entries.hasMoreElements()){
                 ZipEntry exportEntry = entries.nextElement();
-                if(!exportEntry.getName().equals(entry.getName())
-                        || exportEntry.getSize()!= entry.getSize()
-                        || exportEntry.getCrc() != entry.getCrcValue()) {
+                if(!exportEntry.getName().equals(name)
+                        || exportEntry.getSize()!= size
+                        || exportEntry.getCrc() != crcValue) {
                     zipFile.close();
                     return false;
                 }

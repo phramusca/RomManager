@@ -48,14 +48,18 @@ public class RomVersion {
     private JeuVideo jeuVideo;
 	private boolean toCopy;
     private List<String> tags = new ArrayList<>();
+    private final long crcValue;
+    private final long size;
 	
     /**
      * Create a Rom Version, read from fileSystem
      * @param name
      * @param filename
      * @param console
+     * @param crcValue
+     * @param size
      */
-    public RomVersion(String name, String filename, Console console) {
+    public RomVersion(String name, String filename, Console console, long crcValue, long size) {
         this.filename = filename;
         System.out.println("name="+name);
         System.out.println("version="+filename);
@@ -63,6 +67,8 @@ public class RomVersion {
         alternativeName = "";
 		this.name=name;
         setScore(console);
+        this.crcValue = crcValue;
+        this.size = size;
     }
 
 	/**
@@ -75,13 +81,17 @@ public class RomVersion {
 	 * @param errorLevel
 	 * @param isExportable
      * @param tags
+     * @param crcValue
+     * @param size
 	 */
 	public RomVersion(String name, String filename, String alternativeName, 
 			String attributes,
 			int score, 
 			int errorLevel, 
 			boolean isExportable,
-            String tags) {
+            String tags, 
+            long crcValue, 
+            long size) {
 		this.name = name;
 		this.filename = filename;
 		this.alternativeName = alternativeName;
@@ -108,6 +118,8 @@ public class RomVersion {
         if(!tags.trim().equals("")) {
             this.tags = Arrays.asList(tags.split(","));
         }
+        this.crcValue = crcValue;
+        this.size = size;
 	}
 
 	public final void setScore(Console console) {
@@ -411,5 +423,13 @@ public class RomVersion {
         if(!tags.contains(tag)) {
             tags.add(tag);
         }
+    }
+
+    public long getCrcValue() {
+        return crcValue;
+    }
+
+    public long getSize() {
+        return size;
     }
 }

@@ -218,7 +218,7 @@ public class ProcessList extends ProcessAbstract {
                             romContainerFlat.addVersion(new RomVersion(
                                     FilenameUtils.getBaseName(romName),
                                     versionPath,
-                                    console));
+                                    console, -1, file.length()));
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(ProcessList.class.getName())
