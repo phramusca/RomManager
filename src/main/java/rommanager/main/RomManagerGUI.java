@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -538,8 +539,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         List<String> genres = tableModel.getRoms().values().stream()
                 .filter(r -> selectedConsole.equals("All") || r.console.getName().equals(selectedConsole))
-                .map(r -> r.getGame().getGenre())
-                .distinct().collect(Collectors.toList());
+                .map(r -> r.getGame().getGenres())
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
         final DefaultListModel model = getModel(genres);
         jListFilterGenre.setModel(model);
         jListFilterGenre.setSelectedIndex(0);
@@ -552,7 +555,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         List<String> ratings = tableModel.getRoms().values().stream()
                 .filter(r -> (selectedConsole.equals("All") || r.console.getName().equals(selectedConsole))
-                        && (selectedGenre.equals("All") || r.getGame().getGenre().equals(selectedGenre)))
+                        && (selectedGenre.equals("All") || r.getGame().getGenres().contains(selectedGenre)))
                 .map(r -> String.valueOf(r.getGame().getRating()))
                 .distinct().collect(Collectors.toList());
         jListFilterRating.setModel(getModel(ratings));

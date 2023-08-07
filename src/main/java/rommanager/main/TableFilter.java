@@ -81,7 +81,7 @@ public class TableFilter {
             stream = stream.filter(r -> r.console.getName().equals(this.console));
         }
         if(this.genre!=null) {
-            stream = stream.filter(r -> r.getGame().getGenre().equals(this.genre));
+            stream = stream.filter(r -> r.getGame().getGenres().contains(this.genre));
         }
         if(this.rating!=null) {
             stream = stream.filter(r -> String.valueOf(r.getGame().getRating()).equals(this.rating));

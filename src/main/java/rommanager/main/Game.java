@@ -17,6 +17,8 @@
 package rommanager.main;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -38,7 +40,8 @@ public class Game {
 	private final String releaseDate;//Not used
 	private final String developer;
 	private final String publisher;
-	private final String genre; //FIXME 1 genre split by "," => genreS
+    private final String genre;
+	private final List<String> genres;
     private final String genreId; //Not used
 	private final String players;//Not used
 	private final int playcount;//Not used
@@ -66,7 +69,8 @@ public class Game {
 		this.releaseDate = releaseDate;
 		this.developer = developer;
 		this.publisher = publisher;
-		this.genre = genre;
+        this.genre = genre;
+		this.genres = Arrays.asList(genre.trim().split("\\s*,\\s*"));
         this.genreId = genreId;
 		this.players = players;
 		this.playcount = playcount;
@@ -78,7 +82,7 @@ public class Game {
         this.ratio = ratio;
         this.region = region;
 	}
-
+    
 	public boolean delete(String rootPath) {
 		return getFile(rootPath).delete();
 	}
@@ -110,6 +114,10 @@ public class Game {
 	public String getGenre() {
 		return genre;
 	}
+    
+    public List<String> getGenres() {
+        return genres;
+    }
     
     public String getGenreId() {
 		return genreId;
@@ -159,7 +167,6 @@ public class Game {
 					+ ", releaseDate=" + releaseDate + "\n"
 					+ ", developer=" + developer + "\n"
 					+ ", publisher=" + publisher + "\n"
-					+ ", genre=" + genre + "\n"
 					+ ", players=" + players + "\n"
 					+ ", playcount=" + playcount + "\n"
 					+ ", lastplayed=" + lastplayed + "\n"
