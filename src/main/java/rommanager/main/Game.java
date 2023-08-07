@@ -34,15 +34,15 @@ public class Game {
 	private final String name;
 	private final String desc;
 	private final String image;
-    private final String video; //Not used
-	private final String thumbnail; //Not used
+    private final String video;
+	private final String thumbnail; //Not used, same as image
 	private final float rating;
 	private final String releaseDate;//Not used
 	private final String developer;
 	private final String publisher;
     private final String genre;
 	private final List<String> genres;
-    private final String genreId; //Not used
+    private final String genreId; //Not used, not useful
 	private final String players;//Not used
 	private final int playcount;//Not used
 	private final String lastplayed;//Not used
