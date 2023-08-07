@@ -316,10 +316,11 @@ public class RomVersion {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        
-		out.append(score).append(" ");
+		out.append(score);
+        out.append("<BR/>").append(filename);
+        out.append("<BR/>").append(name);
         if(!alternativeName.equals("")) {
-            out.append("<BR/>").append(alternativeName).append(" ");
+            out.append("<BR/>").append(alternativeName);
         }
         if(!attributes.isEmpty()) {
 			for(Attribute attr : attributes) {
