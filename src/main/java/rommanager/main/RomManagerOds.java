@@ -277,7 +277,7 @@ public class RomManagerOds {
 					video,thumbnail, rating, releaseDate, 
 					developer, publisher, genre, genreId, players, 
 					playcount, lastplayed, isFavorite, timestamp, isHidden, isAdult, ratio, region);
-				IconBuffer.getCoverIcon(game.getName(), "", true);
+				BufferIcon.getCoverIcon(game.getName(), "", true);
 				romVersion.setGame(game);
                 
                 JeuVideo jeuVideo = new JeuVideo(url, title, releaseDateJeuVideo, ratingJeuVideo, userRating, description);

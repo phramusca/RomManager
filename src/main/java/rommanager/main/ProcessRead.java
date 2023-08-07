@@ -103,7 +103,7 @@ public class ProcessRead extends ProcessAbstract {
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
                         if(!game.getImage().isBlank()) {
-                            IconBuffer.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
+                            BufferIcon.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
                         }
 						romVersion.setGame(game);
 					}

@@ -37,7 +37,7 @@ import rommanager.utils.StringManager;
  */
 
 
-public class IconBuffer {
+public class BufferIcon {
     private static final Map<String, ImageIcon> ICONS = new HashMap<>();
 
     /**
@@ -109,7 +109,7 @@ public class IconBuffer {
             }
 			
 			BufferedImage myImage = ImageIO.read(iconFile);
-            icon = new ImageIcon(((new ImageIcon(myImage).getImage()).getScaledInstance(-1, IconBuffer.ICON_HEIGHT, java.awt.Image.SCALE_SMOOTH)));
+            icon = new ImageIcon(((new ImageIcon(myImage).getImage()).getScaledInstance(-1, BufferIcon.ICON_HEIGHT, java.awt.Image.SCALE_SMOOTH)));
             
             //Write to cache
             BufferedImage bi = new BufferedImage(icon.getImage().getWidth(null),icon.getImage().getHeight(null),BufferedImage.TYPE_3BYTE_BGR);
@@ -118,10 +118,10 @@ public class IconBuffer {
             g2.dispose();
             ImageIO.write(bi, "png", getCacheFile(key)); //NOI18N
 		} catch (IIOException ex) {
-            Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BufferIcon.class.getName()).log(Level.SEVERE, null, ex);
         }
         catch (IOException | NullPointerException ex) {
-			Logger.getLogger(IconBuffer.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(BufferIcon.class.getName()).log(Level.SEVERE, null, ex);
 		}
         return icon;
     }
