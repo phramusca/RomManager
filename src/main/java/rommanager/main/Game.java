@@ -18,8 +18,14 @@ package rommanager.main;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
+import rommanager.utils.DateTime;
+import rommanager.utils.DateTime.DateTimeFormat;
 
 /**
  *
@@ -140,7 +146,22 @@ public class Game {
 	}
 
 	public String getReleaseDate() {
-		return releaseDate;
+		return DateTime.formatUTC(getReleaseDate(releaseDate, "^(\\d{4})(\\d{2})(\\d{2})T(\\d{6})$"), "MM/yyyy", false);
+	}
+    
+    private Date getReleaseDate(String line, String pattern) {
+		Pattern patterner = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = patterner.matcher(line);
+		boolean matchFound = matcher.find();
+		if(matchFound) {
+			int year = Integer.parseInt(matcher.group(1));
+            int month = Integer.parseInt(matcher.group(2));
+            int day = Integer.parseInt(matcher.group(3));
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day);
+            return c.getTime();
+		}
+		return new Date(0);
 	}
 
 	public int getPlaycount() {

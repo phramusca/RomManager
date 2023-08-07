@@ -74,13 +74,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		// as done, in initComponents, before setColumnModel which removes the columns ...
 		jTableRom.createDefaultColumnsFromModel();
 
-		setColumn(0, 220, 220);
-        setColumn(1, 100, 300);
-		setColumn(2, 100, 800);
-		setColumn(3, 100, 200);
-		setColumn(4, 100, 150);
-		setColumn(5, 100, 50);
-		setColumn(6, 100, 200);
+		setColumn(0, BufferIcon.ICON_WIDTH, BufferIcon.ICON_WIDTH); //Screenshot
+        setColumn(1, 100, 300); //Name
+		setColumn(2, 100, 1000); //Description
+		setColumn(3, 100, 200); //Console
+		setColumn(4, 100, 150); //Genre
+        setColumn(5, 60, 60); //Players
+        setColumn(6, 80, 80); //Release Date
+        setColumn(7, 50, 50); //Rating
+		setColumn(8, 100, 200); //Export selection
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setVerticalAlignment(SwingConstants.TOP);
@@ -182,12 +184,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jButtonAuto = new javax.swing.JButton();
         jButtonVideo = new javax.swing.JButton();
-        jLabelFilename = new javax.swing.JLabel();
         jSplitPane3 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaDescription = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListVersions = new javax.swing.JList<>();
+        jTextFieldFilename = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -415,7 +417,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jSplitPane2.setLeftComponent(jPanel3);
 
-        jSplitPane1.setResizeWeight(0.2);
+        jSplitPane1.setResizeWeight(0.5);
 
         jTableRom.setAutoCreateColumnsFromModel(false);
         jTableRom.setModel(new rommanager.main.TableModelRom());
@@ -451,15 +453,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabelFilename.setText(" ");
-
         jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane3.setResizeWeight(0.5);
 
+        jTextAreaDescription.setEditable(false);
         jTextAreaDescription.setColumns(20);
         jTextAreaDescription.setLineWrap(true);
         jTextAreaDescription.setRows(5);
         jTextAreaDescription.setWrapStyleWord(true);
+        jTextAreaDescription.setEnabled(false);
         jScrollPane2.setViewportView(jTextAreaDescription);
 
         jSplitPane3.setTopComponent(jScrollPane2);
@@ -473,18 +475,21 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jSplitPane3.setRightComponent(jScrollPane1);
 
+        jTextFieldFilename.setEditable(false);
+        jTextFieldFilename.setEnabled(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSplitPane3)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextFieldFilename)
+                    .addComponent(jSplitPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonVideo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 350, Short.MAX_VALUE)
                         .addComponent(jButtonAuto)))
                 .addContainerGap())
         );
@@ -495,9 +500,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonAuto)
                     .addComponent(jButtonVideo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelFilename)
+                .addComponent(jTextFieldFilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE))
+                .addComponent(jSplitPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE))
         );
 
         jSplitPane1.setRightComponent(jPanel2);
@@ -692,7 +697,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jTableRomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableRomMouseClicked
 		RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
-            jLabelFilename.setText(romContainer.getFilename());
+            jTextFieldFilename.setText(romContainer.getFilename());
             jTextAreaDescription.setText(romContainer.getGame().getDesc());
 			displayVersions(romContainer.getVersions());
 		}
@@ -1045,7 +1050,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelAction;
-    private javax.swing.JLabel jLabelFilename;
     private static javax.swing.JList jListFilterConsole;
     private static javax.swing.JList jListFilterGenre;
     private static javax.swing.JList jListFilterNumberFilesExport;
@@ -1068,6 +1072,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane3;
     private static javax.swing.JTable jTableRom;
     private javax.swing.JTextArea jTextAreaDescription;
+    private javax.swing.JTextField jTextFieldFilename;
     private static javax.swing.JTextField jTextFieldPathExport;
     private static javax.swing.JTextField jTextFieldPathSource;
     // End of variables declaration//GEN-END:variables

@@ -57,6 +57,8 @@ public class TableModelRom extends TableModelGeneric {
 			"Description",
 			"Console",
 			"Genre",
+            "Players",
+            "Released",
 			"Rating",
 			"Export Selection"
         });
@@ -124,7 +126,7 @@ public class TableModelRom extends TableModelGeneric {
         RomContainer romContainer = getRom(rowIndex);
 
 		ImageIcon icon = BufferIcon.getCoverIcon(romContainer.getGame().getName(), "", false);
-		
+
         switch (columnIndex) {
 			case 0: return icon!= null ? icon: new ImageIcon();
 			case 1: 
@@ -136,18 +138,19 @@ public class TableModelRom extends TableModelGeneric {
 				StringBuilder builder = new StringBuilder();
 				builder.append("<html>")
 						.append(romContainer.getFilename())
-							.append("<BR/>")
-						.append(romContainer.getGame().getPlayers()).append(" ")
+							.append("<BR/>(")
 						.append(romContainer.getGame().getDeveloper()).append(" / ")
 						.append(romContainer.getGame().getPublisher())
-							.append("<BR/>").append("<BR/>")
+							.append(")<BR/>").append("<BR/>")
 						.append(romContainer.getGame().getDesc().equals("")?romContainer.getJeuVideo().getDescription():romContainer.getGame().getDesc())
 						.append("</html>");
 				return builder.toString();
 			case 3: return romContainer.getConsoleStr();
 			case 4: return "<html>"+romContainer.getGame().getGenre().replace(",", "<BR/>")+"</html>";
-			case 5: return romContainer.getGame().getRating();
-			case 6: return romContainer; //need to return object for the filter (.toString() is auto anyway)
+			case 5: return romContainer.getGame().getPlayers();
+            case 6: return romContainer.getGame().getReleaseDate();
+            case 7: return romContainer.getGame().getRating();
+			case 8: return romContainer; //need to return object for the filter (.toString() is auto anyway)
 			
 		}
         return null;

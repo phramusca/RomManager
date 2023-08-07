@@ -227,7 +227,7 @@ public class ProcessRead extends ProcessAbstract {
                     XML.getElementValue(element, "video"),
                     XML.getElementValue(element, "thumbnail"),
                     ratingLocal,
-                    XML.getElementValue(element, "releaseDate"),
+                    XML.getElementValue(element, "releasedate"),
                     XML.getElementValue(element, "developer"),
                     XML.getElementValue(element, "publisher"),
                     XML.getElementValue(element, "genre"),
