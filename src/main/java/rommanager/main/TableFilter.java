@@ -30,6 +30,7 @@ public class TableFilter {
     private String console = null;
     private String genre = null;
     private String rating = null;
+    private String players = null;
     private ExportFilesNumber exportFilesNumber = ExportFilesNumber.ALL;
 
 	/**
@@ -55,6 +56,19 @@ public class TableFilter {
         }
         else {
             this.rating=rating;
+        }
+    }
+    
+    /**
+	 *
+	 * @param players
+	 */
+	public void displayByPlayers(String players) {
+        if(players.equals("All")) {
+            this.players=null;
+        }
+        else {
+            this.players=players;
         }
     }
     
@@ -85,6 +99,9 @@ public class TableFilter {
         }
         if(this.rating!=null) {
             stream = stream.filter(r -> String.valueOf(r.getGame().getRating()).equals(this.rating));
+        }
+        if(this.players!=null) {
+            stream = stream.filter(r -> String.valueOf(r.getGame().getPlayers()).equals(this.players));
         }
         switch(exportFilesNumber) {
             case ALL:
