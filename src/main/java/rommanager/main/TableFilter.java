@@ -31,6 +31,7 @@ public class TableFilter {
     private String genre = null;
     private String rating = null;
     private String players = null;
+    private String playCount = null;
     private ExportFilesNumber exportFilesNumber = ExportFilesNumber.ALL;
 
 	/**
@@ -72,6 +73,19 @@ public class TableFilter {
         }
     }
     
+    /**
+	 *
+	 * @param playCount
+	 */
+	public void displayByPlayCount(String playCount) {
+        if(playCount.equals("All")) {
+            this.playCount=null;
+        }
+        else {
+            this.playCount=playCount;
+        }
+    }
+    
 	/**
 	 *
 	 * @param console
@@ -102,6 +116,9 @@ public class TableFilter {
         }
         if(this.players!=null) {
             stream = stream.filter(r -> String.valueOf(r.getGame().getPlayers()).equals(this.players));
+        }
+        if(this.playCount!=null) {
+            stream = stream.filter(r -> String.valueOf(r.getGame().getPlaycount()).equals(this.playCount));
         }
         switch(exportFilesNumber) {
             case ALL:
