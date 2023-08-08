@@ -35,28 +35,28 @@ public class Game {
     //FIXME 2 Use unused fields (display and/or filter)
     
 	private final String path;
-    private final String hash; //Not used
+    private final String hash; //Not used, what for ?
 	private final String name;
 	private final String desc;
 	private final String image;
     private final String video;
 	private final String thumbnail; //Not used, same as image
 	private final float rating;
-	private final String releaseDate;//Not used
+	private final String releaseDate;
 	private final String developer;
 	private final String publisher;
     private final String genre;
 	private final List<String> genres;
     private final String genreId; //Not used, not useful
-	private final String players;//Not used
-	private final int playcount;//Not used
-	private final String lastplayed;//Not used
-	private final boolean favorite;//Not used
-    private final long timestamp;//Not used
-    private final boolean hidden;//Not used
-    private final boolean adult;//Not used
-    private final String ratio;//Not used
-    private final String region;//Not used
+	private final String players;
+	private final int playcount; //FIXME 0 Display playcount
+	private final String lastplayed; //FIXME 0 Display lastplayed
+	private final boolean favorite; //FIXME 0 Display favorite
+    private final long timestamp; //Not used, what for ?
+    private final boolean hidden; //FIXME 0 Display hidden
+    private final boolean adult; //FIXME 0 Display adult
+    private final String ratio; //Not used, what for ?
+    private final String region; //Not used, what for ?
 
 	public Game(String path, String hash, String name, String desc, String image, 
             String video, String thumbnail, float rating, String releaseDate, 

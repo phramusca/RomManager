@@ -20,6 +20,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import rommanager.utils.TriStateCheckBox;
+import rommanager.utils.TriStateCheckBox.State;
+import static rommanager.utils.TriStateCheckBox.State.ALL;
+import static rommanager.utils.TriStateCheckBox.State.SELECTED;
+import static rommanager.utils.TriStateCheckBox.State.UNSELECTED;
 
 /**
  *
@@ -33,6 +38,10 @@ public class TableFilter {
     private String players = null;
     private String playCount = null;
     private ExportFilesNumber exportFilesNumber = ExportFilesNumber.ALL;
+    
+    private State displayFavorite = State.ALL;
+    private State displayHidden = State.UNSELECTED;
+    private State displayAdult = State.UNSELECTED;
 
 	/**
 	 *
@@ -103,6 +112,18 @@ public class TableFilter {
         this.exportFilesNumber=exportFilesNumber;
     }
     
+    public void displayFavorite(TriStateCheckBox.State display) {
+        this.displayFavorite=display;
+    }
+    
+    public void displayHidden(TriStateCheckBox.State display) {
+        this.displayHidden=display;
+    }
+    
+    public void displayAdult(TriStateCheckBox.State display) {
+        this.displayAdult=display;
+    }
+       
     List<RomContainer> getFiltered(Collection<RomContainer> values) {
         Stream<RomContainer> stream = values.stream();
         if(this.console!=null) {
@@ -120,6 +141,36 @@ public class TableFilter {
         if(this.playCount!=null) {
             stream = stream.filter(r -> String.valueOf(r.getGame().getPlaycount()).equals(this.playCount));
         }
+        switch(displayFavorite) {
+            case ALL:
+                break;
+            case SELECTED:
+                stream = stream.filter(r -> r.getGame().isFavorite());
+                break;
+            case UNSELECTED:
+                stream = stream.filter(r -> !r.getGame().isFavorite());
+                break;
+        }
+        switch(displayHidden) {
+            case ALL:
+                break;
+            case SELECTED:
+                stream = stream.filter(r -> r.getGame().isHidden());
+                break;
+            case UNSELECTED:
+                stream = stream.filter(r -> !r.getGame().isHidden());
+                break;
+        }
+        switch(displayAdult) {
+            case ALL:
+                break;
+            case SELECTED:
+                stream = stream.filter(r -> r.getGame().isAdult());
+                break;
+            case UNSELECTED:
+                stream = stream.filter(r -> !r.getGame().isAdult());
+                break;
+        }
         switch(exportFilesNumber) {
             case ALL:
                 break;
@@ -130,7 +181,7 @@ public class TableFilter {
                 stream = stream.filter(r -> r.getExportableVersions().size()>1);
                 break;
             case MORE_THAN_ZERO:
-                stream = stream.filter(r -> r.getExportableVersions().size()>0);
+                stream = stream.filter(r -> !r.getExportableVersions().isEmpty());
                 break;
             case ONE:
                 stream = stream.filter(r -> r.getExportableVersions().size()==1);
