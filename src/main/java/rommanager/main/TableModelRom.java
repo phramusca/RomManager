@@ -133,7 +133,12 @@ public class TableModelRom extends TableModelGeneric {
 				String name = romContainer.getGame().getName();
                 name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 4 Do not set Name column in ods file if not from game (gamelist.xml)
 				name=name.equals("")?romContainer.getFilename():name;
-				return "<html>"+name+"</html>";
+				return "<html>"+name
+                        +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
+                        +(romContainer.getGame().isHidden()?" [Hidden] ":"")
+                        +(romContainer.getGame().isAdult()?" [Adult] ":"")
+                        +(romContainer.getGame().getPlaycount()>0?"Played "+romContainer.getGame().getPlaycount()+" times, last "+romContainer.getGame().getLastplayedFormatted():"")
+                        +"</html>";
 			case 2: 
 				StringBuilder builder = new StringBuilder();
 				builder.append("<html>")
@@ -148,7 +153,7 @@ public class TableModelRom extends TableModelGeneric {
 			case 3: return romContainer.getConsoleStr();
 			case 4: return "<html>"+romContainer.getGame().getGenre().replace(",", "<BR/>")+"</html>";
 			case 5: return romContainer.getGame().getPlayers();
-            case 6: return romContainer.getGame().getReleaseDate();
+            case 6: return romContainer.getGame().getReleaseDateFormatted();
             case 7: return romContainer.getGame().getRating();
 			case 8: return romContainer; //need to return object for the filter (.toString() is auto anyway)
 			

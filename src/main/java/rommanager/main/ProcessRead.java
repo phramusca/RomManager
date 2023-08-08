@@ -58,9 +58,7 @@ public class ProcessRead extends ProcessAbstract {
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 	}
-
-    //FIXME 3 Ask user if he wants to overwrite OR show differences (what fields could we update ? only rating ? favorite, ... ?) and propose how to handle the sync.
-
+   
 	@Override
 	public void run() {
 		try {
@@ -125,6 +123,7 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
+    //FIXME 8 What is the best way for: rom launching, rom edition ? (web interface does not work well :()
     //FIXME 8 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
     
     private void save(Map<String, Game> games, File gamelistXmlFile) {
@@ -133,8 +132,8 @@ public class ProcessRead extends ProcessAbstract {
         Element root = document.createElement("gameList");
         document.appendChild(root);
         
-        //FIXME 9 Include <folder> entries if we want to send back entries when local modifications will be available to the user
-        //FIXME 9 Make a sync process to sync metadata (rating, ...) from/to local/recalbox
+        //FIXME 8 Include <folder> entries if we want to send back entries when local modifications will be available to the user
+        //FIXME 8 Make a sync process to sync metadata (rating, ...) from/to local/recalbox
         
         for(Game game: games.values()) {
             Element gameElement = document.createElement("game");

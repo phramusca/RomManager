@@ -305,9 +305,6 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JSplitPane" name="jSplitPaneFilters">
-      <Properties>
-        <Property name="resizeWeight" type="double" value="0.1"/>
-      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
       <SubComponents>
@@ -626,7 +623,7 @@
         </Container>
         <Container class="javax.swing.JSplitPane" name="jSplitPaneList">
           <Properties>
-            <Property name="resizeWeight" type="double" value="0.9"/>
+            <Property name="resizeWeight" type="double" value="1.0"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">

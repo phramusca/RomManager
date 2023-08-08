@@ -80,9 +80,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		setColumn(2, 100, 800); //Description
 		setColumn(3, 100, 200); //Console
 		setColumn(4, 100, 150); //Genre
-        setColumn(5, 60, 60); //Players
-        setColumn(6, 80, 80); //Release Date
-        setColumn(7, 50, 50); //Rating
+        setColumn(5, 60, 60);   //Players
+        setColumn(6, 80, 80);   //Release Date
+        setColumn(7, 50, 50);   //Rating
 		setColumn(8, 100, 200); //Export selection
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -371,8 +371,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jSplitPaneFilters.setResizeWeight(0.1);
-
         jListFilterRating.setModel(new DefaultListModel());
         jListFilterRating.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jListFilterRating.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -548,7 +546,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jSplitPaneFilters.setLeftComponent(jPanel3);
 
-        jSplitPaneList.setResizeWeight(0.9);
+        jSplitPaneList.setResizeWeight(1.0);
 
         jTableRom.setAutoCreateColumnsFromModel(false);
         jTableRom.setModel(new rommanager.main.TableModelRom());
@@ -1143,7 +1141,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     
     class CallBackJeuxVideo implements ICallBack {
 
-        //FIXME 4 Remove setup and read methods, use progressBar instead
+        //FIXME 2 Remove setup and read methods, use progressBar instead
         
 		@Override
 		public void setup(int size) {

@@ -31,9 +31,7 @@ import rommanager.utils.DateTime;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class Game {
-
-    //FIXME 2 Use unused fields (display and/or filter)
-    
+   
 	private final String path;
     private final String hash; //Not used, what for ?
 	private final String name;
@@ -49,12 +47,12 @@ public class Game {
 	private final List<String> genres;
     private final String genreId; //Not used, not useful
 	private final String players;
-	private final int playcount; //FIXME 0 Display playcount
-	private final String lastplayed; //FIXME 0 Display lastplayed
-	private final boolean favorite; //FIXME 0 Display favorite
+	private final int playcount;
+	private final String lastplayed;
+	private final boolean favorite;
     private final long timestamp; //Not used, what for ?
-    private final boolean hidden; //FIXME 0 Display hidden
-    private final boolean adult; //FIXME 0 Display adult
+    private final boolean hidden;
+    private final boolean adult;
     private final String ratio; //Not used, what for ?
     private final String region; //Not used, what for ?
 
@@ -144,20 +142,36 @@ public class Game {
 		return thumbnail;
 	}
 
-	public String getReleaseDate() {
-		return DateTime.formatUTC(getReleaseDate(releaseDate, "^(\\d{4})(\\d{2})(\\d{2})T(\\d{6})$"), "MM/yyyy", false);
+	public String getReleaseDateFormatted() {
+		return DateTime.formatUTC(getDate(releaseDate), "MM/yyyy", false);
 	}
     
-    private Date getReleaseDate(String line, String pattern) {
-		Pattern patterner = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+    public String getReleaseDate() {
+		return releaseDate;
+	}
+    
+    public String getLastplayedFormatted() {
+		return DateTime.formatUTC(getDate(lastplayed), "dd/MM/yyyy HH:mm:ss", false);
+	}
+    
+    public String getLastplayed() {
+		return lastplayed;
+	}
+    
+    //FIXME 1 Date does not seem valid !
+    private Date getDate(String line) {
+		Pattern patterner = Pattern.compile("^(\\d{4})(\\d{2})(\\d{2})T(\\d{2})(\\d{2})(\\d{2})$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patterner.matcher(line);
 		boolean matchFound = matcher.find();
 		if(matchFound) {
 			int year = Integer.parseInt(matcher.group(1));
             int month = Integer.parseInt(matcher.group(2));
             int day = Integer.parseInt(matcher.group(3));
+            int hour = Integer.parseInt(matcher.group(4));
+            int minute = Integer.parseInt(matcher.group(5));
+            int second = Integer.parseInt(matcher.group(6));
             Calendar c = Calendar.getInstance();
-            c.set(year, month, day);
+            c.set(year, month, day, hour, minute, second);
             return c.getTime();
 		}
 		return new Date(0);
@@ -167,10 +181,6 @@ public class Game {
 		return playcount;
 	}
 
-	public String getLastplayed() {
-		return lastplayed;
-	}
-	
 	private File getFile(String rootPath) {
 		return new File(FilenameUtils.concat(rootPath, path));
 	}
