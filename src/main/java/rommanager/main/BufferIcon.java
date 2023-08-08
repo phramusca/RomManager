@@ -50,7 +50,7 @@ public class BufferIcon {
      * Icon width.
      * Width is set auto based on image ratio, this value is to set column width
      */
-    public static final int ICON_WIDTH = 105;
+    public static final int ICON_WIDTH = 140;
     
     /**
      * Get cover icon from cache if exists, from internet if not
