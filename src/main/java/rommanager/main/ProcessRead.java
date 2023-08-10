@@ -209,16 +209,22 @@ public class ProcessRead extends ProcessAbstract {
         }
         ArrayList<Element> elements = XML.getElements(doc, "game");
         progressBarGame.setup(elements.size());
-        int playCounter;
-        float ratingLocal;
         for(Element element : elements) {
             checkAbort();
-            long timestamp = Long.parseLong(XML.getAttribute(element, "timestamp"));
-            String pc = XML.getElementValue(element, "playcount");
-            playCounter=pc.equals("")?-1:Integer.parseInt(pc);
-            String r = XML.getElementValue(element, "rating");
-            ratingLocal=r.equals("")?-1:Float.parseFloat(r);
-            Game game = new Game(XML.getElementValue(element, "path"),
+            Game game = getGame(element);
+            games.put(FilenameUtils.getBaseName(game.getPath()), game);
+            progressBarGame.progress(game.getName());
+        }
+        return games;
+	}
+    
+    public static Game getGame(Element element) {
+        String r = XML.getElementValue(element, "rating");
+        float ratingLocal=r.equals("")?-1:Float.parseFloat(r);
+        String pc = XML.getElementValue(element, "playcount");
+        int playCounter=pc.equals("")?-1:Integer.parseInt(pc);
+        long timestamp = Long.parseLong(XML.getAttribute(element, "timestamp"));
+        return new Game(XML.getElementValue(element, "path"),
                     XML.getElementValue(element, "hash"),
                     XML.getElementValue(element, "name"),
                     XML.getElementValue(element, "desc"),
@@ -240,9 +246,5 @@ public class ProcessRead extends ProcessAbstract {
                     Boolean.parseBoolean(XML.getElementValue(element, "adult")),
                     XML.getElementValue(element, "ratio"),
                     XML.getElementValue(element, "region"));
-            games.put(FilenameUtils.getBaseName(game.getPath()), game);
-            progressBarGame.progress(game.getName());
-        }
-        return games;
-	}
+    }
 }

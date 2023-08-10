@@ -19,6 +19,7 @@ package rommanager.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +30,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -75,6 +81,9 @@ public class XML {
         try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
+            //To indent with 4 spaces. Causes issues with tab indented read files
+//            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 			DOMSource domSource = new DOMSource(document);
 			StreamResult streamResult = new StreamResult(filename);
 			// If you use
@@ -86,6 +95,30 @@ public class XML {
 		} catch (TransformerException ex) {
 			Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
 		}
+    }
+    
+    public static Element getElementByValue(String value) {
+        XPath xPath = (XPath) XPathFactory.newInstance().newXPath();
+//        String failure Expression = "//gameList/game";
+//        Node node = (Node) xPath.compile(failureExpression).evaluate(doc,
+//        XPathConstants.NODE);
+        return null;
+    }
+    
+    public static List<Element> evaluateXPath(Document document, String xpathExpression) {
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+        XPath xpath = xpathFactory.newXPath();
+        List<Element> values = new ArrayList<>();
+        try {
+            XPathExpression expr = xpath.compile(xpathExpression);
+            NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                values.add((Element)nodes.item(i));
+            }
+        } catch (XPathExpressionException ex) {
+            Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return values;
     }
     
 	public static String getNodeValue(Document doc, String TagNameLev1, String TagNameLev2) {

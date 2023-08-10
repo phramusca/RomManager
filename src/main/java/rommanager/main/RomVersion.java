@@ -280,18 +280,15 @@ public class RomVersion {
 				console.getName());
     }
     
-	public String getExportFilename(Console console, String exportPath) {
-        String exportFolder = getExportFolder(console, exportPath);
+	public String getExportPath(Console console, String exportPath) {
+        return FilenameUtils.concat(getExportFolder(console, exportPath), getExportFilename(console));
+	}
+    
+    public String getExportFilename(Console console) {
         if(console.isZip()) {
-            return FilenameUtils.concat(
-                        exportFolder, 
-                        FilenameUtils.getBaseName(
-                                filename)
-                            .concat(".zip"));
+            return FilenameUtils.getBaseName(filename).concat(".zip");
         } else {
-            return FilenameUtils.concat(
-                        exportFolder,
-                        filename);
+            return filename;
         }
 	}
     

@@ -155,7 +155,7 @@ public class ProcessExport extends ProcessAbstract {
 					checkAbort();
 					sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
                     File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
-                    File exportFile = new File(romVersion.getExportFilename(romContainer.getConsole(), exportPath));
+                    File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath));
                     String ext = FilenameUtils.getExtension(filename);
                     if(ext.equals("7z")) {
 						try (SevenZFile sevenZFile = new SevenZFile(new File(
@@ -216,7 +216,7 @@ public class ProcessExport extends ProcessAbstract {
     private boolean checkFile(RomContainer romContainer, RomVersion romVersion) throws IOException {
         String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
         File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
-        File exportFile = new File(romVersion.getExportFilename(romContainer.getConsole(), exportPath));
+        File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath));
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
         if(containerFileExtension.equals("7z")) {
             if(romContainer.getConsole().isZip()) {
@@ -298,7 +298,7 @@ public class ProcessExport extends ProcessAbstract {
 		for(RomContainer romContainer : romSourceList) {
 			for(RomVersion romVersion : romContainer.getToCopyVersions()) {
 				this.checkAbort();
-				String exportFilename = romVersion.getExportFilename(romContainer.getConsole(), exportPath);
+				String exportFilename = romVersion.getExportPath(romContainer.getConsole(), exportPath);
                 if(exportFilename.equals(file.getAbsolutePath())) { 
                     return new Pair<>(romContainer, romVersion); 
                 }

@@ -28,7 +28,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel1" max="32767" attributes="0"/>
-                  <Component id="jSplitPaneFilters" pref="1032" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jSplitPaneFilters" pref="948" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
       </Group>
@@ -398,8 +401,8 @@
                       <Component id="jScrollPaneSelectGenre5" pref="75" max="32767" attributes="2"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="triStateCheckBoxFavorite" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="triStateCheckBoxFavorite" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="triStateCheckBoxHidden" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="triStateCheckBoxAdult" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -688,9 +691,11 @@
                               <Component id="jSplitPaneDesc" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jButtonVideo" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="32767" attributes="0"/>
+                                  <Component id="jButtonEdit" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jLabel9" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jButtonSaveXml" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="32767" attributes="0"/>
                                   <Component id="jButtonAuto" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -703,7 +708,8 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jButtonAuto" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jButtonVideo" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButtonEdit" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButtonSaveXml" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jTextFieldFilename" min="-2" max="-2" attributes="0"/>
@@ -792,9 +798,17 @@
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel9">
+                <Component class="javax.swing.JButton" name="jButtonEdit">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="                                              "/>
+                    <Property name="text" type="java.lang.String" value="Edit"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEditActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="jButtonSaveXml">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Save"/>
                   </Properties>
                 </Component>
               </SubComponents>
