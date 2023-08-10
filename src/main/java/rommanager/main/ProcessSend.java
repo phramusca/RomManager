@@ -36,7 +36,7 @@ import rommanager.utils.XML;
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
-public class ProcessRead extends ProcessAbstract {
+public class ProcessSend extends ProcessAbstract {
 
     private final String sourcePath;
 	private final String exportPath;
@@ -45,7 +45,7 @@ public class ProcessRead extends ProcessAbstract {
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
-	public ProcessRead(
+	public ProcessSend(
             String sourcePath,
 			String exportPath, 
             ProgressBar progressBarConsole, 
@@ -70,57 +70,15 @@ public class ProcessRead extends ProcessAbstract {
 			for(Console console : Console.values()) {
 				checkAbort();
                 progressBarConsole.progress(console.getName());
-                
                 File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
-                if(remoteFile.exists()) {
-                    FileSystem.copyFile(remoteFile, localFile);
+                if(localFile.exists()) {
+                    FileSystem.copyFile(localFile, remoteFile);
                 }
-//                Map<String, Game> gamesLocal = read(localFile);
-                Map<String, Game> gamesRemote = read(remoteFile);
-//                progressBar.setup(tableModel.getRoms().size());
-//                for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
-////                    Game gameRemote = entrySet.getValue();
-////                    if(gamesLocal.containsKey(entrySet.getKey())) {
-////                        Game gameLocal = gamesLocal.get(entrySet.getKey());
-////                        if(gameRemote.GetTimeStamp() > gameLocal.GetTimeStamp()) {
-////                            
-////                        }
-////                    }
-////                    gamesLocal.put(entrySet.getKey(), gameRemote);
-//                    progressBar.progress(entrySet.getValue().getName());
-//                }
-//                save(gamesLocal, localFile);
-                games.putAll(gamesRemote);
 			}
 			progressBarConsole.reset();
             
-            //Match gamelist.xml read with local files and display information
-			progressBarGame.setup(tableModel.getRoms().size());
-			String consolePath;
-			for(RomContainer romContainer : tableModel.getRoms().values()) {
-				checkAbort();
-				consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
-				for(RomVersion romVersion : romContainer.getVersions()) {
-					checkAbort();
-					String key = FilenameUtils.getBaseName(romVersion.getFilename());
-					if(games.containsKey(key)) {
-						Game game = games.get(key);
-                        if(!game.getImage().isBlank()) {
-                            BufferIcon.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
-                        }
-						romVersion.setGame(game);
-					}
-				}
-				progressBarGame.progress(romContainer.getFilename());
-			}
-			tableModel.fireTableDataChanged();
-			
-            progressBarGame.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
-			progressBarGame.reset();
-            
-			Popup.info("Reading complete.");
+			Popup.info("Sending complete.");
 			progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
@@ -205,13 +163,13 @@ public class ProcessRead extends ProcessAbstract {
 	private Map<String, Game> read(File gamelistXmlFile) throws InterruptedException {
 		Map<String, Game> games = new HashMap<>();
         if(!gamelistXmlFile.exists()) {
-            Logger.getLogger(ProcessRead.class.getName())
+            Logger.getLogger(ProcessSend.class.getName())
                     .log(Level.WARNING, "File not found: {0}", gamelistXmlFile.getAbsolutePath());
             return games;
         }
         Document doc = XML.open(gamelistXmlFile.getAbsolutePath());
         if(doc==null) {
-            Logger.getLogger(ProcessRead.class.getName())
+            Logger.getLogger(ProcessSend.class.getName())
                     .log(Level.SEVERE, "Error with: Document doc = XML.open(\"{0}\")", gamelistXmlFile.getAbsolutePath());
             return games;
         }
@@ -231,8 +189,7 @@ public class ProcessRead extends ProcessAbstract {
         float ratingLocal=r.equals("")?-1:Float.parseFloat(r);
         String pc = XML.getElementValue(element, "playcount");
         int playCounter=pc.equals("")?-1:Integer.parseInt(pc);
-        String t = XML.getAttribute(element, "timestamp");
-        long timestamp = (!t.isBlank()?Long.parseLong(t):-1);
+        long timestamp = Long.parseLong(XML.getAttribute(element, "timestamp"));
         return new Game(XML.getElementValue(element, "path"),
                     XML.getElementValue(element, "hash"),
                     XML.getElementValue(element, "name"),

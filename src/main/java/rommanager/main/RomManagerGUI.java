@@ -20,13 +20,10 @@ import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
@@ -38,14 +35,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import rommanager.main.TableFilter.ExportFilesNumber;
 import rommanager.utils.Desktop;
-import rommanager.utils.FileSystem;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.TriStateCheckBox;
-import rommanager.utils.XML;
 
 /**
  *
@@ -59,6 +52,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     
 	private ProcessList processList;
 	private ProcessRead processRead;
+    private ProcessSend processSend;
 	private ProcessExport processExport;
 	private ProcessSetScore processSetScore;
 	
@@ -177,6 +171,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonSave = new javax.swing.JButton();
         jButtonReadJeuxVideo = new javax.swing.JButton();
         jProgressBarConsole = new ProgressBar();
+        jButtonSendGamelist = new javax.swing.JButton();
         jSplitPaneFilters = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
@@ -216,7 +211,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListVersions = new javax.swing.JList<>();
         jTextFieldFilename = new javax.swing.JTextField();
         jButtonEdit = new javax.swing.JButton();
-        jButtonSaveXml = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rom Manager");
@@ -304,6 +298,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jProgressBarConsole.setString(""); // NOI18N
         jProgressBarConsole.setStringPainted(true);
 
+        jButtonSendGamelist.setText("Send gamelist.xml");
+        jButtonSendGamelist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSendGamelistActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -328,6 +329,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                         .addComponent(jButtonExport)
                                         .addGap(18, 18, 18)
                                         .addComponent(jButtonReadGameList)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonSendGamelist)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jButtonReadJeuxVideo)
                                         .addGap(0, 0, Short.MAX_VALUE))
@@ -366,7 +369,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonExport)
                     .addComponent(jButtonReadGameList)
                     .addComponent(jButtonSave)
-                    .addComponent(jButtonReadJeuxVideo))
+                    .addComponent(jButtonReadJeuxVideo)
+                    .addComponent(jButtonSendGamelist))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -521,11 +525,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
@@ -534,13 +538,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jLabel6)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(triStateCheckBoxFavorite, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -622,8 +626,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonSaveXml.setText("Save");
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -632,13 +634,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextFieldFilename)
-                    .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonVideo)
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jButtonEdit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonSaveXml)
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jButtonAuto))))
         );
@@ -648,12 +648,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonAuto)
                     .addComponent(jButtonVideo)
-                    .addComponent(jButtonEdit)
-                    .addComponent(jButtonSaveXml))
+                    .addComponent(jButtonEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldFilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE))
+                .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
         );
 
         jSplitPaneList.setRightComponent(jPanel2);
@@ -669,7 +668,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 948, Short.MAX_VALUE)
+                        .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -678,7 +677,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -718,7 +717,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
 	}
     
-    private static void fillFilters() {
+    private void fillFilters() {
         isListFilterManualChange = false;
         fillFilterConsole();
         fillFilterGenre();
@@ -729,13 +728,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
         isListFilterManualChange = true;
     }
     
-    private static void fillFilterConsole() {
+    private void fillFilterConsole() {
         List<String> consoles = tableModel.getRoms().values().stream().map(r -> r.getConsoleStr()).distinct().collect(Collectors.toList());
         jListFilterConsole.setModel(getModel(consoles));
         jListFilterConsole.setSelectedIndex(0);
     }
     
-    private static DefaultListModel fillFilterGenre() {
+    private DefaultListModel fillFilterGenre() {
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         List<String> genres = tableModel.getRoms().values().stream()
                 .filter(r -> selectedConsole.equals("All") || r.console.getName().equals(selectedConsole))
@@ -749,7 +748,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         return model;
     }
     
-    private static void fillFilterRating() {
+    private void fillFilterRating() {
         //FIXME 3 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
@@ -762,7 +761,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterRating.setSelectedIndex(0);
     }
     
-    private static void fillFilterPlayers() {
+    private void fillFilterPlayers() {
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         String selectedRating = (String) jListFilterRating.getSelectedValue();
@@ -776,7 +775,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterPlayers.setSelectedIndex(0);
     }
     
-    private static void fillFilterPlayCount() {
+    private void fillFilterPlayCount() {
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         String selectedRating = (String) jListFilterRating.getSelectedValue();
@@ -792,7 +791,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterPlayCount.setSelectedIndex(0);
     }
     
-    private static void fillFilterNumberFilesExport() {
+    private void fillFilterNumberFilesExport() {
         DefaultListModel model = new DefaultListModel();
         for(ExportFilesNumber element : ExportFilesNumber.values()) {
             model.addElement(element);
@@ -853,13 +852,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		enableGUI(true);
 	}
 	
-	private static void enableGUI(boolean enable) {
+	private void enableGUI(boolean enable) {
 		jButtonScanSource.setEnabled(enable);
 		jButtonScore.setEnabled(enable);
 		jButtonExport.setEnabled(enable);
 		jButtonReadGameList.setEnabled(enable);
         jButtonReadJeuxVideo.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
+        jButtonSendGamelist.setEnabled(enable);
 		
 		jButtonOptionSelectFolderExport.setEnabled(enable);
 		jButtonOptionSelectFolderSource.setEnabled(enable);
@@ -973,6 +973,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		abort(processList);
 		abort(processExport);
 		abort(processRead);
+        abort(processSend);
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
@@ -1162,35 +1163,38 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
         RomContainer romContainer = getRomContainer();
 		if(romContainer!=null) {
-            try {
-                String exportPath = jTextFieldPathExport.getText();
-                File file = new File(exportPath);
-                if(!file.exists()) {
-                    enableGUI();
-                    Popup.warning("Export path does not exist.");
-                    return;
-                }
-                String sourcePath = jTextFieldPathSource.getText();
-                File sourceFile = new File(sourcePath);
-                if(!sourceFile.exists()) {
-                    Popup.warning("Source path does not exist.");
-                    enableGUI();
-                    return;
-                }
-                File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, romContainer.getConsole().name()), "gamelist.xml"));
-                File updatedFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, romContainer.getConsole().name()), "gamelist-updated.xml"));
-                FileSystem.copyFile(remoteFile, updatedFile);
-                
-                
-                DialogRomEdition.main(this, romContainer.getConsole(), romContainer, updatedFile.getAbsolutePath());
-                
-                
-            } catch (IOException ex) {
-                Logger.getLogger(RomManagerGUI.class.getName()).log(Level.SEVERE, null, ex);
+            String sourcePath = jTextFieldPathSource.getText();
+            File sourceFile = new File(sourcePath);
+            if(!sourceFile.exists()) {
+                Popup.warning("Source path does not exist.");
+                enableGUI();
+                return;
             }
+            File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, romContainer.getConsole().name()), "gamelist.xml"));
+            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, localFile.getAbsolutePath());
         }
         
     }//GEN-LAST:event_jButtonEditActionPerformed
+
+    private void jButtonSendGamelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendGamelistActionPerformed
+        disableGUI("Sending gamelist.xml : ");
+		String exportPath = jTextFieldPathExport.getText();
+		File file = new File(exportPath);
+		if(!file.exists()) {
+			enableGUI();
+			Popup.warning("Export path does not exist.");
+			return;
+		}
+        String sourcePath = jTextFieldPathSource.getText();
+        File sourceFile = new File(sourcePath);
+        if(!sourceFile.exists()) {
+            Popup.warning("Source path does not exist.");
+            enableGUI();
+            return;
+        }
+		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
+		processSend.start();
+    }//GEN-LAST:event_jButtonSendGamelistActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {
 
@@ -1299,15 +1303,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonAbort;
     private javax.swing.JButton jButtonAuto;
     private javax.swing.JButton jButtonEdit;
-    private static javax.swing.JButton jButtonExport;
-    private static javax.swing.JButton jButtonOptionSelectFolderExport;
-    private static javax.swing.JButton jButtonOptionSelectFolderSource;
-    private static javax.swing.JButton jButtonReadGameList;
-    private static javax.swing.JButton jButtonReadJeuxVideo;
-    private static javax.swing.JButton jButtonSave;
-    private javax.swing.JButton jButtonSaveXml;
-    private static javax.swing.JButton jButtonScanSource;
-    private static javax.swing.JButton jButtonScore;
+    private javax.swing.JButton jButtonExport;
+    private javax.swing.JButton jButtonOptionSelectFolderExport;
+    private javax.swing.JButton jButtonOptionSelectFolderSource;
+    private javax.swing.JButton jButtonReadGameList;
+    private javax.swing.JButton jButtonReadJeuxVideo;
+    private javax.swing.JButton jButtonSave;
+    private javax.swing.JButton jButtonScanSource;
+    private javax.swing.JButton jButtonScore;
+    private javax.swing.JButton jButtonSendGamelist;
     private javax.swing.JButton jButtonVideo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -1321,12 +1325,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelAction;
-    private static javax.swing.JList jListFilterConsole;
-    private static javax.swing.JList jListFilterGenre;
-    private static javax.swing.JList jListFilterNumberFilesExport;
-    private static javax.swing.JList jListFilterPlayCount;
-    private static javax.swing.JList jListFilterPlayers;
-    private static javax.swing.JList jListFilterRating;
+    private javax.swing.JList jListFilterConsole;
+    private javax.swing.JList jListFilterGenre;
+    private javax.swing.JList jListFilterNumberFilesExport;
+    private javax.swing.JList jListFilterPlayCount;
+    private javax.swing.JList jListFilterPlayers;
+    private javax.swing.JList jListFilterRating;
     private javax.swing.JList<String> jListVersions;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -48,26 +48,33 @@ public class DialogRomEdition extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 		this.gamelistFilename = gamelistFilename;
+        RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME: What if != 0 ?
+        jTextName.setText(exportRomVersion.getExportFilename(console));
         doc = XML.open(gamelistFilename);
         if(doc!=null) {
-            RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME: What if != 0 ?
             String path = FilenameUtils.concat(console.getName(), exportRomVersion.getExportFilename(console));
             List<Element> evaluateXPath = XML.evaluateXPath(doc, "//gameList/game[./path[. = '"+path+"']]");
             
             elementGame = evaluateXPath.get(0); //FIXME: What if != 0 ?
-            elementHidden = XML.getElement(elementGame, "hidden");
             elementFavorite = XML.getElement(elementGame, "favorite");
+            elementHidden = XML.getElement(elementGame, "hidden");
             elementAdult = XML.getElement(elementGame, "adult");
            
-            boolean elementValueFavorite = getElementValue(elementFavorite);
-            boolean elementValueHidden = getElementValue(elementHidden);
-            boolean elementValueAdult = getElementValue(elementAdult);
- 
-            jTextName.setText(exportRomVersion.getExportFilename(console));
+//            String fav = XML.getElementValue(elementFavorite);
+//            String hid = XML.getElementValue(elementHidden);
+//            String adu = XML.getElementValue(elementAdult);
+//            
+//            boolean elementValueFavorite = getElementValue(elementFavorite);
+//            boolean elementValueHidden = getElementValue(elementHidden);
+//            boolean elementValueAdult = getElementValue(elementAdult);
 
-            jCheckBoxFavorite.setSelected(elementValueFavorite);
-            jCheckBoxHidden.setSelected(elementValueHidden);
-            jCheckBoxAdult.setSelected(elementValueAdult);
+            boolean favoriteValue = Boolean.parseBoolean(XML.getElementValue(elementFavorite));
+            boolean hiddenValue = Boolean.parseBoolean(XML.getElementValue(elementHidden));
+            boolean adultValue = Boolean.parseBoolean(XML.getElementValue(elementAdult));
+            
+            jCheckBoxFavorite.setSelected(favoriteValue);
+            jCheckBoxHidden.setSelected(hiddenValue);
+            jCheckBoxAdult.setSelected(adultValue);
         }
     }
 

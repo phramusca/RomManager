@@ -154,7 +154,7 @@ public class XML {
 		return element.getAttribute(attribute);
 	}
 	
-	private static String getElementValue(Element element) {
+	public static String getElementValue(Element element) {
 		if(element==null) {
 			return "";
 		}

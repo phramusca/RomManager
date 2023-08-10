@@ -29,7 +29,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel1" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="jSplitPaneFilters" pref="948" max="32767" attributes="0"/>
+                      <Component id="jSplitPaneFilters" pref="0" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -42,7 +42,7 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jSplitPaneFilters" max="32767" attributes="0"/>
+              <Component id="jSplitPaneFilters" pref="205" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -82,6 +82,8 @@
                                           <Component id="jButtonExport" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="jButtonReadGameList" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButtonSendGamelist" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="jButtonReadJeuxVideo" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -134,6 +136,7 @@
                       <Component id="jButtonReadGameList" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSave" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonReadJeuxVideo" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonSendGamelist" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -168,9 +171,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOptionSelectFolderExportActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextFieldPathSource">
           <Properties>
@@ -187,9 +187,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOptionSelectFolderSourceActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
@@ -218,9 +215,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonScanSourceActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonScore">
           <Properties>
@@ -229,9 +223,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonScoreActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonExport">
           <Properties>
@@ -240,9 +231,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonReadGameList">
           <Properties>
@@ -251,9 +239,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonReadGameListActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonAbort">
           <Properties>
@@ -280,9 +265,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSaveActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonReadJeuxVideo">
           <Properties>
@@ -291,9 +273,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonReadJeuxVideoActionPerformed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JProgressBar" name="jProgressBarConsole">
           <Properties>
@@ -304,6 +283,14 @@
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ProgressBar()"/>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonSendGamelist">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Send gamelist.xml"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSendGamelistActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -376,11 +363,11 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre1" pref="73" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre1" pref="16" max="32767" attributes="2"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre2" pref="73" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre2" pref="16" max="32767" attributes="2"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
@@ -391,14 +378,14 @@
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jScrollPaneSelectGenre6" alignment="0" pref="74" max="32767" attributes="2"/>
+                          <Component id="jScrollPaneSelectGenre6" alignment="0" pref="16" max="32767" attributes="2"/>
                           <Component id="jScrollPaneSelectGenre4" alignment="0" pref="0" max="32767" attributes="2"/>
                           <Component id="jScrollPaneSelectGenre7" pref="0" max="32767" attributes="2"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre5" pref="75" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre5" pref="16" max="32767" attributes="2"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="triStateCheckBoxFavorite" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -432,9 +419,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterRatingValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -455,9 +439,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterNumberFilesExportValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -478,9 +459,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterPlayersValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -501,9 +479,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterPlayCountValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -524,9 +499,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterConsoleValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -557,9 +529,6 @@
                   <Events>
                     <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="jListFilterGenreValueChanged"/>
                   </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -688,13 +657,11 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="jTextFieldFilename" max="32767" attributes="0"/>
-                              <Component id="jSplitPaneDesc" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jSplitPaneDesc" alignment="0" pref="330" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jButtonVideo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="32767" attributes="0"/>
                                   <Component id="jButtonEdit" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jButtonSaveXml" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="32767" attributes="0"/>
                                   <Component id="jButtonAuto" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -709,12 +676,11 @@
                               <Component id="jButtonAuto" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jButtonVideo" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jButtonEdit" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jButtonSaveXml" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jTextFieldFilename" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jSplitPaneDesc" pref="378" max="32767" attributes="0"/>
+                          <Component id="jSplitPaneDesc" pref="147" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -805,11 +771,6 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEditActionPerformed"/>
                   </Events>
-                </Component>
-                <Component class="javax.swing.JButton" name="jButtonSaveXml">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Save"/>
-                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
