@@ -17,9 +17,11 @@
 package rommanager.main;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static rommanager.main.TableModelColumn.Console;
 import rommanager.utils.TriStateCheckBox;
 import rommanager.utils.TriStateCheckBox.State;
 import static rommanager.utils.TriStateCheckBox.State.ALL;
@@ -42,6 +44,8 @@ public class TableFilter {
     private State displayFavorite = State.ALL;
     private State displayHidden = State.UNSELECTED;
     private State displayAdult = State.UNSELECTED;
+    
+    private TableModelColumn sortBy = TableModelColumn.Console;
 
 	/**
 	 *
@@ -187,13 +191,54 @@ public class TableFilter {
                 stream = stream.filter(r -> r.getExportableVersions().size()==1);
                 break;
         }
-        stream = stream.sorted((RomContainer o1, RomContainer o2) -> {
-            int ConsoleCompare = o1.console.getName().compareTo(o2.console.getName());
-            return (ConsoleCompare == 0)
-                    ? o1.getGame().getName().compareTo(o2.getGame().getName())
-                    : ConsoleCompare;
-        });
+        Comparator<RomContainer> comparator;
+        switch(sortBy) {
+            case Rating:
+                comparator = (RomContainer o1, RomContainer o2) -> {
+                    return Float.compare(o1.getGame().getRating(), o2.getGame().getRating());
+                };
+                comparator = comparator.reversed();
+                break;
+
+            case Genre:
+                comparator = (RomContainer o1, RomContainer o2) -> {
+                    String genre1 = o1.getGame().getGenre();
+                    String genre2 = o2.getGame().getGenre();
+
+                    if (genre1.isEmpty() && genre2.isEmpty()) {
+                        return 0; // Both are empty, consider them equal
+                    } else if (genre1.isEmpty()) {
+                        return 1; // o1 is empty, move it to the end
+                    } else if (genre2.isEmpty()) {
+                        return -1; // o2 is empty, move it to the end
+                    } else {
+                        return genre1.compareTo(genre2); // Compare non-empty genres
+                    }
+                };break;
+            case Players:
+                comparator = (RomContainer o1, RomContainer o2) -> {
+                    return o1.getGame().getPlayers().compareTo(o2.getGame().getPlayers());
+                };
+                comparator = comparator.reversed();
+                break;
+            case ReleaseDate:
+                comparator = (RomContainer o1, RomContainer o2) -> {
+                    return o1.getGame().getReleaseDateSql().compareTo(o2.getGame().getReleaseDateSql());
+                };break;
+            default:
+            case Console:
+                comparator = (RomContainer o1, RomContainer o2) -> {
+                    return o1.getConsole().getName().compareTo(o2.getConsole().getName());
+                };break;
+        }        
+        stream = stream.sorted(comparator.thenComparing((RomContainer o1, RomContainer o2) -> {
+            return o1.getGame().getName().compareTo(o2.getGame().getName());
+        }));
         return stream.collect(Collectors.toList());
+    }
+
+    void sortBy(TableModelColumn tableModelColumn) {
+        this.sortBy = tableModelColumn;
     }
     
     public enum ExportFilesNumber {

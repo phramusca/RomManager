@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
  */
 public abstract class RomContainer {
 	
-    String filename;
-    List<RomVersion> versions;
-	Console console;
+    protected final String filename;
+    protected final List<RomVersion> versions;
+	protected Console console;
 	private Game game = null;
     private JeuVideo jeuVideo = null;
 	

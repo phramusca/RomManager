@@ -142,8 +142,12 @@ public class Game {
 		return thumbnail;
 	}
 
-	public String getReleaseDateFormatted() {
+    public String getReleaseDateFormatted() {
 		return DateTime.formatUTC(getDate(releaseDate), "MM/yyyy", false);
+	}
+    
+	public String getReleaseDateSql() {
+		return DateTime.formatUTCtoSqlUTC(getDate(releaseDate));
 	}
     
     public String getReleaseDate() {

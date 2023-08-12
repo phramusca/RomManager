@@ -97,7 +97,11 @@ public class TableModelRom extends TableModelGeneric {
 	 * @return
 	 */
 	public RomContainer getRom(int index) {
-        return filteredRoms.get(index);
+        if(index<filteredRoms.size() && index>=0) {
+            return filteredRoms.get(index);
+        } else {
+            return null;
+        }
 	}
 
     /**
@@ -124,39 +128,38 @@ public class TableModelRom extends TableModelGeneric {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         RomContainer romContainer = getRom(rowIndex);
-
-		ImageIcon icon = BufferIcon.getCoverIcon(romContainer.getGame().getName());
-
-        switch (columnIndex) {
-			case 0: return icon!= null ? icon: new ImageIcon();
-			case 1: 
-				String name = romContainer.getGame().getName();
-                name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 4 Do not set Name column in ods file if not from game (gamelist.xml)
-				name=name.equals("")?romContainer.getFilename():name;
-				return "<html>"+name
-                        +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
-                        +(romContainer.getGame().isHidden()?" [Hidden] ":"")
-                        +(romContainer.getGame().isAdult()?" [Adult] ":"")
-                        +(romContainer.getGame().getPlaycount()>0?"Played "+romContainer.getGame().getPlaycount()+" times, last "+romContainer.getGame().getLastplayedFormatted():"")
-                        +"</html>";
-			case 2: 
-				StringBuilder builder = new StringBuilder();
-				builder.append("<html>")
-						.append(romContainer.getFilename())
-							.append("<BR/>(")
-						.append(romContainer.getGame().getDeveloper()).append(" / ")
-						.append(romContainer.getGame().getPublisher())
-							.append(")<BR/>").append("<BR/>")
-						.append(romContainer.getGame().getDesc().equals("")?romContainer.getJeuVideo().getDescription():romContainer.getGame().getDesc())
-						.append("</html>");
-				return builder.toString();
-			case 3: return romContainer.getConsoleStr();
-			case 4: return "<html>"+romContainer.getGame().getGenre().replace(",", "<BR/>")+"</html>";
-			case 5: return romContainer.getGame().getPlayers();
-            case 6: return romContainer.getGame().getReleaseDateFormatted();
-            case 7: return romContainer.getGame().getRating();
-			case 8: return romContainer; //need to return object for the filter (.toString() is auto anyway)
-			
+        if(romContainer!=null) {
+            ImageIcon icon = BufferIcon.getCoverIcon(romContainer.getGame().getName());
+            switch (columnIndex) {
+                case 0: return icon!= null ? icon: new ImageIcon();
+                case 1: 
+                    String name = romContainer.getGame().getName();
+                    name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 4 Do not set Name column in ods file if not from game (gamelist.xml)
+                    name=name.equals("")?romContainer.getFilename():name;
+                    return "<html>"+name
+                            +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
+                            +(romContainer.getGame().isHidden()?" [Hidden] ":"")
+                            +(romContainer.getGame().isAdult()?" [Adult] ":"")
+                            +(romContainer.getGame().getPlaycount()>0?"Played "+romContainer.getGame().getPlaycount()+" times, last "+romContainer.getGame().getLastplayedFormatted():"")
+                            +"</html>";
+                case 2: 
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("<html>")
+                            .append(romContainer.getFilename())
+                                .append("<BR/>(")
+                            .append(romContainer.getGame().getDeveloper()).append(" / ")
+                            .append(romContainer.getGame().getPublisher())
+                                .append(")<BR/>").append("<BR/>")
+                            .append(romContainer.getGame().getDesc().equals("")?romContainer.getJeuVideo().getDescription():romContainer.getGame().getDesc())
+                            .append("</html>");
+                    return builder.toString();
+                case 3: return romContainer.getConsoleStr();
+                case 4: return "<html>"+romContainer.getGame().getGenre().replace(",", "<BR/>")+"</html>";
+                case 5: return romContainer.getGame().getPlayers();
+                case 6: return romContainer.getGame().getReleaseDateFormatted();
+                case 7: return romContainer.getGame().getRating();
+                case 8: return romContainer; //need to return object for the filter (.toString() is auto anyway)
+            }
 		}
         return null;
     }
