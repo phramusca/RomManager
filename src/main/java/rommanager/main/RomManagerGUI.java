@@ -253,8 +253,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTextFieldFilename = new javax.swing.JTextField();
         jButtonEdit = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Rom Manager");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -801,7 +806,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 213, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -837,8 +842,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private class CallBackProcess implements ICallBackProcess {
 		@Override
 		public void completed() {
-            //FIXME 0 Change this after list is sent + do the same for save button too
-            jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.PLAIN, 12));
 			enableGuiAndFilter();
 		}
 	}
@@ -930,10 +933,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
 
     private void fillFilterDecade() {
-        String selectedConsole = (String) jListFilterConsole.getSelectedValue();
-        String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         List<String> decades = tableModel.getRoms().values().stream()
-//                .filter(r -> r.getGame().getReleaseDecade())
                 .map(r -> String.valueOf(r.getGame().getReleaseDecade()))
                 .distinct().collect(Collectors.toList());
         jListFilterDecade.setModel(getModel(decades));
@@ -1171,7 +1171,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAutoActionPerformed
 
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
-        //FIXME 0 Save on close, in case there are some changes
         disableGUI("Saving : ");
 		String sourcePath = jTextFieldPathSource.getText();
 		File file = new File(sourcePath);
@@ -1180,7 +1179,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		new SaveOds(new CallBackProcess(), sourcePath).start();
+		new SaveOds(new ICallBackProcess() {
+            @Override
+            public void completed() {
+                jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.PLAIN, 12));
+                enableGuiAndFilter();
+            }
+        } , sourcePath).start();
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
     private static boolean isListFilterManualChange = true;
@@ -1317,6 +1322,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 public void completed() {
                     tableModel.filter();
                     jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.BOLD, 16));
+                    jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
                 }
             });
         }
@@ -1338,7 +1344,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, new CallBackProcess());
+		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, new ICallBackProcess() {
+            @Override
+            public void completed() {
+                jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.PLAIN, 12));
+                enableGuiAndFilter();
+            }
+        });
 		processSend.start();
     }//GEN-LAST:event_jButtonSendGamelistActionPerformed
 
@@ -1390,6 +1402,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jListFilterDecadeValueChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        boolean isSendGameBold = jButtonSendGamelist.getFont().equals(new Font(jButtonSendGamelist.getFont().getName(), Font.BOLD, 16));
+        boolean isSaveBold = jButtonSave.getFont().equals(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
+        if(isSendGameBold || isSaveBold) {
+            int result = JOptionPane.showConfirmDialog(this, "Exit the application?");
+            if (result==JOptionPane.OK_OPTION) {
+                System.exit(0);     
+            }
+        } else {
+            System.exit(0); 
+        }
+    }//GEN-LAST:event_formWindowClosing
     
     class CallBackJeuxVideo implements ICallBack {
 
