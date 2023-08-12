@@ -526,7 +526,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel9.setText("Decade     ");
+        jLabel9.setText("Date     ");
 
         jListFilterDecade.setModel(new DefaultListModel());
         jListFilterDecade.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -562,7 +562,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
-            .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+            .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.Alignment.TRAILING)
             .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
@@ -591,7 +591,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPaneSelectGenre5))
+                            .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
@@ -167,21 +168,13 @@ public class Game {
 		return lastplayed;
 	}
     
-    //FIXME 1 Date does not seem valid !
-    private Date getDate(String line) {
+    public static Date getDate(String line) {
 		Pattern patterner = Pattern.compile("^(\\d{4})(\\d{2})(\\d{2})T(\\d{2})(\\d{2})(\\d{2})$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patterner.matcher(line);
 		boolean matchFound = matcher.find();
 		if(matchFound) {
-			int year = Integer.parseInt(matcher.group(1));
-            int month = Integer.parseInt(matcher.group(2));
-            int day = Integer.parseInt(matcher.group(3));
-            int hour = Integer.parseInt(matcher.group(4));
-            int minute = Integer.parseInt(matcher.group(5));
-            int second = Integer.parseInt(matcher.group(6));
-            Calendar c = Calendar.getInstance();
-            c.set(year, month, day, hour, minute, second);
-            return c.getTime();
+            String sql = matcher.group(1)+"-"+matcher.group(2)+"-"+matcher.group(3)+" "+matcher.group(4)+":" +matcher.group(5)+":"+matcher.group(6);
+            return DateTime.parseSqlUtc(sql);
 		}
 		return new Date(0);
 	}
