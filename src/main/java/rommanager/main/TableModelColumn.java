@@ -24,6 +24,6 @@ enum TableModelColumn {
     Console,
     Genre,
     Players,
-    ReleaseDate, //FIXME 0 add a  radiobutton
+    ReleaseDate,
     Rating
 }

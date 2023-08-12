@@ -146,6 +146,11 @@ public class Game {
 		return DateTime.formatUTC(getDate(releaseDate), "MM/yyyy", false);
 	}
     
+    public String getReleaseDecade() {
+        String year = DateTime.formatUTC(getDate(releaseDate), "yyyy", false);
+        return (year.substring(0, year.length()-1))+"0's";
+	}
+    
 	public String getReleaseDateSql() {
 		return DateTime.formatUTCtoSqlUTC(getDate(releaseDate));
 	}

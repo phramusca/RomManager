@@ -208,6 +208,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jRadioButtonRating = new javax.swing.JRadioButton();
         jRadioButtonPlayers = new javax.swing.JRadioButton();
         jRadioButtonGenre = new javax.swing.JRadioButton();
+        jRadioButtonDecade = new javax.swing.JRadioButton();
+        jLabel9 = new javax.swing.JLabel();
+        jScrollPaneSelectGenre8 = new javax.swing.JScrollPane();
+        jListFilterDecade = new javax.swing.JList();
         jSplitPaneList = new javax.swing.JSplitPane();
         jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
         jTableRom = new javax.swing.JTable();
@@ -515,6 +519,24 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        buttonGroupSorting.add(jRadioButtonDecade);
+        jRadioButtonDecade.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonDecadeItemStateChanged(evt);
+            }
+        });
+
+        jLabel9.setText("Decade     ");
+
+        jListFilterDecade.setModel(new DefaultListModel());
+        jListFilterDecade.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListFilterDecade.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListFilterDecadeValueChanged(evt);
+            }
+        });
+        jScrollPaneSelectGenre8.setViewportView(jListFilterDecade);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -540,13 +562,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
-            .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+            .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
             .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-            .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jRadioButtonConsole)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -567,24 +587,35 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jRadioButtonGenre)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPaneSelectGenre5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jRadioButtonDecade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPaneSelectGenre8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jRadioButtonConsole))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButtonConsole)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(jRadioButtonGenre))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButtonRating)
@@ -598,13 +629,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jLabel5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel8)
+                        .addComponent(jLabel9))
+                    .addComponent(jRadioButtonDecade))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPaneSelectGenre8, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(triStateCheckBoxFavorite, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -786,6 +823,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         fillFilterPlayers();
         fillFilterPlayCount();
         fillFilterNumberFilesExport();
+        fillFilterDecade();
         isListFilterManualChange = true;
     }
     
@@ -821,6 +859,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterRating.setModel(getModel(ratings));
         jListFilterRating.setSelectedIndex(0);
     }
+    
+    
     
     private void fillFilterPlayers() {
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
@@ -861,6 +901,17 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterNumberFilesExport.setSelectedValue(ExportFilesNumber.MORE_THAN_ZERO, true);
     }
 
+    private void fillFilterDecade() {
+        String selectedConsole = (String) jListFilterConsole.getSelectedValue();
+        String selectedGenre = (String) jListFilterGenre.getSelectedValue();
+        List<String> decades = tableModel.getRoms().values().stream()
+//                .filter(r -> r.getGame().getReleaseDecade())
+                .map(r -> String.valueOf(r.getGame().getReleaseDecade()))
+                .distinct().collect(Collectors.toList());
+        jListFilterDecade.setModel(getModel(decades));
+        jListFilterDecade.setSelectedIndex(0);
+    }
+    
     private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
         disableGUI("Exporting : ");
 		String exportPath = jTextFieldPathExport.getText();
@@ -902,35 +953,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jTableRom.setRowSorter(null);
 		enableGUI(false);
 	}
-	
-//    private static void enableRowSorter(boolean enable) {
-//		if(enable) {
-//			if(tableModel.getRowCount()>0) {
-//				jTableRom.setAutoCreateRowSorter(true);
-//				TableRowSorter<TableModelRom> tableSorter = new TableRowSorter<>(tableModel);
-//                tableSorter.setSortable(0, false);
-//                tableSorter.setSortable(8, false);
-//                tableSorter.setComparator(6, (String name1, String name2) -> (name1.split("/")[1]+""+name1.split("/")[0]).compareTo(name2.split("/")[1]+""+name2.split("/")[0]));
-//				jTableRom.setRowSorter(tableSorter);
-//				List <RowSorter.SortKey> sortKeys = new ArrayList<>();
-//				sortKeys.add(new RowSorter.SortKey(3, SortOrder.ASCENDING)); // Console
-//				sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING)); // Name
-//				tableSorter.setSortKeys(sortKeys);
-//			}
-//			else {
-//				jTableRom.setAutoCreateRowSorter(false);
-//			}
-//		}
-//		else {
-//			jTableRom.setRowSorter(null);
-//		}
-//	}
     
 	public void enableGuiAndFilter() {
-//        enableRowSorter(false);
 		fillFilters();
         tableModel.filter();
-//        enableRowSorter(true);
         enableGUI(true);
 	}
     
@@ -1319,6 +1345,23 @@ public class RomManagerGUI extends javax.swing.JFrame {
             tableModel.filter();
         }
     }//GEN-LAST:event_jRadioButtonGenreItemStateChanged
+
+    private void jRadioButtonDecadeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonDecadeItemStateChanged
+        JRadioButton source = (JRadioButton) evt.getSource();
+        if(source.isSelected()) {
+            tableModel.tableFilter.sortBy(TableModelColumn.ReleaseDate);
+            tableModel.filter();
+        }
+    }//GEN-LAST:event_jRadioButtonDecadeItemStateChanged
+
+    private void jListFilterDecadeValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterDecadeValueChanged
+        if(jListFilterDecade.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
+            tableModel.tableFilter.displayByDecade((String) jListFilterDecade.getSelectedValue());
+            if(isListFilterManualChange) {
+                tableModel.filter();
+            }
+        }
+    }//GEN-LAST:event_jListFilterDecadeValueChanged
     
     class CallBackJeuxVideo implements ICallBack {
 
@@ -1460,8 +1503,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelAction;
     private javax.swing.JList jListFilterConsole;
+    private javax.swing.JList jListFilterDecade;
     private javax.swing.JList jListFilterGenre;
     private javax.swing.JList jListFilterNumberFilesExport;
     private javax.swing.JList jListFilterPlayCount;
@@ -1474,6 +1519,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JProgressBar jProgressBarConsole;
     private static javax.swing.JProgressBar jProgressBarGame;
     private javax.swing.JRadioButton jRadioButtonConsole;
+    private javax.swing.JRadioButton jRadioButtonDecade;
     private javax.swing.JRadioButton jRadioButtonGenre;
     private javax.swing.JRadioButton jRadioButtonPlayers;
     private javax.swing.JRadioButton jRadioButtonRating;
@@ -1486,6 +1532,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPaneSelectGenre5;
     private javax.swing.JScrollPane jScrollPaneSelectGenre6;
     private javax.swing.JScrollPane jScrollPaneSelectGenre7;
+    private javax.swing.JScrollPane jScrollPaneSelectGenre8;
     private javax.swing.JSplitPane jSplitPaneDesc;
     private javax.swing.JSplitPane jSplitPaneFilters;
     private javax.swing.JSplitPane jSplitPaneList;

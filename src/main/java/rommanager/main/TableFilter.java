@@ -39,6 +39,7 @@ public class TableFilter {
     private String rating = null;
     private String players = null;
     private String playCount = null;
+    private String decade = null;
     private ExportFilesNumber exportFilesNumber = ExportFilesNumber.ALL;
     
     private State displayFavorite = State.ALL;
@@ -99,6 +100,15 @@ public class TableFilter {
         }
     }
     
+    void displayByDecade(String decade) {
+        if(decade.equals("All")) {
+            this.decade=null;
+        }
+        else {
+            this.decade=decade;
+        }
+    }
+    
 	/**
 	 *
 	 * @param console
@@ -144,6 +154,9 @@ public class TableFilter {
         }
         if(this.playCount!=null) {
             stream = stream.filter(r -> String.valueOf(r.getGame().getPlaycount()).equals(this.playCount));
+        }
+        if(this.decade!=null) {
+            stream = stream.filter(r -> String.valueOf(r.getGame().getReleaseDecade()).equals(this.decade));
         }
         switch(displayFavorite) {
             case ALL:
