@@ -36,18 +36,23 @@ public class DialogRomEdition extends javax.swing.JDialog {
 	Element elementFavorite;
     Element elementHidden;
     Element elementAdult;
+    RomContainer romContainer;
+    private final ICallBackProcess callback;
 	
 	/** Creates new form StatSourceGUI
 	 * @param parent
 	 * @param modal  
      * @param console  
      * @param romContainer  
-     * @param gamelistFilename  
+     * @param gamelistFilename
+     * @param callback
 	 */
-    public DialogRomEdition(Frame parent, boolean modal, Console console, RomContainer romContainer, String gamelistFilename) {
+    public DialogRomEdition(Frame parent, boolean modal, Console console, RomContainer romContainer, String gamelistFilename, ICallBackProcess callback) {
         super(parent, modal);
         initComponents();
 		this.gamelistFilename = gamelistFilename;
+        this.romContainer = romContainer;
+        this.callback = callback;
         RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME: What if != 0 ?
         jTextName.setText(exportRomVersion.getExportFilename(console));
         doc = XML.open(gamelistFilename);
@@ -163,7 +168,12 @@ public class DialogRomEdition extends javax.swing.JDialog {
         setElementValue(elementAdult, "adult", jCheckBoxAdult.isSelected());
         XML.save(gamelistFilename, doc);
         
-        //FIXME: Need to change in romVersion too (and apply filter again), and at some point on ods
+        romContainer.getExportableVersions().get(0).getGame().setFavorite(jCheckBoxFavorite.isSelected());
+        romContainer.getExportableVersions().get(0).getGame().setHidden(jCheckBoxHidden.isSelected());
+        romContainer.getExportableVersions().get(0).getGame().setAdult(jCheckBoxAdult.isSelected());
+        romContainer.resetGame();
+        
+        callback.completed();
         this.dispose();
 	}//GEN-LAST:event_jButtonSaveActionPerformed
 
@@ -187,10 +197,11 @@ public class DialogRomEdition extends javax.swing.JDialog {
      * @param console 
      * @param romContainer 
      * @param gamelistFilename 
+     * @param callback 
 	 */
-    public static void main(Frame parent, Console console, RomContainer romContainer, String gamelistFilename) {
+    public static void main(Frame parent, Console console, RomContainer romContainer, String gamelistFilename, ICallBackProcess callback) {
         java.awt.EventQueue.invokeLater(() -> {
-			DialogRomEdition dialog = new DialogRomEdition(parent, true, console, romContainer, gamelistFilename);
+			DialogRomEdition dialog = new DialogRomEdition(parent, true, console, romContainer, gamelistFilename, callback);
 			dialog.setLocationRelativeTo(parent);
 			dialog.setVisible(true);
 		});

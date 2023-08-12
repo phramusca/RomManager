@@ -657,7 +657,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="jTextFieldFilename" max="32767" attributes="0"/>
-                              <Component id="jSplitPaneDesc" alignment="0" pref="330" max="32767" attributes="0"/>
+                              <Component id="jSplitPaneDesc" alignment="0" pref="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jButtonVideo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="32767" attributes="0"/>

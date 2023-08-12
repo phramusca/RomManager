@@ -49,10 +49,10 @@ public class Game {
 	private final String players;
 	private final int playcount;
 	private final String lastplayed;
-	private final boolean favorite;
+	private boolean favorite;
     private final long timestamp; //Not used, what for ?
-    private final boolean hidden;
-    private final boolean adult;
+    private boolean hidden;
+    private boolean adult;
     private final String ratio; //Not used, what for ?
     private final String region; //Not used, what for ?
 
@@ -235,4 +235,17 @@ public class Game {
     public String getRegion() {
         return region;
     }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public void setAdult(boolean adult) {
+        this.adult = adult;
+    }
+
 }

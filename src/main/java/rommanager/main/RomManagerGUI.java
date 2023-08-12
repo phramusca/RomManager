@@ -1171,9 +1171,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 return;
             }
             File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, romContainer.getConsole().name()), "gamelist.xml"));
-            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, localFile.getAbsolutePath());
+            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, localFile.getAbsolutePath(), new ICallBackProcess() {
+                @Override
+                public void completed() {
+                    tableModel.filter();
+                    //FIXME 0 Need to save ods at some point
+                }
+            });
         }
-        
     }//GEN-LAST:event_jButtonEditActionPerformed
 
     private void jButtonSendGamelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendGamelistActionPerformed

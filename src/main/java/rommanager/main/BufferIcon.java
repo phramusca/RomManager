@@ -56,31 +56,35 @@ public class BufferIcon {
      * Get cover icon from cache if exists, from internet if not
 	 * @param key
      * @param file
-     * @param readIfNotFound
      * @return
      */
-    public static ImageIcon getCoverIcon(String key, String file, boolean readIfNotFound) {
+    public static boolean checkOrGetCoverIcon(String key, String file) {
         if(ICONS.containsKey(key)) {
-            return readIconFromCache(key);
-        }
-        ImageIcon icon=null;
-        if(readIfNotFound) {
-            //Icon not found, retrieving it and add it to the map
-            icon= readIconFromCache(key);
-            if(icon!=null) {
+            return true;
+        } else {
+            File cacheFile = getCacheFile(key);
+            if(cacheFile.exists()) {
                 ICONS.put(key, null);
-                return icon;
+                return true;
             }
-            if(!file.equals("")) {
-                icon= readIcon(key, file);
-                if(icon!=null) {
+            else if(!file.equals("")) {
+                ImageIcon icon = readIcon(key, file);
+                if(icon != null) {
                     ICONS.put(key, null);
-                    icon=null; //to avoid errors OutOfMemoryError: Java heap space
+                    icon = null; //to avoid errors OutOfMemoryError: Java heap space
+                    return true;
                 }
             }
         }
-        return icon;
+        return false;
 	}
+    
+    public static ImageIcon getCoverIcon(String key) {
+        if(ICONS.containsKey(key)) {
+            return readIconFromCache(key);
+        }
+        return null;
+    }
  
     //TODO: Offer at least a cache cleanup function (better would be a smart auto cleanup)
     private static ImageIcon readIconFromCache(String key) {

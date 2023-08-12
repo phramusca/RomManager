@@ -60,8 +60,8 @@ public class ProcessRead extends ProcessAbstract {
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 	}
-   
-	@Override
+
+    @Override
 	public void run() {
 		try {
             //Read all gamelist.xml files from both local and export folders
@@ -76,21 +76,7 @@ public class ProcessRead extends ProcessAbstract {
                 if(remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, localFile);
                 }
-//                Map<String, Game> gamesLocal = read(localFile);
                 Map<String, Game> gamesRemote = read(remoteFile);
-//                progressBar.setup(tableModel.getRoms().size());
-//                for(Map.Entry<String, Game> entrySet : gamesRemote.entrySet()) {
-////                    Game gameRemote = entrySet.getValue();
-////                    if(gamesLocal.containsKey(entrySet.getKey())) {
-////                        Game gameLocal = gamesLocal.get(entrySet.getKey());
-////                        if(gameRemote.GetTimeStamp() > gameLocal.GetTimeStamp()) {
-////                            
-////                        }
-////                    }
-////                    gamesLocal.put(entrySet.getKey(), gameRemote);
-//                    progressBar.progress(entrySet.getValue().getName());
-//                }
-//                save(gamesLocal, localFile);
                 games.putAll(gamesRemote);
 			}
 			progressBarConsole.reset();
@@ -100,14 +86,14 @@ public class ProcessRead extends ProcessAbstract {
 			String consolePath;
 			for(RomContainer romContainer : tableModel.getRoms().values()) {
 				checkAbort();
-				consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
+                consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
 				for(RomVersion romVersion : romContainer.getVersions()) {
 					checkAbort();
 					String key = FilenameUtils.getBaseName(romVersion.getFilename());
 					if(games.containsKey(key)) {
 						Game game = games.get(key);
                         if(!game.getImage().isBlank()) {
-                            BufferIcon.getCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()), true);
+                            BufferIcon.checkOrGetCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()));
                         }
 						romVersion.setGame(game);
 					}
@@ -131,76 +117,7 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-    //FIXME 8 What is the best way for: rom launching, rom edition ? (web interface does not work well :()
     //FIXME 8 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
-    
-    private void save(Map<String, Game> games, File gamelistXmlFile) {
-
-        Document document = XML.newDoc();
-        Element root = document.createElement("gameList");
-        document.appendChild(root);
-        
-        //FIXME 8 Include <folder> entries if we want to send back entries when local modifications will be available to the user
-        //FIXME 8 Make a sync process to sync metadata (rating, ...) from/to local/recalbox
-        
-        for(Game game: games.values()) {
-            Element gameElement = document.createElement("game");
-            root.appendChild(gameElement);
-
-            Element path = document.createElement("path");
-            path.appendChild(document.createTextNode(game.getPath()));
-            gameElement.appendChild(path);
-            
-            Element hash = document.createElement("hash");
-            hash.appendChild(document.createTextNode(game.getHash()));
-            gameElement.appendChild(hash);
-            
-            Element players = document.createElement("players");
-            players.appendChild(document.createTextNode(game.getPlayers()));
-            gameElement.appendChild(players);
-            
-            Element genreid = document.createElement("genreid");
-            genreid.appendChild(document.createTextNode(game.getGenreId()));
-            gameElement.appendChild(genreid);
-            
-            Element genre = document.createElement("genre");
-            genre.appendChild(document.createTextNode(game.getGenre()));
-            gameElement.appendChild(genre);
-            
-            Element publisher = document.createElement("publisher");
-            publisher.appendChild(document.createTextNode(game.getPublisher()));
-            gameElement.appendChild(publisher);
-            
-            Element developer = document.createElement("developer");
-            developer.appendChild(document.createTextNode(game.getDeveloper()));
-            gameElement.appendChild(developer);
-            
-            Element releasedate = document.createElement("releasedate");
-            releasedate.appendChild(document.createTextNode(game.getReleaseDate()));
-            gameElement.appendChild(releasedate);
-            
-            Element video = document.createElement("video");
-            video.appendChild(document.createTextNode(game.getVideo()));
-            gameElement.appendChild(video);
-            
-            Element thumbnail = document.createElement("thumbnail");
-            thumbnail.appendChild(document.createTextNode(game.getThumbnail()));
-            gameElement.appendChild(thumbnail);
-            
-            Element image = document.createElement("image");
-            image.appendChild(document.createTextNode(game.getImage()));
-            gameElement.appendChild(image);
-            
-            Element desc = document.createElement("desc");
-            desc.appendChild(document.createTextNode(game.getDesc()));
-            gameElement.appendChild(desc);
-            
-            Element name = document.createElement("name");
-            name.appendChild(document.createTextNode(game.getName()));
-            gameElement.appendChild(name);
-        }
-        XML.save(gamelistXmlFile, document);
-    }
     
 	private Map<String, Game> read(File gamelistXmlFile) throws InterruptedException {
 		Map<String, Game> games = new HashMap<>();

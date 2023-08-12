@@ -88,10 +88,14 @@ public abstract class RomContainer {
 		return console==null?"Unknown":console.getName();
 	}
 	
+    public void resetGame() {
+        game = null;
+    }
+    
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
-				.filter(v -> v.isExportable() && v.getGame()!=null && !v.getGame().getName().equals(""))
+				.filter(v -> v.isExportable() && v.getGame() != null && !v.getGame().getName().equals(""))
 				.map(v -> v.getGame())
 				.collect(Collectors.toList());
 		
