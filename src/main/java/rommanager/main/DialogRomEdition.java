@@ -53,28 +53,22 @@ public class DialogRomEdition extends javax.swing.JDialog {
         doc = XML.open(gamelistFilename);
         if(doc!=null) {
             String path = FilenameUtils.concat(console.getName(), exportRomVersion.getExportFilename(console));
-            List<Element> evaluateXPath = XML.evaluateXPath(doc, "//gameList/game[./path[. = '"+path+"']]");
-            
-            elementGame = evaluateXPath.get(0); //FIXME: What if != 0 ?
-            elementFavorite = XML.getElement(elementGame, "favorite");
-            elementHidden = XML.getElement(elementGame, "hidden");
-            elementAdult = XML.getElement(elementGame, "adult");
-           
-//            String fav = XML.getElementValue(elementFavorite);
-//            String hid = XML.getElementValue(elementHidden);
-//            String adu = XML.getElementValue(elementAdult);
-//            
-//            boolean elementValueFavorite = getElementValue(elementFavorite);
-//            boolean elementValueHidden = getElementValue(elementHidden);
-//            boolean elementValueAdult = getElementValue(elementAdult);
+            List<Element> evaluateXPath = XML.evaluateXPath(doc, "//gameList/game[./path[. = \""+path+"\"]]");
+            if(!evaluateXPath.isEmpty()) {
+                elementGame = evaluateXPath.get(0); //FIXME: What if > 1 ?
+                elementFavorite = XML.getElement(elementGame, "favorite");
+                elementHidden = XML.getElement(elementGame, "hidden");
+                elementAdult = XML.getElement(elementGame, "adult");
 
-            boolean favoriteValue = Boolean.parseBoolean(XML.getElementValue(elementFavorite));
-            boolean hiddenValue = Boolean.parseBoolean(XML.getElementValue(elementHidden));
-            boolean adultValue = Boolean.parseBoolean(XML.getElementValue(elementAdult));
+                boolean favoriteValue = Boolean.parseBoolean(XML.getElementValue(elementFavorite));
+                boolean hiddenValue = Boolean.parseBoolean(XML.getElementValue(elementHidden));
+                boolean adultValue = Boolean.parseBoolean(XML.getElementValue(elementAdult));
+
+                jCheckBoxFavorite.setSelected(favoriteValue);
+                jCheckBoxHidden.setSelected(hiddenValue);
+                jCheckBoxAdult.setSelected(adultValue);
+            }
             
-            jCheckBoxFavorite.setSelected(favoriteValue);
-            jCheckBoxHidden.setSelected(hiddenValue);
-            jCheckBoxAdult.setSelected(adultValue);
         }
     }
 
@@ -168,6 +162,8 @@ public class DialogRomEdition extends javax.swing.JDialog {
         setElementValue(elementHidden, "hidden", jCheckBoxHidden.isSelected());
         setElementValue(elementAdult, "adult", jCheckBoxAdult.isSelected());
         XML.save(gamelistFilename, doc);
+        
+        //FIXME: Need to change in romVersion too (and apply filter again), and at some point on ods
         this.dispose();
 	}//GEN-LAST:event_jButtonSaveActionPerformed
 
@@ -178,14 +174,6 @@ public class DialogRomEdition extends javax.swing.JDialog {
             Element createElement = doc.createElement(key);
             createElement.setTextContent(String.valueOf(value));
             elementGame.appendChild(createElement);
-        }
-    }
-    
-    private boolean getElementValue(Element element) {
-        if(element!=null) {
-            return Boolean.parseBoolean(element.getNodeValue());
-        } else {
-            return false;
         }
     }
     
