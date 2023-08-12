@@ -16,6 +16,7 @@
  */
 package rommanager.main;
 
+import java.awt.Font;
 import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
@@ -39,6 +40,8 @@ import rommanager.main.TableFilter.ExportFilesNumber;
 import rommanager.utils.Desktop;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.TriStateCheckBox;
+
+//FIXME 0 Allow column sorting
 
 /**
  *
@@ -634,7 +637,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextFieldFilename)
-                    .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                    .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonVideo)
                         .addGap(18, 18, Short.MAX_VALUE)
@@ -713,6 +716,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private class CallBackProcess implements ICallBackProcess {
 		@Override
 		public void completed() {
+            jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.PLAIN, 12));
 			enableGuiAndFilter();
 		}
 	}
@@ -1175,7 +1179,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 @Override
                 public void completed() {
                     tableModel.filter();
-                    //FIXME 0 Need to save ods at some point
+                    jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
                 }
             });
         }
@@ -1197,7 +1201,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
+		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, new CallBackProcess());
 		processSend.start();
     }//GEN-LAST:event_jButtonSendGamelistActionPerformed
     

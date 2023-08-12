@@ -98,6 +98,7 @@ public class ProcessRead extends ProcessAbstract {
 						romVersion.setGame(game);
 					}
 				}
+                romContainer.resetGame();
 				progressBarGame.progress(romContainer.getFilename());
 			}
 			tableModel.fireTableDataChanged();
