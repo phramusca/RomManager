@@ -20,6 +20,8 @@ import java.awt.Font;
 import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,10 +36,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.main.TableFilter.ExportFilesNumber;
@@ -95,7 +99,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         renderer.setVerticalAlignment(SwingConstants.TOP);
         jTableRom.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		
-		triStateCheckBoxHidden.setState(TriStateCheckBox.State.UNSELECTED);
+        JTableHeader header = jTableRom.getTableHeader();
+        header.addMouseListener(new TableHeaderMouseListener(jTableRom));
+
+        triStateCheckBoxHidden.setState(TriStateCheckBox.State.UNSELECTED);
         triStateCheckBoxAdult.setState(TriStateCheckBox.State.UNSELECTED);
         
 		disableGUI("Reading ods file: ");
@@ -104,6 +111,26 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }, jTextFieldPathSource.getText()).start();
     }
 
+    class TableHeaderMouseListener extends MouseAdapter {
+        private JTable table;
+
+        public TableHeaderMouseListener(JTable table) {
+            this.table = table;
+        }
+
+        public void mouseClicked(MouseEvent event) {
+            Point point = event.getPoint();
+            int column = table.columnAtPoint(point);
+            switch(column) {
+                case 3: jRadioButtonConsole.doClick(); break;
+                case 4: jRadioButtonGenre.doClick(); break;
+                case 5: jRadioButtonPlayers.doClick(); break;
+                case 6: jRadioButtonDecade.doClick(); break;
+                case 7: jRadioButtonRating.doClick(); break;
+            }
+        }
+    }
+    
 	/**
 	 *
 	 * @param list
@@ -810,6 +837,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private class CallBackProcess implements ICallBackProcess {
 		@Override
 		public void completed() {
+            //FIXME 0 Change this after list is sent + do the same for save button too
             jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.PLAIN, 12));
 			enableGuiAndFilter();
 		}
