@@ -102,11 +102,11 @@ public class JeuxVideos extends ProcessAbstract {
             
             //Assign read value to rom versions
             Collection<RomContainer> romCollection = tableModel.getRoms().values();
-            callback.setup(romCollection.size());
+            progressBar.setup(romCollection.size());
             
             for(RomContainer romContainer : romCollection) {
                 checkAbort();
-                callback.read(new JeuVideo("", romContainer.getFilename(), "", "", "", ""));
+                progressBar.progress(romContainer.getFilename());
                 List<JeuVideo> consoleJeuVideos = null;
                 if(jeuxVideos.containsKey(romContainer.getConsole().name())) {
                     consoleJeuVideos = jeuxVideos.get(romContainer.getConsole().name());
@@ -177,7 +177,7 @@ public class JeuxVideos extends ProcessAbstract {
                 jeuVideo = new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description);
                 jeux.add(jeuVideo);
             }
-            callback.read(jeuVideo);
+            progressBar.progress(jeuVideo.getTitle());
         }
         return jeux;
 	}

@@ -1000,10 +1000,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonReadJeuxVideo.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
         jButtonSendGamelist.setEnabled(enable);
-		
+		jButtonEdit.setEnabled(enable);
+        jButtonAuto.setEnabled(enable);
 		jButtonOptionSelectFolderExport.setEnabled(enable);
 		jButtonOptionSelectFolderSource.setEnabled(enable);
-		
 		jButtonAbort.setText("Abort");
 		jButtonAbort.setEnabled(!enable);
 	}
@@ -1417,18 +1417,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
     
     class CallBackJeuxVideo implements ICallBack {
-
-        //FIXME 2 Remove setup and read methods, use progressBar instead
-        
-		@Override
-		public void setup(int size) {
-			progressBarGame.setup(size);
-		}
-		
-		@Override
-		public void read(JeuVideo jeuVideo) {
-			progressBarGame.progress(jeuVideo.title);
-		}
 		
 		@Override
 		public void completed() {
