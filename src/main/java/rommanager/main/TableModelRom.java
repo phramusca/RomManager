@@ -134,7 +134,7 @@ public class TableModelRom extends TableModelGeneric {
                 case 0: return icon!= null ? icon: new ImageIcon();
                 case 1: 
                     String name = romContainer.getGame().getName();
-                    name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 4 Do not set Name column in ods file if not from game (gamelist.xml)
+                    name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 3 Do not set Name column in ods file if not from game (gamelist.xml)
                     name=name.equals("")?romContainer.getFilename():name;
                     return "<html>"+name
                             +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")

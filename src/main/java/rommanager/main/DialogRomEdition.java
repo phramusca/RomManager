@@ -53,14 +53,14 @@ public class DialogRomEdition extends javax.swing.JDialog {
 		this.gamelistFilename = gamelistFilename;
         this.romContainer = romContainer;
         this.callback = callback;
-        RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME: What if != 0 ?
+        RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME 8 What if != 0 ?
         jTextName.setText(exportRomVersion.getExportFilename(console));
         doc = XML.open(gamelistFilename);
         if(doc!=null) {
             String path = FilenameUtils.concat(console.getName(), exportRomVersion.getExportFilename(console));
             List<Element> evaluateXPath = XML.evaluateXPath(doc, "//gameList/game[./path[. = \""+path+"\"]]");
             if(!evaluateXPath.isEmpty()) {
-                elementGame = evaluateXPath.get(0); //FIXME: What if > 1 ?
+                elementGame = evaluateXPath.get(0); //FIXME 8 What if > 1 ?
                 elementFavorite = XML.getElement(elementGame, "favorite");
                 elementHidden = XML.getElement(elementGame, "hidden");
                 elementAdult = XML.getElement(elementGame, "adult");

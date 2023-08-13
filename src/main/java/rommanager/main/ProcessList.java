@@ -195,7 +195,7 @@ public class ProcessList extends ProcessAbstract {
                             tableModel.addRow(romSevenZipFile);
                         } 
                     } catch (IOException | OutOfMemoryError ex) {
-                        //FIXME 5 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
+                        //FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
                         Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if(allowedExtensions.contains(ext)) {

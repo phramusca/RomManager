@@ -118,7 +118,7 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-    //FIXME 8 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
+    //FIXME 7 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
     
 	private Map<String, Game> read(File gamelistXmlFile) throws InterruptedException {
 		Map<String, Game> games = new HashMap<>();
