@@ -142,13 +142,7 @@ public class TableFilter {
     List<RomContainer> getFiltered(Collection<RomContainer> values) {
         Stream<RomContainer> stream = values.stream();
         if(!this.search.isEmpty()) {
-            //FIXME 0 Are those proper names to be displayed ? in proper order ?
-            stream = stream.filter(r -> 
-//                    (
-                            r.getGame().getName().toLowerCase().contains(this.search.toLowerCase())
-//                                || r.getFilename().contains(this.search)
-//                    || r.getExportableVersions().isEmpty()?false:r.getExportableVersions().get(0).getFilename().contains(this.search))
-            );
+            stream = stream.filter(r -> r.getName().toLowerCase().contains(this.search.toLowerCase()));
         }
         if(this.console!=null) {
             stream = stream.filter(r -> r.console.getName().equals(this.console));

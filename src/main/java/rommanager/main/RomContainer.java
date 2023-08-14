@@ -87,6 +87,17 @@ public abstract class RomContainer {
 		return console==null?"Unknown":console.getName();
 	}
 	
+    public String getName() {
+        String name = getGame().getName();
+        if(name.isEmpty()) {
+            name = getJeuVideo().getTitle();
+        }
+        if(name.isEmpty()) {
+            name = getFilename();
+        }
+        return name;
+    }
+    
     public void resetGame() {
         game = null;
     }
@@ -135,4 +146,5 @@ public abstract class RomContainer {
 			.filter(r -> r.isToCopy())
 			.collect(Collectors.toList());
 	}
+
 }

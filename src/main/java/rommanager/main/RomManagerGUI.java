@@ -110,26 +110,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTextFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent e) {
-              warn();
+              filter();
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-              warn();
+              filter();
             }
             @Override
             public void insertUpdate(DocumentEvent e) {
-              warn();
+              filter();
             }
 
-            public void warn() {
+            public void filter() {
                 tableModel.tableFilter.search(jTextFieldSearch.getText());
                 tableModel.filter();
-                
-//               if (Integer.parseInt(jTextFieldSearch.getText())<=0){
-//                 JOptionPane.showMessageDialog(null,
-//                    "Error: Please enter number bigger than 0", "Error Message",
-//                    JOptionPane.ERROR_MESSAGE);
-//               }
             }
           });
         

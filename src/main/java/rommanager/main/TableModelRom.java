@@ -132,11 +132,7 @@ public class TableModelRom extends TableModelGeneric {
             switch (columnIndex) {
                 case 0: return icon!= null ? icon: new ImageIcon();
                 case 1: 
-                    //FIXME 0 Are those proper names to be displayed ? in proper order ?
-                    String name = romContainer.getGame().getName();
-                    name=name.isEmpty()?romContainer.getJeuVideo().getTitle():name;
-                    name=name.isEmpty()?romContainer.getFilename():name;
-                    return "<html>"+name
+                    return "<html>"+romContainer.getName()
                             +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
                             +(romContainer.getGame().isHidden()?" [Hidden] ":"")
                             +(romContainer.getGame().isAdult()?" [Adult] ":"")
