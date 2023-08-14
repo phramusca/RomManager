@@ -86,14 +86,14 @@ public class ProcessList extends ProcessAbstract {
 					list(console, FilenameUtils.concat(sourcePath, console.name()));
 				}
 			}
+            progressBarGame.setIndeterminate("Saving ods file");
+			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
+            progressBarConsole.reset();
+			progressBarGame.reset();
 			Popup.info("Listing complete.");
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} finally {
-			progressBarConsole.reset();
-            progressBarGame.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
-			progressBarGame.reset();
 			callBack.completed();
 		}
 	}
@@ -149,6 +149,7 @@ public class ProcessList extends ProcessAbstract {
 						browseNbFiles(file, console);
 					} else {
 						nbFiles+=1;
+                        progressBarGame.setMaximum(nbFiles);
 					}
 				}
 			}
@@ -185,44 +186,39 @@ public class ProcessList extends ProcessAbstract {
                 if(ext.equals("7z")) {
                     try {
                         RomContainer7z romSevenZipFile;
-                        if(!tableModel.getRoms().containsKey(
-                                FilenameUtils.getName(
-                                        file.getAbsolutePath()))) {
+                        String key = console.name()+"/"+FilenameUtils.getName(file.getAbsolutePath());
+                        if(!tableModel.getRoms().containsKey(key)) {
                             romSevenZipFile = 
                                     new RomContainer7z(
                                             console, FilenameUtils.getName(file.getAbsolutePath()));
                             romSevenZipFile.setVersions(progressBarGame, FilenameUtils.getFullPath(file.getAbsolutePath()));
                             tableModel.addRow(romSevenZipFile);
-                        } 
-                    } catch (IOException | OutOfMemoryError ex) {
+                        }
+                    } catch (IOException ex) {
                         //FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
                         Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if(allowedExtensions.contains(ext)) {
-                    try {
-                        String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);
-                        if(!tableModel.getRoms().containsKey(romName)) {
-                            RomContainerFlat romContainerFlat;
-                            if(flatContainers.containsKey(romName)) {
-                                romContainerFlat = flatContainers.get(romName);
-                            } else {
-                                romContainerFlat = 
-                                        new RomContainerFlat(
-                                                console,
-                                                romName);
-                                flatContainers.put(romName, romContainerFlat);
-                            }
-                            String versionPath = 
-                                    file.getAbsolutePath()
-                                            .substring(rootPath.length()+1);
-                            romContainerFlat.addVersion(new RomVersion(
-                                    FilenameUtils.getBaseName(romName),
-                                    versionPath,
-                                    console, -1, file.length()));
+                    String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);
+                    String key = console.name()+"/"+romName;
+                    if(!tableModel.getRoms().containsKey(key)) {
+                        RomContainerFlat romContainerFlat;
+                        if(flatContainers.containsKey(key)) {
+                            romContainerFlat = flatContainers.get(key);
+                        } else {
+                            romContainerFlat = 
+                                    new RomContainerFlat(
+                                            console,
+                                            romName);
+                            flatContainers.put(key, romContainerFlat);
                         }
-                    } catch (IOException ex) {
-                        Logger.getLogger(ProcessList.class.getName())
-                                .log(Level.SEVERE, null, ex);
+                        String versionPath = 
+                                file.getAbsolutePath()
+                                        .substring(rootPath.length()+1);
+                        romContainerFlat.addVersion(new RomVersion(
+                                FilenameUtils.getBaseName(romName),
+                                versionPath,
+                                console, -1, file.length()));
                     }
                 }
 			}

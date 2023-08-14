@@ -211,7 +211,7 @@ public class TableModelRom extends TableModelGeneric {
 	 * @param romContainer
     */
     public void addRow(RomContainer romContainer){
-		this.roms.put(romContainer.getFilename(), romContainer);
+		this.roms.put(romContainer.getConsole().name()+"/"+romContainer.getFilename(), romContainer);
 		this.fireTableDataChanged();
     }
 

@@ -155,7 +155,7 @@ public class JeuxVideos extends ProcessAbstract {
         String url = "https://www.jeuxvideo.com/meilleurs/machine-"+console.getIdJeuxVideo()+"/?p="+page;
         Document doc = Jsoup.connect(url).get();
         Elements aElements = doc.select(".container__3eUfTL li");
-        callback.setup(aElements.size());
+        progressBar.setup(aElements.size());
         for(Element element : aElements) {
             checkAbort();
             String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();

@@ -28,9 +28,8 @@ public class RomContainerFlat extends RomContainer {
 	 * For files that are not groupped in 7z
 	 * @param console
 	 * @param filename
-	 * @throws IOException
 	 */
-	public RomContainerFlat(Console console, String filename) throws IOException {
+	public RomContainerFlat(Console console, String filename) {
 		super(console, filename);
 	}
 	@Override

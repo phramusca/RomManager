@@ -16,7 +16,6 @@
  */
 package rommanager.main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public abstract class RomContainer {
 	private Game game = null;
     private JeuVideo jeuVideo = null;
 	
-	RomContainer(Console console, String filename) throws IOException {
+	RomContainer(Console console, String filename) {
         this.filename = filename;
 		this.versions = new ArrayList<>();
 		this.console = console;

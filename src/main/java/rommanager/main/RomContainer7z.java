@@ -23,7 +23,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.FileSystem;
-import rommanager.utils.Popup;
 import rommanager.utils.ProgressBar;
 
 /**
@@ -36,13 +35,12 @@ public class RomContainer7z extends RomContainer {
      * For 7z files including rom versions
      * @param console
      * @param filename
-     * @throws IOException
      */
-    public RomContainer7z(Console console, String filename) throws IOException {
+    public RomContainer7z(Console console, String filename) {
         super(console, filename);
     }
 
-    public void setVersions(ProgressBar progressBar, String path) throws IOException, OutOfMemoryError {
+    public void setVersions(ProgressBar progressBar, String path) throws IOException {
         File sourceFile = new File(FilenameUtils.concat(path, filename));
         try (SevenZFile sevenZFile = new SevenZFile(sourceFile)) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();

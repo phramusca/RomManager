@@ -201,7 +201,12 @@ public class RomVersion {
 //					\(Vol \d*\) 	1	Official multicart //Not seen until now. TODO: Is this a multi-volume rom or a version number ?
 						String value = attribute.getRaw()
 								.substring(4, attribute.getRaw().indexOf(")"));
-						this.score+=Integer.valueOf(value);
+                        try {
+                            this.score+=Integer.parseInt(value);
+                        } catch(java.lang.NumberFormatException ex) {
+                            Logger.getLogger(RomVersion.class.getName())
+									.log(Level.WARNING, attribute.toString(), ex);
+                        }
 						attribute.setValue("{+"+value+"}");
 					} else if(attribute.getRaw().startsWith("(V")
 							&& !attribute.getRaw().equals("(VS)")) {
