@@ -40,6 +40,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -104,6 +106,32 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         triStateCheckBoxHidden.setState(TriStateCheckBox.State.UNSELECTED);
         triStateCheckBoxAdult.setState(TriStateCheckBox.State.UNSELECTED);
+        
+        jTextFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+              warn();
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+              warn();
+            }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+              warn();
+            }
+
+            public void warn() {
+                tableModel.tableFilter.search(jTextFieldSearch.getText());
+                tableModel.filter();
+                
+//               if (Integer.parseInt(jTextFieldSearch.getText())<=0){
+//                 JOptionPane.showMessageDialog(null,
+//                    "Error: Please enter number bigger than 0", "Error Message",
+//                    JOptionPane.ERROR_MESSAGE);
+//               }
+            }
+          });
         
 		disableGUI("Reading ods file: ");
 		new ReadOds(() -> {
@@ -239,6 +267,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jScrollPaneSelectGenre8 = new javax.swing.JScrollPane();
         jListFilterDecade = new javax.swing.JList();
+        jTextFieldSearch = new javax.swing.JTextField();
         jSplitPaneList = new javax.swing.JSplitPane();
         jScrollPaneCheckTags1 = new javax.swing.JScrollPane();
         jTableRom = new javax.swing.JTable();
@@ -632,11 +661,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jScrollPaneSelectGenre8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
                 .addContainerGap())
+            .addComponent(jTextFieldSearch)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jTextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButtonConsole)
                     .addComponent(jLabel3))
@@ -806,7 +837,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1582,6 +1613,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldFilename;
     private static javax.swing.JTextField jTextFieldPathExport;
     private static javax.swing.JTextField jTextFieldPathSource;
+    private javax.swing.JTextField jTextFieldSearch;
     private rommanager.utils.TriStateCheckBox triStateCheckBoxAdult;
     private rommanager.utils.TriStateCheckBox triStateCheckBoxFavorite;
     private rommanager.utils.TriStateCheckBox triStateCheckBoxHidden;

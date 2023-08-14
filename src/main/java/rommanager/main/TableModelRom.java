@@ -35,7 +35,6 @@ public class TableModelRom extends TableModelGeneric {
 
 	private Map<String, RomContainer> roms;
     private List<RomContainer> filteredRoms;
-//    private long lengthAll;
     private long lengthSelected;
     private int nbSelected;
     TableFilter tableFilter;
@@ -133,9 +132,10 @@ public class TableModelRom extends TableModelGeneric {
             switch (columnIndex) {
                 case 0: return icon!= null ? icon: new ImageIcon();
                 case 1: 
+                    //FIXME 0 Are those proper names to be displayed ? in proper order ?
                     String name = romContainer.getGame().getName();
-                    name=name.equals("")?romContainer.getJeuVideo().getTitle():name; //FIXME 3 Do not set Name column in ods file if not from game (gamelist.xml)
-                    name=name.equals("")?romContainer.getFilename():name;
+                    name=name.isEmpty()?romContainer.getJeuVideo().getTitle():name;
+                    name=name.isEmpty()?romContainer.getFilename():name;
                     return "<html>"+name
                             +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
                             +(romContainer.getGame().isHidden()?" [Hidden] ":"")
