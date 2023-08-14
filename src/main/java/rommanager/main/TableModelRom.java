@@ -207,8 +207,8 @@ public class TableModelRom extends TableModelGeneric {
 	 * @param romContainer
     */
     public void addRow(RomContainer romContainer){
-		this.roms.put(romContainer.getConsole().name()+"/"+romContainer.getFilename(), romContainer);
-		this.fireTableDataChanged();
+		roms.put(romContainer.getConsole().name()+"/"+romContainer.getFilename(), romContainer);
+		fireTableDataChanged();
     }
 
 	/**
@@ -218,7 +218,8 @@ public class TableModelRom extends TableModelGeneric {
 	 * @throws IOException
 	 */
 	public void addRow(Console console, String filename) throws IOException {
-		if(!roms.containsKey(filename)) {
+        String key = console.name()+"/"+filename;
+		if(!roms.containsKey(key)) {
 			RomContainer romContainer=null;
             String ext = FilenameUtils.getExtension(filename);
             if(ext.equals("7z")) {
@@ -228,7 +229,7 @@ public class TableModelRom extends TableModelGeneric {
 				romContainer = new RomContainerFlat(console, romName);
             }
 			if(romContainer!=null) {
-				roms.put(filename, romContainer);
+				roms.put(key, romContainer);
 			}
 		}
 	}

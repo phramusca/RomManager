@@ -123,7 +123,9 @@ public class ProcessList extends ProcessAbstract {
 		if(refresh) {
 			tableModel.getRoms().values().removeIf(r -> r.getConsole().equals(console));	
 		}
+        progressBarGame.setup(console.getNbFiles());
 		browseFoldersFS(console, path, new File(path));
+        
         progressBarGame.setup(flatContainers.values().size());
 		for(RomContainerFlat romContainerFlat : flatContainers.values()) {
 			checkAbort();
@@ -149,7 +151,6 @@ public class ProcessList extends ProcessAbstract {
 						browseNbFiles(file, console);
 					} else {
 						nbFiles+=1;
-                        progressBarGame.setMaximum(nbFiles);
 					}
 				}
 			}

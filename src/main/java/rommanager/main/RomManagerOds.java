@@ -283,7 +283,7 @@ public class RomManagerOds {
                 JeuVideo jeuVideo = new JeuVideo(url, title, releaseDateJeuVideo, ratingJeuVideo, userRating, description);
                 romVersion.setJeuVideo(jeuVideo);
                 
-				model.getRoms().get(filename).getVersions().add(romVersion);
+				model.getRoms().get(console.name()+"/"+filename).getVersions().add(romVersion);
 				progressBarGame.progress(filename);
 			}
 			progressBarGame.reset();
