@@ -50,19 +50,35 @@ public class Gamelist {
         read();
     }
 
-    //FIXME 0 use setGame method
-    public Game setGame(Game localGame) {
-        String key = FilenameUtils.getBaseName(localGame.getPath());
+    public void setGame(Game newGame) {
+        String key = FilenameUtils.getBaseName(newGame.getPath());
         Element elementGame = games.get(key).fst;
-        Game currentGame = games.get(key).snd;
-        Game newGame = compareGame(localGame, currentGame);
         setGame(elementGame, newGame);
-        return newGame;
     }
     
-    //FIXME 0 comapre games
-    private Game compareGame(Game localGame, Game remoteGame) {
-        Game newGame = null; //new Game(path, hash, name, desc, image, video, thumbnail, 0, releaseDate, developer, publisher, genre, genreId, players, playcount, lastplayed, isFavorite, timestamp, isHidden, isAdult, ratio, region);
+    public Game compareGame(Game localGame, Game remoteGame) {
+        Game newGame = new Game(remoteGame.getPath(), 
+                remoteGame.getHash(), 
+                remoteGame.getName(), 
+                remoteGame.getDesc(), 
+                remoteGame.getImage(), 
+                remoteGame.getVideo(), 
+                remoteGame.getThumbnail(), 
+                remoteGame.getRating(), 
+                remoteGame.getReleaseDate(), 
+                remoteGame.getDeveloper(), 
+                remoteGame.getPublisher(), 
+                remoteGame.getGenre(), 
+                remoteGame.getGenreId(), 
+                remoteGame.getPlayers(), 
+                remoteGame.getPlaycount(), 
+                remoteGame.getLastplayed(), 
+                remoteGame.isFavorite(), 
+                remoteGame.getTimestamp(), 
+                remoteGame.isHidden(), 
+                remoteGame.isAdult(), 
+                remoteGame.getRatio(), 
+                remoteGame.getRegion());
 
         if(localGame.isFavorite()) {
             

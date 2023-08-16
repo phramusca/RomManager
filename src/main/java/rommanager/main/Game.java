@@ -246,6 +246,5 @@ public class Game {
 
     public void setAdult(boolean adult) {
         this.adult = adult;
-    }
-
+    }    
 }
