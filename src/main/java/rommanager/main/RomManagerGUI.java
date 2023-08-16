@@ -925,7 +925,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
     
     private void fillFilterRating() {
-        //FIXME 1 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
+        //FIXME 2 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         List<String> ratings = tableModel.getRoms().values().stream()
@@ -1380,7 +1380,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed() {
                     setButtonBold(jButtonSyncGameList, true);
-                    setButtonBold(jButtonSyncRoms, true);
+                    setButtonBold(jButtonSave, true);
                 }
             });
         }
