@@ -27,7 +27,7 @@ import rommanager.utils.ProgressBar;
  */
 public class ProcessSetScore extends ProcessAbstract {
 
-	private final ProgressBar progressBar;
+	private final ProgressBar progressBarGame;
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	private final String sourcePath;
@@ -38,7 +38,7 @@ public class ProcessSetScore extends ProcessAbstract {
 			ICallBackProcess callBack,
 			String sourcePath) {
 		super("Thread.ProcessSetScore");
-		this.progressBar = progressBar;
+		this.progressBarGame = progressBar;
 		this.tableModel = tableModel;
 		this.callBack = callBack;
 		this.sourcePath = sourcePath;
@@ -48,10 +48,12 @@ public class ProcessSetScore extends ProcessAbstract {
 	public void run() {
 		try {
 			setScore();
-			progressBar.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBar, sourcePath);
+			progressBarGame.setIndeterminate("Saving ods file");
+            if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+                callBack.actionPerformed();
+            }
 			Popup.info("Set Score complete.");
-			progressBar.reset();
+			progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} finally {
@@ -60,12 +62,12 @@ public class ProcessSetScore extends ProcessAbstract {
 	}
 
     private void setScore() throws InterruptedException {
-		progressBar.setup(tableModel.getRowCount());
+		progressBarGame.setup(tableModel.getRowCount());
 		for(RomContainer romContainer : tableModel.getRoms().values().stream()
                 .filter(r->r.getConsole().isSelected())
 					.collect(Collectors.toList())) {
 			checkAbort();
-			progressBar.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
+			progressBarGame.progress(romContainer.getConsoleStr()+" \\ "+romContainer.getFilename());
 			for(RomVersion romVersion : romContainer.getVersions()) {
 				checkAbort();
 				romVersion.setScore(romContainer.console);

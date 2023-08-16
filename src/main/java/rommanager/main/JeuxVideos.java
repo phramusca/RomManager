@@ -47,7 +47,7 @@ public class JeuxVideos extends ProcessAbstract {
 	private final ICallBack callback;
     private Map<String, List<JeuVideo>> jeuxVideos;
     private final TableModelRom tableModel;
-    private final ProgressBar progressBar;
+    private final ProgressBar progressBarGame;
     private final String sourcePath;
     
 	/**
@@ -61,7 +61,7 @@ public class JeuxVideos extends ProcessAbstract {
         super("Thread.JeuxVideos");
 		this.callback = callback;
         this.tableModel = tableModel;
-        this.progressBar = progressBar;
+        this.progressBarGame = progressBar;
         this.sourcePath = sourcePath;
 	}
 	
@@ -102,11 +102,11 @@ public class JeuxVideos extends ProcessAbstract {
             
             //Assign read value to rom versions
             Collection<RomContainer> romCollection = tableModel.getRoms().values();
-            progressBar.setup(romCollection.size());
+            progressBarGame.setup(romCollection.size());
             
             for(RomContainer romContainer : romCollection) {
                 checkAbort();
-                progressBar.progress(romContainer.getFilename());
+                progressBarGame.progress(romContainer.getFilename());
                 List<JeuVideo> consoleJeuVideos = null;
                 if(jeuxVideos.containsKey(romContainer.getConsole().name())) {
                     consoleJeuVideos = jeuxVideos.get(romContainer.getConsole().name());
@@ -122,9 +122,11 @@ public class JeuxVideos extends ProcessAbstract {
                     }
                 }
             }
-            progressBar.setIndeterminate("Saving ods file");
-            RomManagerOds.createFile(tableModel, progressBar, sourcePath);
-            progressBar.reset();
+            progressBarGame.setIndeterminate("Saving ods file");
+            if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+                callback.saved();
+            }
+            progressBarGame.reset();
         } catch (InterruptedException ex) {
             callback.interrupted();
         } catch (IOException | JsonSyntaxException ex) {
@@ -155,7 +157,7 @@ public class JeuxVideos extends ProcessAbstract {
         String url = "https://www.jeuxvideo.com/meilleurs/machine-"+console.getIdJeuxVideo()+"/?p="+page;
         Document doc = Jsoup.connect(url).get();
         Elements aElements = doc.select(".container__3eUfTL li");
-        progressBar.setup(aElements.size());
+        progressBarGame.setup(aElements.size());
         for(Element element : aElements) {
             checkAbort();
             String title = element.select("div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > h2:nth-child(1) > a:nth-child(1)").text();
@@ -177,7 +179,7 @@ public class JeuxVideos extends ProcessAbstract {
                 jeuVideo = new JeuVideo(urlJeuxVideo, title, releaseDate, rating, userRating, description);
                 jeux.add(jeuVideo);
             }
-            progressBar.progress(jeuVideo.getTitle());
+            progressBarGame.progress(jeuVideo.getTitle());
         }
         return jeux;
 	}

@@ -42,7 +42,7 @@ import rommanager.utils.ProgressBar;
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
-public class ProcessExport extends ProcessAbstract {
+public class ProcessSyncRoms extends ProcessAbstract {
 
 	private final String exportPath;
     private final ProgressBar progressBarConsole;
@@ -55,7 +55,7 @@ public class ProcessExport extends ProcessAbstract {
 	private List<File> romDestinationList;
     private boolean onlyCultes;
 	
-	public ProcessExport(
+	public ProcessSyncRoms(
 			String sourcePath, 
 			String exportPath, 
             ProgressBar progressBarConsole, 
@@ -174,7 +174,7 @@ public class ProcessExport extends ProcessAbstract {
                                             unzippedFile.delete();
                                         }
 									} catch (FileNotFoundException ex) {
-                                        Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+                                        Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
                                     }
 									break;
 								}
@@ -202,12 +202,13 @@ public class ProcessExport extends ProcessAbstract {
 			}
             
 			Popup.info("Export complete.\n"+nbAlreadyExported+" already exported\n"+nbExported+" exported / "+nbToCopy+"\n"+nbFailed+" error(s)\n"+nbDeleted+" deleted");
+            callBack.actionPerformed();
 			progressBarConsole.reset();
             progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} catch (IOException ex) {
-			Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {
 			callBack.completed();
 		}
@@ -255,7 +256,7 @@ public class ProcessExport extends ProcessAbstract {
             }
             zipFile.close();
         } catch (IOException ex) {
-            Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         return true;
@@ -283,7 +284,7 @@ public class ProcessExport extends ProcessAbstract {
             }
             zipFile.close();
         } catch (IOException ex) {
-            Logger.getLogger(ProcessExport.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         return true;

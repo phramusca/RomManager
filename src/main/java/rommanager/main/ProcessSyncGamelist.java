@@ -36,7 +36,7 @@ import rommanager.utils.ProgressBar;
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
-public class ProcessRead extends ProcessAbstract {
+public class ProcessSyncGamelist extends ProcessAbstract {
 
     private final String sourcePath;
 	private final String exportPath;
@@ -45,7 +45,7 @@ public class ProcessRead extends ProcessAbstract {
 	private final TableModelRom tableModel;
 	private final ICallBackProcess callBack;
 	
-	public ProcessRead(
+	public ProcessSyncGamelist(
             String sourcePath,
 			String exportPath, 
             ProgressBar progressBarConsole, 
@@ -93,37 +93,25 @@ public class ProcessRead extends ProcessAbstract {
                         progressBarGame.progress(remoteGame.getName());
                         File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), remoteGame.getPath()));
                         if(!gameFile.exists()) {
-                            //FIXME 0 count number of deleted and display at the end
                             gamelist.deleteGame(remoteGameElement);
                             continue;
                         }
-                        //FIXME 0 count number of all ok, modified, errors, ...
                         if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) continue; 
                         if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) continue; 
                         if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) continue; 
-                        
-//                        Element elementVideo = XML.getElement(remoteGameElement, "video");
-//                        Element elementPlayers = XML.getElement(remoteGameElement, "players");
-//                        Element elementImage = XML.getElement(remoteGameElement, "image");
-//                        
-//                        if(elementImage == null && (elementVideo != null || elementPlayers != null)) {
-//                            gamelist.deleteGame(remoteGameElement);
-//                        }
                         
                         String keyVersion = FilenameUtils.getName(gameFile.getAbsolutePath());
                         List<RomVersion> collect = romVersionsForConsole.stream()
                                 .filter(v->v.getExportFilename(console).equals(keyVersion))
                                 .collect(Collectors.toList());
-
-
-                        collect.size();
                         if(collect.size()==1) {
                             RomVersion localVersion = collect.get(0);
                             Game localGame = localVersion.getGame();
 
 
                         } else {
-                            //FIXME 0
+                            //FIXME 0 manage if file not found, though should not happen
+                            Popup.warning(keyVersion+" could not be found on "+console.getName());
                         }
                     }
                    if(gamelist.hasChanged()) {
@@ -165,9 +153,11 @@ public class ProcessRead extends ProcessAbstract {
 			tableModel.fireTableDataChanged();
 			
             progressBarGame.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
+			if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+                callBack.actionPerformed();
+            }
 			progressBarGame.reset();
-            
+            //FIXME 0 display modification counters
 			Popup.info("Reading complete.");
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
