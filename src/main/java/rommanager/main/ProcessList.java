@@ -87,7 +87,9 @@ public class ProcessList extends ProcessAbstract {
 				}
 			}
             progressBarGame.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBarGame, sourcePath);
+			if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+                callBack.actionPerformed();
+            }
             progressBarConsole.reset();
 			progressBarGame.reset();
 			Popup.info("Listing complete.");

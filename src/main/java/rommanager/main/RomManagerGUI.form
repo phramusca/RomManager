@@ -86,7 +86,7 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="jButtonScore" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="jButtonExport" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jButtonSyncRoms" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="jButtonSyncGameList" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -137,7 +137,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButtonScanSource" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonScore" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonExport" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonSyncRoms" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSyncGameList" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSave" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonReadJeuxVideo" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -228,12 +228,12 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonScoreActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButtonExport">
+        <Component class="javax.swing.JButton" name="jButtonSyncRoms">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sync roms" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSyncRomsActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonSyncGameList">

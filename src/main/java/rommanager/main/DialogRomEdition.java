@@ -18,11 +18,6 @@
 package rommanager.main;
 
 import java.awt.Frame;
-import java.util.List;
-import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import rommanager.utils.XML;
 
 /**
  * JDialog extension to add/modify Stat source
@@ -30,12 +25,6 @@ import rommanager.utils.XML;
  */
 public class DialogRomEdition extends javax.swing.JDialog {
 
-    Document doc;
-	String gamelistFilename;
-    Element elementGame;
-	Element elementFavorite;
-    Element elementHidden;
-    Element elementAdult;
     RomContainer romContainer;
     private final ICallBackProcess callback;
 	
@@ -44,37 +33,18 @@ public class DialogRomEdition extends javax.swing.JDialog {
 	 * @param modal  
      * @param console  
      * @param romContainer  
-     * @param gamelistFilename
      * @param callback
 	 */
-    public DialogRomEdition(Frame parent, boolean modal, Console console, RomContainer romContainer, String gamelistFilename, ICallBackProcess callback) {
+    public DialogRomEdition(Frame parent, boolean modal, Console console, RomContainer romContainer, ICallBackProcess callback) {
         super(parent, modal);
         initComponents();
-		this.gamelistFilename = gamelistFilename;
         this.romContainer = romContainer;
         this.callback = callback;
-        RomVersion exportRomVersion = romContainer.getExportableVersions().get(0); //FIXME 8 What if != 0 ?
-        jTextName.setText(exportRomVersion.getExportFilename(console));
-        doc = XML.open(gamelistFilename);
-        if(doc!=null) {
-            String path = FilenameUtils.concat(console.getName(), exportRomVersion.getExportFilename(console));
-            List<Element> evaluateXPath = XML.evaluateXPath(doc, "//gameList/game[./path[. = \""+path+"\"]]");
-            if(!evaluateXPath.isEmpty()) {
-                elementGame = evaluateXPath.get(0); //FIXME 8 What if > 1 ?
-                elementFavorite = XML.getElement(elementGame, "favorite");
-                elementHidden = XML.getElement(elementGame, "hidden");
-                elementAdult = XML.getElement(elementGame, "adult");
-
-                boolean favoriteValue = Boolean.parseBoolean(XML.getElementValue(elementFavorite));
-                boolean hiddenValue = Boolean.parseBoolean(XML.getElementValue(elementHidden));
-                boolean adultValue = Boolean.parseBoolean(XML.getElementValue(elementAdult));
-
-                jCheckBoxFavorite.setSelected(favoriteValue);
-                jCheckBoxHidden.setSelected(hiddenValue);
-                jCheckBoxAdult.setSelected(adultValue);
-            }
-            
-        }
+        Game game = romContainer.getGame();
+        jTextName.setText(game.getName());
+        jCheckBoxFavorite.setSelected(game.isFavorite());
+        jCheckBoxHidden.setSelected(game.isHidden());
+        jCheckBoxAdult.setSelected(game.isAdult());
     }
 
     /** This method is called from within the constructor to
@@ -163,29 +133,14 @@ public class DialogRomEdition extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
 	private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
-        setElementValue(elementFavorite, "favorite", jCheckBoxFavorite.isSelected());
-        setElementValue(elementHidden, "hidden", jCheckBoxHidden.isSelected());
-        setElementValue(elementAdult, "adult", jCheckBoxAdult.isSelected());
-        XML.save(gamelistFilename, doc);
-        
-        romContainer.getExportableVersions().get(0).getGame().setFavorite(jCheckBoxFavorite.isSelected());
-        romContainer.getExportableVersions().get(0).getGame().setHidden(jCheckBoxHidden.isSelected());
-        romContainer.getExportableVersions().get(0).getGame().setAdult(jCheckBoxAdult.isSelected());
+        romContainer.getGame().setFavorite(jCheckBoxFavorite.isSelected());
+        romContainer.getGame().setHidden(jCheckBoxHidden.isSelected());
+        romContainer.getGame().setAdult(jCheckBoxAdult.isSelected());
         romContainer.resetGame();
-        
+        callback.actionPerformed();
         callback.completed();
         this.dispose();
 	}//GEN-LAST:event_jButtonSaveActionPerformed
-
-    private void setElementValue(Element element, String key, boolean value) {
-        if(element!=null) {
-            element.setTextContent(String.valueOf(value));
-        } else {
-            Element createElement = doc.createElement(key);
-            createElement.setTextContent(String.valueOf(value));
-            elementGame.appendChild(createElement);
-        }
-    }
     
 	private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
 		this.dispose();
@@ -196,12 +151,11 @@ public class DialogRomEdition extends javax.swing.JDialog {
 	 * @param parent
      * @param console 
      * @param romContainer 
-     * @param gamelistFilename 
      * @param callback 
 	 */
-    public static void main(Frame parent, Console console, RomContainer romContainer, String gamelistFilename, ICallBackProcess callback) {
+    public static void main(Frame parent, Console console, RomContainer romContainer, ICallBackProcess callback) {
         java.awt.EventQueue.invokeLater(() -> {
-			DialogRomEdition dialog = new DialogRomEdition(parent, true, console, romContainer, gamelistFilename, callback);
+			DialogRomEdition dialog = new DialogRomEdition(parent, true, console, romContainer, callback);
 			dialog.setLocationRelativeTo(parent);
 			dialog.setVisible(true);
 		});

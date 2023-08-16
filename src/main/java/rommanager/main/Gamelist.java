@@ -45,6 +45,12 @@ public class Gamelist {
         read();
     }
     
+    public void save() {
+        XML.save(file, doc);
+        read();
+    }
+
+    //FIXME 0 use setGame method
     public Game setGame(Game localGame) {
         String key = FilenameUtils.getBaseName(localGame.getPath());
         Element elementGame = games.get(key).fst;
@@ -54,12 +60,7 @@ public class Gamelist {
         return newGame;
     }
     
-    public void save() {
-        XML.save(file, doc);
-        read();
-    }
-    
-    //FIXME 0
+    //FIXME 0 comapre games
     private Game compareGame(Game localGame, Game remoteGame) {
         Game newGame = null; //new Game(path, hash, name, desc, image, video, thumbnail, 0, releaseDate, developer, publisher, genre, genreId, players, playcount, lastplayed, isFavorite, timestamp, isHidden, isAdult, ratio, region);
 
@@ -92,13 +93,13 @@ public class Gamelist {
     private void read() {
         games = new HashMap<>();
         if(!file.exists()) {
-            Logger.getLogger(ProcessRead.class.getName())
+            Logger.getLogger(Gamelist.class.getName())
                     .log(Level.WARNING, "File not found: {0}", file.getAbsolutePath());
             return;
         }
         doc = XML.open(file.getAbsolutePath());
         if(doc==null) {
-            Logger.getLogger(ProcessRead.class.getName())
+            Logger.getLogger(Gamelist.class.getName())
                     .log(Level.SEVERE, "Error with: Document doc = XML.open(\"{0}\")", file.getAbsolutePath());
             return;
         }

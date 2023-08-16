@@ -23,4 +23,6 @@ package rommanager.main;
 public interface ICallBackProcess {
 
 	public void completed();
+
+    public void actionPerformed();
 }
