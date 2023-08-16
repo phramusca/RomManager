@@ -16,21 +16,21 @@
  */
 package rommanager.main;
 
+import com.sun.tools.javac.util.Pair;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import rommanager.utils.FileSystem;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
-import rommanager.utils.XML;
+
+//FIXME 7 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
 
 /**
  *
@@ -64,43 +64,104 @@ public class ProcessRead extends ProcessAbstract {
     @Override
 	public void run() {
 		try {
-            //Read all gamelist.xml files from both local and export folders
-			Map<String, Game> games = new HashMap<>();
+            //Read all gamelist.xml files from export folder
+			Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
 			for(Console console : Console.values()) {
 				checkAbort();
                 progressBarConsole.progress(console.getName());
-                
-                File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, console.name()), "gamelist.xml"));
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
+                File backupFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml.bak"));
                 if(remoteFile.exists()) {
-                    FileSystem.copyFile(remoteFile, localFile);
+                    FileSystem.copyFile(remoteFile, backupFile);
+                    
+                    //FIXME 0 Use this 
+                    long remoteLastModified = remoteFile.lastModified();
+
+                    List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
+                            .stream()
+                            .filter(r->r.console.equals(console))
+                            .map(r->r.getExportableVersions())
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
+                    
+                    Gamelist gamelist = new Gamelist(remoteFile);
+                    progressBarGame.setup(gamelist.getGames().values().size());
+                    for (Pair<Element, Game> entry : gamelist.getGames().values()) {
+                        Element remoteGameElement = entry.fst;
+                        Game remoteGame = entry.snd;
+                        progressBarGame.progress(remoteGame.getName());
+                        File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), remoteGame.getPath()));
+                        if(!gameFile.exists()) {
+                            //FIXME 0 count number of deleted and display at the end
+                            gamelist.deleteGame(remoteGameElement);
+                            continue;
+                        }
+                        //FIXME 0 count number of all ok, modified, errors, ...
+                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) continue; 
+                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) continue; 
+                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) continue; 
+                        
+//                        Element elementVideo = XML.getElement(remoteGameElement, "video");
+//                        Element elementPlayers = XML.getElement(remoteGameElement, "players");
+//                        Element elementImage = XML.getElement(remoteGameElement, "image");
+//                        
+//                        if(elementImage == null && (elementVideo != null || elementPlayers != null)) {
+//                            gamelist.deleteGame(remoteGameElement);
+//                        }
+                        
+                        String keyVersion = FilenameUtils.getName(gameFile.getAbsolutePath());
+                        List<RomVersion> collect = romVersionsForConsole.stream()
+                                .filter(v->v.getExportFilename(console).equals(keyVersion))
+                                .collect(Collectors.toList());
+
+
+                        collect.size();
+                        if(collect.size()==1) {
+                            RomVersion localVersion = collect.get(0);
+                            Game localGame = localVersion.getGame();
+
+
+                        } else {
+                            //FIXME 0
+                        }
+                    }
+                   if(gamelist.hasChanged()) {
+                        gamelist.save();
+                    }
+                    if(gamelist.getGames().isEmpty()) {
+                        remoteFile.delete();
+                    } else {
+                        //FIXME 0 Delete all media files not in gamelist
+                        gamelists.put(console, gamelist);
+                    }                   
+                } else {
+                    //FIXME 0 Create the file and fill it up with local data (if any)
+                    
+//                    Popup.warning("No gamelist.xml on remote for " + console.getName());
                 }
-                Map<String, Game> gamesRemote = read(remoteFile);
-                games.putAll(gamesRemote);
 			}
 			progressBarConsole.reset();
             
-            //Match gamelist.xml read with local files and display information
-			progressBarGame.setup(tableModel.getRoms().size());
-			String consolePath;
-			for(RomContainer romContainer : tableModel.getRoms().values()) {
-				checkAbort();
-                consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
-				for(RomVersion romVersion : romContainer.getVersions()) {
-					checkAbort();
-					String key = FilenameUtils.getBaseName(romVersion.getFilename());
-					if(games.containsKey(key)) {
-						Game game = games.get(key);
-                        if(!game.getImage().isBlank()) {
-                            BufferIcon.checkOrGetCoverIcon(game.getName(), FilenameUtils.concat(consolePath, game.getImage()));
-                        }
-						romVersion.setGame(game);
-					}
-				}
-                romContainer.resetGame();
-				progressBarGame.progress(romContainer.getFilename());
-			}
+//            //Match gamelist.xml read with local files and display information
+//			progressBarGame.setup(tableModel.getRoms().size());
+//			String consolePath;
+//			for(RomContainer romContainer : tableModel.getRoms().values()) {
+//				checkAbort();
+//                consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());
+//				for(RomVersion romVersion : romContainer.getVersions()) {
+//					checkAbort();
+//                    Gamelist gamelist = gamelists.get(romContainer.getConsole());
+//                    Game gameLocal = romVersion.getGame();
+//                    Game newGame = gamelist.setGame(gameLocal);
+//                    if(!newGame.getImage().isBlank()) {
+//                        BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
+//                    }
+//                    romVersion.setGame(newGame);
+//				}
+//                romContainer.resetGame();
+//				progressBarGame.progress(romContainer.getFilename());
+//			}
 			tableModel.fireTableDataChanged();
 			
             progressBarGame.setIndeterminate("Saving ods file");
@@ -108,7 +169,6 @@ public class ProcessRead extends ProcessAbstract {
 			progressBarGame.reset();
             
 			Popup.info("Reading complete.");
-			progressBarGame.reset();
 		} catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
 		} catch (IOException ex) {
@@ -118,60 +178,15 @@ public class ProcessRead extends ProcessAbstract {
 		}
 	}
 
-    //FIXME 7 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
-    
-	private Map<String, Game> read(File gamelistXmlFile) throws InterruptedException {
-		Map<String, Game> games = new HashMap<>();
-        if(!gamelistXmlFile.exists()) {
-            Logger.getLogger(ProcessRead.class.getName())
-                    .log(Level.WARNING, "File not found: {0}", gamelistXmlFile.getAbsolutePath());
-            return games;
+    private boolean checkMedia(Console console, Gamelist gamelist, Element remoteGameElement, String filename) {
+        File mediaFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), filename));
+        if (!filename.contains("ZZZ") && !mediaFile.exists()) {
+            gamelist.removeScraped(remoteGameElement);
+            //Some file is missing and the only way (I found) to force re-scrap is removing entry from xml
+//                            gamelist.deleteGame(remoteGameElement);
+            return false;
         }
-        Document doc = XML.open(gamelistXmlFile.getAbsolutePath());
-        if(doc==null) {
-            Logger.getLogger(ProcessRead.class.getName())
-                    .log(Level.SEVERE, "Error with: Document doc = XML.open(\"{0}\")", gamelistXmlFile.getAbsolutePath());
-            return games;
-        }
-        ArrayList<Element> elements = XML.getElements(doc, "game");
-        progressBarGame.setup(elements.size());
-        for(Element element : elements) {
-            checkAbort();
-            Game game = getGame(element);
-            games.put(FilenameUtils.getBaseName(game.getPath()), game);
-            progressBarGame.progress(game.getName());
-        }
-        return games;
-	}
-    
-    public static Game getGame(Element element) {
-        String r = XML.getElementValue(element, "rating");
-        float ratingLocal=r.equals("")?-1:Float.parseFloat(r);
-        String pc = XML.getElementValue(element, "playcount");
-        int playCounter=pc.equals("")?-1:Integer.parseInt(pc);
-        String t = XML.getAttribute(element, "timestamp");
-        long timestamp = (!t.isBlank()?Long.parseLong(t):-1);
-        return new Game(XML.getElementValue(element, "path"),
-                    XML.getElementValue(element, "hash"),
-                    XML.getElementValue(element, "name"),
-                    XML.getElementValue(element, "desc"),
-                    XML.getElementValue(element, "image"),
-                    XML.getElementValue(element, "video"),
-                    XML.getElementValue(element, "thumbnail"),
-                    ratingLocal,
-                    XML.getElementValue(element, "releasedate"),
-                    XML.getElementValue(element, "developer"),
-                    XML.getElementValue(element, "publisher"),
-                    XML.getElementValue(element, "genre"),
-                    XML.getElementValue(element, "genreid"),
-                    XML.getElementValue(element, "players"),
-                    playCounter,
-                    XML.getElementValue(element, "lastplayed"),
-                    Boolean.parseBoolean(XML.getElementValue(element, "favorite")),
-                    timestamp,
-                    Boolean.parseBoolean(XML.getElementValue(element, "hidden")),
-                    Boolean.parseBoolean(XML.getElementValue(element, "adult")),
-                    XML.getElementValue(element, "ratio"),
-                    XML.getElementValue(element, "region"));
+        return true;
     }
+
 }
