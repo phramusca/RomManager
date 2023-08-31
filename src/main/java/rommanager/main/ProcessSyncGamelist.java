@@ -88,6 +88,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                     Gamelist gamelist = new Gamelist(remoteFile);
                     progressBarGame.setup(gamelist.getGames().values().size());
                     for (Pair<Element, Game> entry : gamelist.getGames().values()) {
+                        checkAbort();
                         Element remoteGameElement = entry.fst;
                         Game remoteGame = entry.snd;
                         progressBarGame.progress(remoteGame.getName());

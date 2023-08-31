@@ -280,18 +280,11 @@ public class RomVersion {
     }
     
     public String getExportFolder(Console console, String exportPath) {
+        String folderName = getTags().isEmpty()?"1_"+console.name():getTags().get(0)+"_"+console.name();
         return FilenameUtils.concat(
-				FilenameUtils.concat(
+                    FilenameUtils.concat(
 						exportPath, console.name()), 
-				console.getName());
-    }
-    
-    //FIXME 0 Use getExportFolderTag instead of getExportPath / getExportFolder
-    public String getExportFolderTag(Console console, String exportPath, String tag) {
-        return FilenameUtils.concat(
-				FilenameUtils.concat(
-						exportPath, console.name()), 
-				tag);
+                            folderName);
     }
     
 	public String getExportPath(Console console, String exportPath) {
