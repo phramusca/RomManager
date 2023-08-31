@@ -27,8 +27,8 @@ import rommanager.utils.Popup;
 public class RomManager {
 
     protected static Options options;
-    protected static final String TAG_JEUX_VIDEO = "CULTE";
-    protected static final String TAG_JDG = "JDG";
+    protected static final String TAG_JEUX_VIDEO = "0_CULTE";
+    protected static final String TAG_JDG = "2_JDG";
     
     public static void main(String[] args) {
         options = new Options("RomManager.properties");

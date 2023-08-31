@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -88,15 +90,17 @@ public class ProcessSyncRoms extends ProcessAbstract {
 				checkAbort();
 				if(console.isSelected()) {
                     //FIXME 0 Export Path to include tags
-					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
-					if(!new File(consolePath).exists()) {
-						if(!new File(consolePath).mkdirs()) {
-							Popup.error("Error creating "+consolePath);
-							callBack.completed();
-						}
-					} else {
-						browseFS(new File(consolePath));
-					}
+//					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
+                    String consolePath = FilenameUtils.concat(exportPath, console.name());
+					if(new File(consolePath).exists()) {
+                        browsePath(new File(consolePath));
+                    }
+//                    else {
+//                        if(!new File(consolePath).mkdirs()) {
+//                            Popup.error("Error creating "+consolePath);
+//                            callBack.completed();
+//                        }
+//                    }
 				}
                 progressBarGame.progress(console.getName());
 			}
@@ -164,7 +168,12 @@ public class ProcessSyncRoms extends ProcessAbstract {
 							SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 							while(entry!=null){
 								if(entry.getName().equals(romVersion.getFilename())) {
-                                    File unzippedFile = new File(FilenameUtils.concat(romVersion.getExportFolder(romContainer.getConsole(), exportPath), romVersion.getFilename()));
+                                    String exportFolder = romVersion.getExportFolder(romContainer.getConsole(), exportPath);
+                                    File file = new File(exportFolder);
+                                    if(!file.exists()) {
+                                        file.mkdirs();
+                                    }
+                                    File unzippedFile = new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
 									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
 										byte[] content = new byte[(int) entry.getSize()];
 										sevenZFile.read(content, 0, content.length);
@@ -320,34 +329,35 @@ public class ProcessSyncRoms extends ProcessAbstract {
 		return null;
 	}
 	
-	private void browseFS(File path) throws InterruptedException {
+    private void browsePath(File path) throws InterruptedException {
         this.checkAbort();
-        //Verifying we have a path and not a file
         if (path.isDirectory()) {
             File[] files = path.listFiles();
             if (files != null) {
-				//TODO: Either use (is this needed ? safe ?) OR remove commented
-//                if(files.length<=0) {
-//                    if(!FilenameUtils.equalsNormalizedOnSystem(
-//							this.device.getDestination(), 
-//							path.getAbsolutePath())) {
-//                        Jamuz.getLogger().log(Level.FINE, 
-//								"Deleted empty folder \"{0}\"", 
-//								path.getAbsolutePath());  //NOI18N
-//                        path.delete();
-//                    }
-//                }
-//                else {
-                    for (File file : files) {
-                        this.checkAbort();
-                        if (file.isDirectory()) {
-                            browseFS(file);
-                        }
-                        else {
-                            this.romDestinationList.add(file);
+                for (File file : files) {
+                    this.checkAbort();
+                    if (file.isDirectory()) {
+                        Path pathToAFolderWithTrailingBackslash = Paths.get(file.getAbsolutePath());
+                        if(Character.isDigit(pathToAFolderWithTrailingBackslash.getFileName().toString().charAt(0))) {
+                            browseFiles(file);
                         }
                     }
-//                }
+                }
+            } 
+        }
+	}
+    
+	private void browseFiles(File path) throws InterruptedException {
+        this.checkAbort();
+        if (path.isDirectory()) {
+            File[] files = path.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    this.checkAbort();
+                    if (!file.isDirectory()) {
+                        this.romDestinationList.add(file);
+                    }
+                }
             } 
         }
 	}

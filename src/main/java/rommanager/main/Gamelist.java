@@ -178,6 +178,8 @@ public class Gamelist {
     }
 
     void removeScraped(Element remoteGameElement) {
+        removeElement(remoteGameElement, "hash");
+        removeElement(remoteGameElement, "name");
         removeElement(remoteGameElement, "region");
         removeElement(remoteGameElement, "genreid");
         removeElement(remoteGameElement, "genre");
