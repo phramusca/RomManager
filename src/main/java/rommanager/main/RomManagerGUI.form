@@ -91,7 +91,9 @@
                                           <Component id="jButtonSyncGameList" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="jButtonReadJeuxVideo" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="0" pref="132" max="32767" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButtonReadJdG" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="39" max="32767" attributes="0"/>
                                       </Group>
                                       <Component id="jProgressBarConsole" alignment="1" max="32767" attributes="0"/>
                                       <Component id="jProgressBarGame" alignment="1" max="32767" attributes="0"/>
@@ -141,6 +143,7 @@
                       <Component id="jButtonSyncGameList" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSave" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonReadJeuxVideo" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonReadJdG" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -287,6 +290,14 @@
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ProgressBar()"/>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonReadJdG">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Read JdG"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonReadJdGActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

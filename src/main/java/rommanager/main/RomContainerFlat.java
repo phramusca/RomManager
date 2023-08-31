@@ -16,8 +16,6 @@
  */
 package rommanager.main;
 
-import java.io.IOException;
-
 /**
  *
  * @author phramusca ( https://github.com/phramusca/ )

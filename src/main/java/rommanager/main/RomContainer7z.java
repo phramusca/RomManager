@@ -57,6 +57,7 @@ public class RomContainer7z extends RomContainer {
                         entry.getCrcValue(),
                         entry.getSize());
                 String ext = FilenameUtils.getExtension(name);
+                
                 switch (ext) {
                     case "gb":
                         moveTo.add(Console.gb);
@@ -78,6 +79,7 @@ public class RomContainer7z extends RomContainer {
                 Console moveToConsole = moveTo.stream().findFirst().get();
                 if(moveTo.size()>1) {
                     //Prefer the color version //TODO: Offer the choice. Sometimes color is not the best choice (japan only, hack,...)
+                    //FIXME 2 some 7z include gb AND gbc versions. Need to split that too !
                     if(moveTo.contains(Console.gb) && moveTo.contains(Console.gbc)) {
                         moveToConsole = Console.gbc;
                     }
