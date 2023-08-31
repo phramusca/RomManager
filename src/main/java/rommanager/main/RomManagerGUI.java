@@ -224,6 +224,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonSave = new javax.swing.JButton();
         jButtonReadJeuxVideo = new javax.swing.JButton();
         jProgressBarConsole = new ProgressBar();
+        jButtonReadJdG = new javax.swing.JButton();
         jSplitPaneFilters = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
@@ -364,6 +365,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jProgressBarConsole.setString(""); // NOI18N
         jProgressBarConsole.setStringPainted(true);
 
+        jButtonReadJdG.setText("Read JdG");
+        jButtonReadJdG.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReadJdGActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -390,7 +398,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                         .addComponent(jButtonSyncGameList)
                                         .addGap(18, 18, 18)
                                         .addComponent(jButtonReadJeuxVideo)
-                                        .addGap(0, 132, Short.MAX_VALUE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonReadJdG)
+                                        .addGap(0, 39, Short.MAX_VALUE))
                                     .addComponent(jProgressBarConsole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jProgressBarGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
@@ -426,7 +436,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonSyncRoms)
                     .addComponent(jButtonSyncGameList)
                     .addComponent(jButtonSave)
-                    .addComponent(jButtonReadJeuxVideo))
+                    .addComponent(jButtonReadJeuxVideo)
+                    .addComponent(jButtonReadJdG))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -1056,6 +1067,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jButtonSyncRoms.setEnabled(enable);
 		jButtonSyncGameList.setEnabled(enable);
         jButtonReadJeuxVideo.setEnabled(enable);
+        jButtonReadJdG.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
 		jButtonEdit.setEnabled(enable);
         jButtonAuto.setEnabled(enable);
@@ -1450,6 +1462,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             System.exit(0); 
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void jButtonReadJdGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJdGActionPerformed
+        disableGUI("Reading JdG Tier List : ");
+        String sourcePath = jTextFieldPathSource.getText();
+		JdG jdGRead = new JdG(new CallBackJeuxVideo(), tableModel, progressBarGame, sourcePath);
+		jdGRead.start();
+    }//GEN-LAST:event_jButtonReadJdGActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {
 		
@@ -1567,6 +1586,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonOptionSelectFolderExport;
     private javax.swing.JButton jButtonOptionSelectFolderSource;
+    private javax.swing.JButton jButtonReadJdG;
     private javax.swing.JButton jButtonReadJeuxVideo;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JButton jButtonScanSource;

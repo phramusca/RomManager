@@ -87,6 +87,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
 			for(Console console : consoles) {
 				checkAbort();
 				if(console.isSelected()) {
+                    //FIXME 0 Export Path to include tags
 					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
 					if(!new File(consolePath).exists()) {
 						if(!new File(consolePath).mkdirs()) {
@@ -191,6 +192,17 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     }
                     if(checkFile(romContainer, romVersion)) {
                         nbExported++;
+                        
+//                        if(!romVersion.getTags().isEmpty()) {
+//                            for (String tag : romVersion.getTags()) {
+//                                String exportFolderTag = romVersion.getExportFolderTag(romContainer.getConsole(), exportPath, tag);
+//                                String exportFilenameTag = FilenameUtils.concat(exportFolderTag, romVersion.getExportFilename(romContainer.getConsole()));
+//                                FileSystem.createSymbolicLink(exportFilenameTag, exportFile);
+//                            }
+//                        }
+                        
+                        
+                        
                     } else {
                         nbFailed++;
                         if(exportFile.exists()) {

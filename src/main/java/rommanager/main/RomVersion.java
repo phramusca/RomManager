@@ -116,7 +116,8 @@ public class RomVersion {
 		this.errorLevel = errorLevel;
 		this.exportable = isExportable;
         if(!tags.trim().equals("")) {
-            this.tags = Arrays.asList(tags.split(","));
+            List<String> arraylist = Arrays.asList(tags.split(","));
+            this.tags = new ArrayList<>(arraylist);
         }
         this.crcValue = crcValue;
         this.size = size;
@@ -283,6 +284,14 @@ public class RomVersion {
 				FilenameUtils.concat(
 						exportPath, console.name()), 
 				console.getName());
+    }
+    
+    //FIXME 0 Use getExportFolderTag instead of getExportPath / getExportFolder
+    public String getExportFolderTag(Console console, String exportPath, String tag) {
+        return FilenameUtils.concat(
+				FilenameUtils.concat(
+						exportPath, console.name()), 
+				tag);
     }
     
 	public String getExportPath(Console console, String exportPath) {
