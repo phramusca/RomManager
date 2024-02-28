@@ -89,18 +89,10 @@ public class ProcessSyncRoms extends ProcessAbstract {
 			for(Console console : consoles) {
 				checkAbort();
 				if(console.isSelected()) {
-                    //FIXME 0 Export Path to include tags
-//					String consolePath = FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), console.getName());
                     String consolePath = FilenameUtils.concat(exportPath, console.name());
 					if(new File(consolePath).exists()) {
                         browsePath(new File(consolePath));
                     }
-//                    else {
-//                        if(!new File(consolePath).mkdirs()) {
-//                            Popup.error("Error creating "+consolePath);
-//                            callBack.completed();
-//                        }
-//                    }
 				}
                 progressBarGame.progress(console.getName());
 			}
@@ -201,17 +193,6 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     }
                     if(checkFile(romContainer, romVersion)) {
                         nbExported++;
-                        
-//                        if(!romVersion.getTags().isEmpty()) {
-//                            for (String tag : romVersion.getTags()) {
-//                                String exportFolderTag = romVersion.getExportFolderTag(romContainer.getConsole(), exportPath, tag);
-//                                String exportFilenameTag = FilenameUtils.concat(exportFolderTag, romVersion.getExportFilename(romContainer.getConsole()));
-//                                FileSystem.createSymbolicLink(exportFilenameTag, exportFile);
-//                            }
-//                        }
-                        
-                        
-                        
                     } else {
                         nbFailed++;
                         if(exportFile.exists()) {
@@ -284,8 +265,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
     }
     
     private boolean checkFile(File exportFile, String name, long crcValue, long size) {
-        try {
-            ZipFile zipFile = new ZipFile(exportFile);
+        try (ZipFile zipFile = new ZipFile(exportFile)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             if(entries.hasMoreElements()){
                 ZipEntry exportEntry = entries.nextElement();
@@ -303,7 +283,6 @@ public class ProcessSyncRoms extends ProcessAbstract {
                 zipFile.close();
                 return false;
             }
-            zipFile.close();
         } catch (IOException ex) {
             Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
             return false;
