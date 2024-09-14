@@ -16,7 +16,7 @@
  */
 package rommanager.main;
 
-import com.sun.tools.javac.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class Gamelist {
 
     public void setGame(Game newGame) {
         String key = FilenameUtils.getBaseName(newGame.getPath());
-        Element elementGame = games.get(key).fst;
+        Element elementGame = games.get(key).getLeft();
         setGame(elementGame, newGame);
     }
     
@@ -122,7 +122,7 @@ public class Gamelist {
         ArrayList<Element> elements = XML.getElements(doc, "game");
         for(Element element : elements) {
             Game game = getGame(element);
-            games.put(FilenameUtils.getBaseName(game.getPath()), new Pair<>(element, game));
+            games.put(FilenameUtils.getBaseName(game.getPath()), Pair.of(element, game));
         }
 	}
         

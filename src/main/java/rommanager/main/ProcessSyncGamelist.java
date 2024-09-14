@@ -16,7 +16,8 @@
  */
 package rommanager.main;
 
-import com.sun.tools.javac.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -89,8 +90,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                     progressBarGame.setup(gamelist.getGames().values().size());
                     for (Pair<Element, Game> entry : gamelist.getGames().values()) {
                         checkAbort();
-                        Element remoteGameElement = entry.fst;
-                        Game remoteGame = entry.snd;
+                        Element remoteGameElement = entry.getLeft();
+                        Game remoteGame = entry.getRight();
                         progressBarGame.progress(remoteGame.getName());
                         File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), remoteGame.getPath()));
                         if(!gameFile.exists()) {

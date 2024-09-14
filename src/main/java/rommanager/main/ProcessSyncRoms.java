@@ -16,7 +16,7 @@
  */
 package rommanager.main;
 
-import com.sun.tools.javac.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -123,10 +123,10 @@ public class ProcessSyncRoms extends ProcessAbstract {
 			for (File file : romDestinationList) {
 				this.checkAbort();
                 Pair<RomContainer, RomVersion> pair = searchInSourceList(file);
-				if(pair != null && checkFile(pair.fst, pair.snd)) {
+				if(pair != null && checkFile(pair.getLeft(), pair.getRight())) {
                     //Already exported
                     nbAlreadyExported++;
-                    pair.snd.setToCopy(false);
+                    pair.getRight().setToCopy(false);
 				} else {
                     //Not a file to be copied, or it is a bad file: removing it on destination
                     file.delete();
@@ -301,7 +301,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
 				this.checkAbort();
 				String exportFilename = romVersion.getExportPath(romContainer.getConsole(), exportPath);
                 if(exportFilename.equals(file.getAbsolutePath())) { 
-                    return new Pair<>(romContainer, romVersion); 
+                    return Pair.of(romContainer, romVersion);
                 }
 			}
 		}
