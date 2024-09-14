@@ -1329,9 +1329,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
             String consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());           
             File cacheFile = BufferVideo.getCacheFile(romContainer.getGame().getName(), new File(FilenameUtils.concat(consolePath, romContainer.getGame().getVideo())));
-            Desktop.openFile(cacheFile.getAbsolutePath());
-            
-            
+            if(cacheFile==null) {
+                Popup.warning("No video found.");
+            } else {
+                Desktop.openFile(cacheFile.getAbsolutePath());
+            }
             
 //			romContainer.setExportableVersions();
 //			displayVersions(romContainer.getVersions());
