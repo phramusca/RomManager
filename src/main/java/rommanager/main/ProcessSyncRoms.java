@@ -18,7 +18,6 @@ package rommanager.main;
 
 import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,43 +45,43 @@ import rommanager.utils.ProgressBar;
  */
 public class ProcessSyncRoms extends ProcessAbstract {
 
-	private final String exportPath;
+    private final String exportPath;
     private final ProgressBar progressBarConsole;
-	private final ProgressBar progressBarGame;
-	private final TableModelRom tableModel;
-	private final ICallBackProcess callBack;
-	private final String sourcePath;
-	
-	private List<RomContainer> romSourceList;
-	private List<File> romDestinationList;
-    private boolean onlyCultes;
-	
-	public ProcessSyncRoms(
-			String sourcePath, 
-			String exportPath, 
-            ProgressBar progressBarConsole, 
-			ProgressBar progressBarGame, 
-			TableModelRom tableModel, 
-			ICallBackProcess callBack) {
-		super("Thread.ProcessExport");
-		this.sourcePath = sourcePath;
-		this.exportPath = exportPath;
-        this.progressBarConsole = progressBarConsole;
-		this.progressBarGame = progressBarGame;
-		this.tableModel = tableModel;
-		this.callBack = callBack;
-	}
+    private final ProgressBar progressBarGame;
+    private final TableModelRom tableModel;
+    private final ICallBackProcess callBack;
+    private final String sourcePath;
 
-	@Override
-	public void run() {
-		try {
+    private List<RomContainer> romSourceList;
+    private List<File> romDestinationList;
+    private boolean onlyCultes;
+
+    public ProcessSyncRoms(
+            String sourcePath,
+            String exportPath,
+            ProgressBar progressBarConsole,
+            ProgressBar progressBarGame,
+            TableModelRom tableModel,
+            ICallBackProcess callBack) {
+        super("Thread.ProcessExport");
+        this.sourcePath = sourcePath;
+        this.exportPath = exportPath;
+        this.progressBarConsole = progressBarConsole;
+        this.progressBarGame = progressBarGame;
+        this.tableModel = tableModel;
+        this.callBack = callBack;
+    }
+
+    @Override
+    public void run() {
+        try {
             progressBarConsole.setup(3);
-			List<Console> consoles = tableModel.getRoms().values().stream()
-					.map(v -> v.getConsole())
-					.distinct()
-					.collect(Collectors.toList());
-			
-			//Get files currently on destination
+            List<Console> consoles = tableModel.getRoms().values().stream()
+                    .map(v -> v.getConsole())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            //Get files currently on destination
             progressBarConsole.progress("Listing files on destination");
             progressBarGame.setup(consoles.size());
             romDestinationList = new ArrayList<>();
@@ -113,8 +112,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
                         .peek(r -> r.setToCopyTrue())
                         .collect(Collectors.toList());
             }
-			
-			//Remove files on destination and exclude already exported
+
+            //Remove files on destination and exclude already exported
             this.checkAbort();
             progressBarGame.setup(romDestinationList.size());
             progressBarConsole.progress("Checking files on destination");
@@ -127,12 +126,12 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     //Already exported
                     nbAlreadyExported++;
                     pair.getRight().setToCopy(false);
-				} else {
+                } else {
                     //Not a file to be copied, or it is a bad file: removing it on destination
                     file.delete();
                     nbDeleted++;
                 }
-				progressBarGame.progress(file.getAbsolutePath());
+                progressBarGame.progress(file.getAbsolutePath());
             }
 
             //Copy (not already exported) files to destination
@@ -150,7 +149,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                 .filter(r -> r.isToCopy())
                                 .collect(Collectors.toList())) {
                     checkAbort();
-					sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
+                    sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
                     File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
                     File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath));
                     String ext = FilenameUtils.getExtension(filename);
@@ -166,21 +165,21 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                         file.mkdirs();
                                     }
                                     File unzippedFile = new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
-									try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
-										byte[] content = new byte[(int) entry.getSize()];
-										sevenZFile.read(content, 0, content.length);
-										out.write(content);
+                                    try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
+                                        byte[] content = new byte[(int) entry.getSize()];
+                                        sevenZFile.read(content, 0, content.length);
+                                        out.write(content);
                                         out.close();
-                                        if(romContainer.getConsole().isZip()) {
+                                        if (romContainer.getConsole().isZip()) {
                                             FileSystem.zipFile(unzippedFile, exportFile);
                                             unzippedFile.delete();
                                         }
-									} catch (FileNotFoundException ex) {
+                                    } catch (IOException ex) {
                                         Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
                                     }
-									break;
-								}
-								entry = sevenZFile.getNextEntry();
+                                    break;
+                                }
+                                entry = sevenZFile.getNextEntry();
                             }
                             sevenZFile.close();
                         }
@@ -204,17 +203,18 @@ public class ProcessSyncRoms extends ProcessAbstract {
             }
 
             Popup.info("Export complete.\n" + nbAlreadyExported + " already exported\n" + nbExported + " exported / " + nbToCopy + "\n" + nbFailed + " error(s)\n" + nbDeleted + " deleted");
+            //FIXME: If nbFailed>0, propose to open log (and make one file per process run)
             callBack.actionPerformed();
             progressBarConsole.reset();
             progressBarGame.reset();
-		} catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
-		} catch (IOException ex) {
-			Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
-		} finally {
-			callBack.completed();
-		}
-	}
+        } catch (IOException ex) {
+            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            callBack.completed();
+        }
+    }
 
     private boolean checkFile(RomContainer romContainer, RomVersion romVersion) throws IOException {
         String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
@@ -236,7 +236,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         }
         return false;
     }
-    
+
     private boolean checkFile(File exportFile, File sourceFile) {
         try {
             ZipFile zipFile = new ZipFile(exportFile);
@@ -263,7 +263,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         }
         return true;
     }
-    
+
     private boolean checkFile(File exportFile, String name, long crcValue, long size) {
         try (ZipFile zipFile = new ZipFile(exportFile)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -289,7 +289,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         }
         return true;
     }
-    
+
     public void setOnlyCultes(boolean onlyCultes) {
         this.onlyCultes = onlyCultes;
     }
@@ -304,10 +304,10 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     return Pair.of(romContainer, romVersion);
                 }
             }
-		}
-		return null;
-	}
-	
+        }
+        return null;
+    }
+
     private void browsePath(File path) throws InterruptedException {
         this.checkAbort();
         if (path.isDirectory()) {
@@ -322,11 +322,11 @@ public class ProcessSyncRoms extends ProcessAbstract {
                         }
                     }
                 }
-            } 
+            }
         }
-	}
-    
-	private void browseFiles(File path) throws InterruptedException {
+    }
+
+    private void browseFiles(File path) throws InterruptedException {
         this.checkAbort();
         if (path.isDirectory()) {
             File[] files = path.listFiles();
@@ -337,7 +337,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                         this.romDestinationList.add(file);
                     }
                 }
-            } 
+            }
         }
     }
 }
