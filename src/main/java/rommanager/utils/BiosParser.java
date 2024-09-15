@@ -86,6 +86,8 @@ public class BiosParser {
             // Create a map of files and their MD5 hashes in the source folder
             Map<String, String> sourceFiles = listFilesAndMD5(sourceFolder);
 
+            List<String> notCopiedBios = new ArrayList<>(); // List to store not copied BIOS names
+
             biosMap.forEach((system, biosInfos) -> {
                 System.out.println("System: " + system);
                 biosInfos.forEach(biosInfo -> {
@@ -124,9 +126,19 @@ public class BiosParser {
                         }
                         return false; // Continue searching if no match
                     }))) {
-                    }// already treated
+                        // Already treated
+                    } else {
+                        // Add to not copied list
+                        notCopiedBios.add(biosInfo.getName() + " (" + biosInfo.getPath() + ") for system " + system + " with MD5: " + biosInfo.getMd5List());
+                    }
                 });
             });
+
+            // Display the list of not copied BIOS
+            if (!notCopiedBios.isEmpty()) {
+                System.out.println("\nBIOS not copied:");
+                notCopiedBios.forEach(System.out::println);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
