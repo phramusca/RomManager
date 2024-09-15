@@ -1,9 +1,16 @@
 package rommanager.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import org.apache.commons.io.FileUtils;
 
 public class BiosParser {
 
@@ -55,13 +62,11 @@ public class BiosParser {
                 } else if (line.startsWith(MD5_LIST_PREFIX)) {
                     biosBuilder.setMd5List(new ArrayList<>());
                 } else if (line.matches("[A-F0-9]{32}")) {
-                    if (biosBuilder.getMd5List() != null) {
-                        biosBuilder.getMd5List().add(line.trim());
-                    }
+                    biosBuilder.getMd5List().add(line.trim());
                 }
             }
 
-            // Handle the last BIOS 
+            // Handle the last BIOS
             if (biosBuilder != null) {
                 systemBiosMap.computeIfAbsent(currentSystem, k -> new ArrayList<>())
                         .add(biosBuilder.build());
@@ -72,14 +77,95 @@ public class BiosParser {
 
     public static void main(String[] args) {
         try {
-            Map<String, List<BiosInfo>> biosMap = parseBiosFile("recalbox/bios/missing_bios_report.txt");
+            Map<String, List<BiosInfo>> biosMap = parseBiosFile("/media/recalbox/bios/missing_bios_report.txt");
+
+            // Define your source and destination folders
+            String sourceFolder = "/home/Documents/06-Jeux/Emulation/Bios/Source/";
+            String destinationFolder = "/home/Documents/06-Jeux/Emulation/Bios/Destination/";
+
+            // Create a map of files and their MD5 hashes in the source folder
+            Map<String, String> sourceFiles = listFilesAndMD5(sourceFolder);
+
             biosMap.forEach((system, biosInfos) -> {
                 System.out.println("System: " + system);
-                biosInfos.forEach(System.out::println);
+                biosInfos.forEach(biosInfo -> {
+                    System.out.println(biosInfo);
+                    // Check if the BIOS exists and has the correct MD5
+                    if (biosInfo.getMd5List().stream().anyMatch(md5 -> sourceFiles.values().stream().anyMatch(sourceMd5 -> {
+                        // Define sourceMd5 here
+                        if (sourceMd5.equalsIgnoreCase(md5)) {
+                            // Get the correct path from the BIOS entry
+                            String path = biosInfo.getPath();
+                            String relativePath = path.substring(path.indexOf("/recalbox/share/bios/") + "/recalbox/share/bios/".length());
+                            String destFilePath = destinationFolder + relativePath;
+                            // Copy the file to the destination, renaming it if necessary
+                            try {
+                                String fileName = new File(path).getName();
+                                // Find the source file path based on the matching MD5
+                                Optional<String> sourceFilePath = sourceFiles.entrySet().stream()
+                                        .filter(entry -> entry.getValue().equalsIgnoreCase(sourceMd5))
+                                        .map(Map.Entry::getKey)
+                                        .findFirst();
+                                if (sourceFilePath.isPresent()) {
+                                    Path sourceFile = Paths.get(sourceFolder, sourceFilePath.get());
+                                    if (!sourceFile.getFileName().toString().equals(fileName)) {
+                                        System.out.println("Warning: " + sourceFile.getFileName().toString() + " filename mismatch for " + biosInfo.getName() + ". Renaming to " + fileName);
+                                    }
+                                    FileUtils.copyFile(sourceFile.toFile(), Paths.get(destFilePath).toFile());
+//                                    FileUtils.moveFile(sourceFile.toFile(), Paths.get(destFilePath).toFile());
+                                    System.out.println("Copied " + biosInfo.getName() + " to " + destFilePath);
+                                } else {
+                                    System.out.println("Warning: File with matching MD5 not found in source folder: " + biosInfo.getName());
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return true; // Stop the inner stream once a match is found
+                        }
+                        return false; // Continue searching if no match
+                    }))) {
+                    }// already treated
+                });
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static Map<String, String> listFilesAndMD5(String folderPath) throws IOException {
+        Map<String, String> fileMD5Map = new HashMap<>();
+        Files.walk(Paths.get(folderPath))
+                .filter(Files::isRegularFile)
+                .forEach(file -> {
+                    try {
+                        String relativePath = file.toString().substring(folderPath.length());
+                        System.out.println(relativePath);
+                        String md5 = calculateMD5(file);
+                        System.out.println(md5);
+                        fileMD5Map.put(relativePath, md5);
+                    } catch (NoSuchAlgorithmException | IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+        return fileMD5Map;
+    }
+
+    private static String calculateMD5(Path file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        byte[] hash = digest.digest(Files.readAllBytes(file));
+        return bytesToHex(hash);
+    }
+
+    private static String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }
 
@@ -99,6 +185,18 @@ class BiosInfo {
         this.forSystems = forSystems;
         this.md5List = md5List;
         this.isRequired = isRequired;
+    }
+
+    public List<String> getMd5List() {
+        return md5List;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     // Builder pattern for creating BiosInfo objects
@@ -147,6 +245,14 @@ class BiosInfo {
 
         public List<String> getMd5List() {
             return md5List;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPath() {
+            return path;
         }
     }
 
