@@ -57,6 +57,19 @@ public class RomMclient {
 		return fromJson;
 	}
     
+    public List<Platform> getPlatforms() throws IOException, ServerException {
+        
+        String url = "platforms";
+		String bodyString = getBodyString(url, client);
+		
+		List<Platform> fromJson = null;
+		if (!bodyString.equals("")) {
+            Type collectionListType = new TypeToken<List<Platform>>(){}.getType();
+            fromJson = gson.fromJson(bodyString, collectionListType);
+		}
+		return fromJson;
+	}
+
     // TODO: Move below a library (used in Slskd in JaMuz too for instance
     
     private HttpUrl.Builder getUrlBuilder(String url) {

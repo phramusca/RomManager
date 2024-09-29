@@ -30,8 +30,13 @@ public class RomM {
     public static void main(String[] args) {
         try {
             RomMclient mclient = new RomMclient("admin", "admin");
+            
             List<Collection> collections = mclient.getCollections();
-            collections.toString();
+            System.out.println(collections.toString());
+            
+            List<Platform> platforms = mclient.getPlatforms();
+            System.out.println(platforms.toString());
+            
         } catch (IOException ex) {
             Logger.getLogger(RomM.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RomMclient.ServerException ex) {

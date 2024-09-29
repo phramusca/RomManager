@@ -16,32 +16,53 @@
  */
 package rommanager.romM;
 
+import lombok.Data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.Data;
 import java.util.List;
 
 @Data
-public class Collection {
-
+public class Platform {
     private int id;
+    private String slug;
+    private String fs_slug;
     private String name;
-    private String description;
-    private String path_cover_l;
-    private String path_cover_s;
-    private boolean has_cover;
-    private String url_cover;
-    private List<Integer> roms;
     private int rom_count;
-    private int user_id;
-    private String user__username;
-    private boolean is_public;
+    private int igdb_id;
+    private int sgdb_id;
+    private int moby_id;
+    private String logo_path;
+    private List<Firmware> firmware;
     private String created_at;
     private String updated_at;
-    
+
     @Override
     public String toString() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(this);
+    }
+
+    @Data
+    public static class Firmware {
+        private int id;
+        private String file_name;
+        private String file_name_no_tags;
+        private String file_name_no_ext;
+        private String file_extension;
+        private String file_path;
+        private long file_size_bytes;
+        private String full_path;
+        private boolean is_verified;
+        private String crc_hash;
+        private String md5_hash;
+        private String sha1_hash;
+        private String created_at;
+        private String updated_at;
+
+        @Override
+        public String toString() {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            return gson.toJson(this);
+        }
     }
 }
