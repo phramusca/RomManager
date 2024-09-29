@@ -16,10 +16,13 @@
  */
 package rommanager.romM;
 
+import rommanager.romM.models.Rom;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rommanager.romM.models.Collection;
+import rommanager.romM.models.Platform;
 
 /**
  *
@@ -29,17 +32,22 @@ public class RomM {
     
     public static void main(String[] args) {
         try {
-            RomMclient mclient = new RomMclient("admin", "admin");
+            RomMclient mclient = new RomMclient("localhost", "admin", "admin");
             
             List<Collection> collections = mclient.getCollections();
-            System.out.println(collections.toString());
+            System.out.println(collections);
             
             List<Platform> platforms = mclient.getPlatforms();
-            System.out.println(platforms.toString());
+            System.out.println(platforms);
             
-        } catch (IOException ex) {
-            Logger.getLogger(RomM.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RomMclient.ServerException ex) {
+            List<Rom> roms = mclient.getRoms(2);
+            System.out.println(roms);
+            
+            Rom rom = mclient.getRom(190);
+            System.out.println(rom);
+                  
+            
+        } catch (IOException | RomMclient.ServerException ex) {
             Logger.getLogger(RomM.class.getName()).log(Level.SEVERE, null, ex);
         }
        

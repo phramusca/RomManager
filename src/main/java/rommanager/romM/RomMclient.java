@@ -16,6 +16,9 @@
  */
 package rommanager.romM;
 
+import rommanager.romM.models.Platform;
+import rommanager.romM.models.Collection;
+import rommanager.romM.models.Rom;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -34,51 +37,86 @@ import org.apache.commons.codec.binary.Base64;
  * @author raph
  */
 public class RomMclient {
-    private static final String BASE_URL = "http://localhost/api"; // No trailing slash !!
-	private static String TOKEN = "";
+
+    private final String BASE_URL;
+    private final String TOKEN;
     private final OkHttpClient client = new OkHttpClient.Builder().build();
     private final static Base64 encoder = new Base64();
     private final Gson gson = new Gson();
 
-    public RomMclient(String username, String password) {
+    public RomMclient(String hostname, String username, String password) {
+        BASE_URL = "http://" + hostname + "/api"; // No trailing slash !!
         TOKEN = encoder.encodeToString((username + ":" + password).getBytes());
     }
-   
+
     public List<Collection> getCollections() throws IOException, ServerException {
-        
+
         String url = "collections";
-		String bodyString = getBodyString(url, client);
-		
-		List<Collection> fromJson = null;
-		if (!bodyString.equals("")) {
-            Type collectionListType = new TypeToken<List<Collection>>(){}.getType();
+        String bodyString = getBodyString(url, client);
+
+        List<Collection> fromJson = null;
+        if (!bodyString.equals("")) {
+            Type collectionListType = new TypeToken<List<Collection>>() {
+            }.getType();
             fromJson = gson.fromJson(bodyString, collectionListType);
-		}
-		return fromJson;
-	}
-    
+        }
+        return fromJson;
+    }
+
     public List<Platform> getPlatforms() throws IOException, ServerException {
-        
+
         String url = "platforms";
-		String bodyString = getBodyString(url, client);
-		
-		List<Platform> fromJson = null;
-		if (!bodyString.equals("")) {
-            Type collectionListType = new TypeToken<List<Platform>>(){}.getType();
+        String bodyString = getBodyString(url, client);
+
+        List<Platform> fromJson = null;
+        if (!bodyString.equals("")) {
+            Type collectionListType = new TypeToken<List<Platform>>() {
+            }.getType();
             fromJson = gson.fromJson(bodyString, collectionListType);
-		}
-		return fromJson;
-	}
+        }
+        return fromJson;
+    }
+
+    public List<Rom> getRoms(int limit) throws IOException, ServerException {
+
+        String url = "roms";
+        HttpUrl.Builder urlBuilder = getUrlBuilder(url);
+        if (limit > 0) {
+            urlBuilder.addQueryParameter("limit", String.valueOf(limit));
+        }
+        //TODO: Manage: platform_id, collection_id, search_term, order_by & order_dir query parameters
+        
+        String bodyString = getBodyString(urlBuilder, client);
+
+        List<Rom> fromJson = null;
+        if (!bodyString.equals("")) {
+            Type collectionListType = new TypeToken<List<Rom>>() {
+            }.getType();
+            fromJson = gson.fromJson(bodyString, collectionListType);
+        }
+        return fromJson;
+    }
+
+    public Rom getRom(int id) throws IOException, ServerException {
+
+        String url = "roms/" + id;
+        String bodyString = getBodyString(url, client);
+
+        Rom fromJson = null;
+        if (!bodyString.equals("")) {
+            fromJson = gson.fromJson(bodyString, Rom.class);
+        }
+        return fromJson;
+    }
 
     // TODO: Move below a library (used in Slskd in JaMuz too for instance
-    
     private HttpUrl.Builder getUrlBuilder(String url) {
         return Objects.requireNonNull(HttpUrl.parse(BASE_URL + "/" + url)).newBuilder(); //NON-NLS
     }
 
     private Request.Builder getRequestBuilder(HttpUrl.Builder urlBuilder) {
         return new Request.Builder()
-				.addHeader("Authorization", "Basic " + TOKEN)
+                .addHeader("Authorization", "Basic " + TOKEN)
                 .url(urlBuilder.build());
     }
 
@@ -111,7 +149,8 @@ public class RomMclient {
         return response.body();
     }
 
-	public static class ServerException extends Exception {
+    public static class ServerException extends Exception {
+
         public ServerException(String errorMessage) {
             super(errorMessage);
         }
