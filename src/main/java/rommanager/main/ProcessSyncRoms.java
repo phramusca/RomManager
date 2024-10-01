@@ -57,6 +57,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
     private boolean onlyCultes;
     private final boolean forceZip;
     private final boolean flat;
+    private final String destinationName;
 
     public ProcessSyncRoms(
             String sourcePath,
@@ -66,7 +67,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
             TableModelRom tableModel,
             ICallBackProcess callBack, 
             boolean forceZip, 
-            boolean flat) {
+            boolean flat,
+            String destinationName) {
         super("Thread.ProcessExport");
         this.sourcePath = sourcePath;
         this.exportPath = exportPath;
@@ -76,6 +78,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         this.callBack = callBack;
         this.forceZip = forceZip;
         this.flat = flat;
+        this.destinationName = destinationName;
     }
 
     @Override
@@ -148,7 +151,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
             //Copy (not already exported) files to destination
             Long nbToCopy = romSourceList.stream().flatMap(r -> r.versions.stream()).filter(v -> v.isToCopy()).count();
             progressBarGame.setup(nbToCopy.intValue());
-            progressBarConsole.progress("Exporting files to destination");
+            progressBarConsole.progress("Exporting files to " + destinationName);
             String sourceFolder;
             int nbFailed = 0;
             int nbExported = 0;

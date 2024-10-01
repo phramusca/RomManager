@@ -49,7 +49,7 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jSplitPaneFilters" pref="213" max="32767" attributes="0"/>
+              <Component id="jSplitPaneFilters" pref="413" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -180,7 +180,7 @@
                               <Component id="jButtonSyncRomsRecalbox" min="-2" pref="125" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                               <Component id="jButtonSyncGameList" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="235" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="237" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jTextFieldPathRecalbox" max="32767" attributes="0"/>
@@ -408,7 +408,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jTextFieldPathRomM" pref="382" max="32767" attributes="0"/>
+                              <Component id="jTextFieldPathRomM" pref="384" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButtonOptionSelectFolderRomM" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -567,14 +567,14 @@
                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre1" pref="16" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre1" pref="59" max="32767" attributes="2"/>
                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                           <Component id="jRadioButtonGenre" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPaneSelectGenre2" pref="16" max="32767" attributes="2"/>
+                      <Component id="jScrollPaneSelectGenre2" pref="59" max="32767" attributes="2"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jRadioButtonRating" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -592,7 +592,7 @@
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jScrollPaneSelectGenre6" alignment="0" pref="16" max="32767" attributes="2"/>
+                          <Component id="jScrollPaneSelectGenre6" alignment="0" pref="59" max="32767" attributes="2"/>
                           <Component id="jScrollPaneSelectGenre4" alignment="0" pref="0" max="32767" attributes="2"/>
                           <Component id="jScrollPaneSelectGenre7" pref="0" max="32767" attributes="2"/>
                       </Group>
@@ -606,7 +606,7 @@
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPaneSelectGenre8" pref="16" max="32767" attributes="2"/>
+                          <Component id="jScrollPaneSelectGenre8" pref="62" max="32767" attributes="2"/>
                           <Component id="jScrollPaneSelectGenre5" pref="0" max="32767" attributes="2"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -981,7 +981,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jTextFieldFilename" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jSplitPaneDesc" pref="155" max="32767" attributes="0"/>
+                          <Component id="jSplitPaneDesc" pref="355" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
