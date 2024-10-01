@@ -73,7 +73,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     public RomManagerGUI() {
         initComponents();
         
-		jTextFieldPathExport.setText(RomManager.options.get("romset.exportPath"));
+		jTextFieldPathRecalbox.setText(RomManager.options.get("romset.recalboxPath"));
+        jTextFieldPathRomM.setText(RomManager.options.get("romset.rommPath"));
 		jTextFieldPathSource.setText(RomManager.options.get("romset.sourcePath"));
         
         progressBarGame = (ProgressBar)jProgressBarGame;
@@ -208,23 +209,28 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         buttonGroupSorting = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
-        jTextFieldPathExport = new javax.swing.JTextField();
-        jButtonOptionSelectFolderExport = new javax.swing.JButton();
-        jTextFieldPathSource = new javax.swing.JTextField();
-        jButtonOptionSelectFolderSource = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jProgressBarGame = new ProgressBar();
-        jButtonScanSource = new javax.swing.JButton();
-        jButtonScore = new javax.swing.JButton();
-        jButtonSyncRoms = new javax.swing.JButton();
-        jButtonSyncGameList = new javax.swing.JButton();
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
-        jButtonSave = new javax.swing.JButton();
-        jButtonReadJeuxVideo = new javax.swing.JButton();
         jProgressBarConsole = new ProgressBar();
+        jPanel6 = new javax.swing.JPanel();
+        jButtonSyncGameList = new javax.swing.JButton();
+        jTextFieldPathRecalbox = new javax.swing.JTextField();
+        jButtonOptionSelectFolderRecalbox = new javax.swing.JButton();
+        jButtonSyncRomsRecalbox = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        jButtonReadJeuxVideo = new javax.swing.JButton();
         jButtonReadJdG = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
+        jButtonScanSource = new javax.swing.JButton();
+        jButtonScore = new javax.swing.JButton();
+        jTextFieldPathSource = new javax.swing.JTextField();
+        jButtonOptionSelectFolderSource = new javax.swing.JButton();
+        jButtonSave = new javax.swing.JButton();
+        jPanel9 = new javax.swing.JPanel();
+        jTextFieldPathRomM = new javax.swing.JTextField();
+        jButtonOptionSelectFolderRomM = new javax.swing.JButton();
+        jButtonSyncRomsRomM = new javax.swing.JButton();
         jSplitPaneFilters = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
@@ -284,30 +290,117 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTextFieldPathExport.setEditable(false);
-
-        jButtonOptionSelectFolderExport.setText("Select"); // NOI18N
-        jButtonOptionSelectFolderExport.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOptionSelectFolderExportActionPerformed(evt);
-            }
-        });
-
-        jTextFieldPathSource.setEditable(false);
-
-        jButtonOptionSelectFolderSource.setText("Select"); // NOI18N
-        jButtonOptionSelectFolderSource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOptionSelectFolderSourceActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Roms Source folder:");
-
-        jLabel2.setText("Destination folder:");
-
         jProgressBarGame.setString(""); // NOI18N
         jProgressBarGame.setStringPainted(true);
+
+        jButtonAbort.setText("Abort");
+        jButtonAbort.setEnabled(false);
+        jButtonAbort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAbortActionPerformed(evt);
+            }
+        });
+
+        jLabelAction.setText("Action: ");
+
+        jProgressBarConsole.setString(""); // NOI18N
+        jProgressBarConsole.setStringPainted(true);
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Recalbox"));
+
+        jButtonSyncGameList.setText("Sync game data");
+        jButtonSyncGameList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSyncGameListActionPerformed(evt);
+            }
+        });
+
+        jTextFieldPathRecalbox.setEditable(false);
+
+        jButtonOptionSelectFolderRecalbox.setText("Select"); // NOI18N
+        jButtonOptionSelectFolderRecalbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonOptionSelectFolderRecalboxActionPerformed(evt);
+            }
+        });
+
+        jButtonSyncRomsRecalbox.setText("Sync roms"); // NOI18N
+        jButtonSyncRomsRecalbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSyncRomsRecalboxActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jButtonSyncRomsRecalbox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonSyncGameList)
+                        .addGap(0, 137, Short.MAX_VALUE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jTextFieldPathRecalbox)
+                        .addGap(6, 6, 6)
+                        .addComponent(jButtonOptionSelectFolderRecalbox)))
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldPathRecalbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonOptionSelectFolderRecalbox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonSyncGameList)
+                    .addComponent(jButtonSyncRomsRecalbox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Import external data"));
+
+        jButtonReadJeuxVideo.setText("Read jeuxvideo.com");
+        jButtonReadJeuxVideo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReadJeuxVideoActionPerformed(evt);
+            }
+        });
+
+        jButtonReadJdG.setText("Read JdG");
+        jButtonReadJdG.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReadJdGActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonReadJeuxVideo)
+                    .addComponent(jButtonReadJdG, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButtonReadJeuxVideo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonReadJdG)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Roms Source"));
 
         jButtonScanSource.setText("Scan Source"); // NOI18N
         jButtonScanSource.addActionListener(new java.awt.event.ActionListener() {
@@ -323,29 +416,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonSyncRoms.setText("Sync roms"); // NOI18N
-        jButtonSyncRoms.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldPathSource.setEditable(false);
+
+        jButtonOptionSelectFolderSource.setText("Select"); // NOI18N
+        jButtonOptionSelectFolderSource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSyncRomsActionPerformed(evt);
+                jButtonOptionSelectFolderSourceActionPerformed(evt);
             }
         });
-
-        jButtonSyncGameList.setText("Sync game data");
-        jButtonSyncGameList.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSyncGameListActionPerformed(evt);
-            }
-        });
-
-        jButtonAbort.setText("Abort");
-        jButtonAbort.setEnabled(false);
-        jButtonAbort.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAbortActionPerformed(evt);
-            }
-        });
-
-        jLabelAction.setText("Action: ");
 
         jButtonSave.setText("Save");
         jButtonSave.setToolTipText("");
@@ -355,90 +433,120 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonReadJeuxVideo.setText("Read jeuxvideo.com");
-        jButtonReadJeuxVideo.addActionListener(new java.awt.event.ActionListener() {
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jButtonScanSource)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonScore, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                        .addComponent(jButtonSave))
+                    .addComponent(jTextFieldPathSource))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonOptionSelectFolderSource)
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldPathSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonOptionSelectFolderSource))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonScanSource)
+                    .addComponent(jButtonScore)
+                    .addComponent(jButtonSave))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("RomM"));
+
+        jTextFieldPathRomM.setEditable(false);
+
+        jButtonOptionSelectFolderRomM.setText("Select"); // NOI18N
+        jButtonOptionSelectFolderRomM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonReadJeuxVideoActionPerformed(evt);
+                jButtonOptionSelectFolderRomMActionPerformed(evt);
             }
         });
 
-        jProgressBarConsole.setString(""); // NOI18N
-        jProgressBarConsole.setStringPainted(true);
-
-        jButtonReadJdG.setText("Read JdG");
-        jButtonReadJdG.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSyncRomsRomM.setText("Sync roms"); // NOI18N
+        jButtonSyncRomsRomM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonReadJdGActionPerformed(evt);
+                jButtonSyncRomsRomMActionPerformed(evt);
             }
         });
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jTextFieldPathRomM, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonOptionSelectFolderRomM))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jButtonSyncRomsRomM, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldPathRomM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonOptionSelectFolderRomM))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonSyncRomsRomM)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabelAction))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jButtonScanSource)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonScore)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonSyncRoms)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonSyncGameList)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonReadJeuxVideo)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonReadJdG)
-                                        .addGap(0, 39, Short.MAX_VALUE))
-                                    .addComponent(jProgressBarConsole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jProgressBarGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextFieldPathExport)
-                                .addGap(6, 6, 6)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButtonAbort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButtonOptionSelectFolderExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButtonSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextFieldPathSource)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonOptionSelectFolderSource)))
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabelAction)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jProgressBarConsole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jProgressBarGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonAbort)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldPathSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonOptionSelectFolderSource)
-                    .addComponent(jLabel1))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldPathExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonOptionSelectFolderExport)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonScanSource)
-                    .addComponent(jButtonScore)
-                    .addComponent(jButtonSyncRoms)
-                    .addComponent(jButtonSyncGameList)
-                    .addComponent(jButtonSave)
-                    .addComponent(jButtonReadJeuxVideo)
-                    .addComponent(jButtonReadJdG))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jProgressBarConsole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -446,7 +554,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jProgressBarGame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelAction)))
-                    .addComponent(jButtonAbort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonAbort, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -664,13 +772,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jRadioButtonConsole)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre1, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(jRadioButtonGenre))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                .addComponent(jScrollPaneSelectGenre2, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButtonRating)
@@ -684,7 +792,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jLabel5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSelectGenre6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -695,7 +803,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jRadioButtonDecade))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPaneSelectGenre8, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSelectGenre8, javax.swing.GroupLayout.DEFAULT_SIZE, 16, Short.MAX_VALUE)
                     .addComponent(jScrollPaneSelectGenre5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -821,7 +929,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 1626, Short.MAX_VALUE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -830,7 +938,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -998,9 +1106,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterDecade.setSelectedIndex(0);
     }
     
-    private void jButtonSyncRomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsActionPerformed
+    private void jButtonSyncRomsRecalboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsRecalboxActionPerformed
+        startSyncRom(jTextFieldPathRecalbox.getText(), "Recalbox", false, false, jButtonSyncRomsRecalbox);
+    }//GEN-LAST:event_jButtonSyncRomsRecalboxActionPerformed
+
+    private void startSyncRom(String exportPath, String title, boolean forceZip, boolean flat, JButton button) {
         disableGUI("Exporting : ");
-		String exportPath = jTextFieldPathExport.getText();
 		File folder = new File(exportPath);
 		if(!folder.exists()) {
 			enableGUI();
@@ -1022,15 +1133,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
             @Override
             public void actionPerformed() {
-                setButtonBold(jButtonSyncRoms, false);
+                setButtonBold(button, false);
             }
             
-        });
+        }, forceZip, flat);
 		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcessVoid());
 		processList.browseNbFiles();
-		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync", true);
-    }//GEN-LAST:event_jButtonSyncRomsActionPerformed
-
+		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync Roms to " + title, true);
+    }
+    
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh, boolean onlyCultes) {
@@ -1064,14 +1175,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private void enableGUI(boolean enable) {
 		jButtonScanSource.setEnabled(enable);
 		jButtonScore.setEnabled(enable);
-		jButtonSyncRoms.setEnabled(enable);
+		jButtonSyncRomsRecalbox.setEnabled(enable);
+        jButtonSyncRomsRomM.setEnabled(enable);
 		jButtonSyncGameList.setEnabled(enable);
         jButtonReadJeuxVideo.setEnabled(enable);
         jButtonReadJdG.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
 		jButtonEdit.setEnabled(enable);
         jButtonAuto.setEnabled(enable);
-		jButtonOptionSelectFolderExport.setEnabled(enable);
+		jButtonOptionSelectFolderRecalbox.setEnabled(enable);
 		jButtonOptionSelectFolderSource.setEnabled(enable);
 		jButtonAbort.setText("Abort");
 		jButtonAbort.setEnabled(!enable);
@@ -1140,7 +1252,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void syncGamelist() {
         disableGUI("Reading gamelist.xml : ");
-		String exportPath = jTextFieldPathExport.getText();
+		String exportPath = jTextFieldPathRecalbox.getText();
 		File file = new File(exportPath);
 		if(!file.exists()) {
 			enableGUI();
@@ -1165,18 +1277,18 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 setButtonBold(jButtonSyncGameList, false);
                 setButtonBold(jButtonSave, false);
             }
-        });
+        }, false);
 		processSyncGamelist.start();
     }
     
-    private void jButtonOptionSelectFolderExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderExportActionPerformed
-        String selectedFolder=selectFolder(jTextFieldPathExport.getText());
+    private void jButtonOptionSelectFolderRecalboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderRecalboxActionPerformed
+        String selectedFolder=selectFolder(jTextFieldPathRecalbox.getText());
         if(!selectedFolder.equals("")) {  //NOI18N
-			RomManager.options.set("romset.exportPath", selectedFolder);
+			RomManager.options.set("romset.recalboxPath", selectedFolder);
 			RomManager.options.save();
-            jTextFieldPathExport.setText(selectedFolder);
+            jTextFieldPathRecalbox.setText(selectedFolder);
         }
-    }//GEN-LAST:event_jButtonOptionSelectFolderExportActionPerformed
+    }//GEN-LAST:event_jButtonOptionSelectFolderRecalboxActionPerformed
 
     private void jButtonOptionSelectFolderSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderSourceActionPerformed
 		String selectedFolder=selectFolder(jTextFieldPathSource.getText());
@@ -1239,7 +1351,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			i++;
 		}
         setButtonBold(jButtonSave, true);
-        setButtonBold(jButtonSyncRoms, true);
+        setButtonBold(jButtonSyncRomsRecalbox, true);
+        setButtonBold(jButtonSyncRomsRomM, true);
     }//GEN-LAST:event_jListVersionsFocusLost
 
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
@@ -1320,7 +1433,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVideoActionPerformed
         RomContainer romContainer=getRomContainer();
 		if(romContainer!=null) {
-            String exportPath = jTextFieldPathExport.getText();
+            String exportPath = jTextFieldPathRecalbox.getText();
             File file = new File(exportPath);
             if(!file.exists()) {
                 enableGUI();
@@ -1452,10 +1565,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         boolean isSyncGameListBold = jButtonSyncGameList.getFont().equals(new Font(jButtonSyncGameList.getFont().getName(), Font.BOLD, 16));
-        boolean isExportBold = jButtonSyncRoms.getFont().equals(new Font(jButtonSyncRoms.getFont().getName(), Font.BOLD, 16));
+        boolean isExportRecalboxBold = jButtonSyncRomsRecalbox.getFont().equals(new Font(jButtonSyncRomsRecalbox.getFont().getName(), Font.BOLD, 16));
+        boolean isExportRommBold = jButtonSyncRomsRomM.getFont().equals(new Font(jButtonSyncRomsRomM.getFont().getName(), Font.BOLD, 16));
         boolean isSaveBold = jButtonSave.getFont().equals(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
         
-        if(isSyncGameListBold || isSaveBold || isExportBold) {
+        if(isSyncGameListBold || isSaveBold || isExportRecalboxBold || isExportRommBold) {
             int result = JOptionPane.showConfirmDialog(this, "UNSAVED CHANGES !! \n Exit the application?");
             if (result==JOptionPane.OK_OPTION) {
                 System.exit(0);     
@@ -1471,6 +1585,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		JdG jdGRead = new JdG(new CallBackJeuxVideo(), tableModel, progressBarGame, sourcePath);
 		jdGRead.start();
     }//GEN-LAST:event_jButtonReadJdGActionPerformed
+
+    private void jButtonOptionSelectFolderRomMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderRomMActionPerformed
+        String selectedFolder=selectFolder(jTextFieldPathRomM.getText());
+        if(!selectedFolder.equals("")) {  //NOI18N
+			RomManager.options.set("romset.rommPath", selectedFolder);
+			RomManager.options.save();
+            jTextFieldPathRomM.setText(selectedFolder);
+        }
+    }//GEN-LAST:event_jButtonOptionSelectFolderRomMActionPerformed
+
+    private void jButtonSyncRomsRomMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsRomMActionPerformed
+        startSyncRom(jTextFieldPathRomM.getText(), "RomM", true, true, jButtonSyncRomsRomM);
+    }//GEN-LAST:event_jButtonSyncRomsRomMActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {
 		
@@ -1586,7 +1713,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonAbort;
     private javax.swing.JButton jButtonAuto;
     private javax.swing.JButton jButtonEdit;
-    private javax.swing.JButton jButtonOptionSelectFolderExport;
+    private javax.swing.JButton jButtonOptionSelectFolderRecalbox;
+    private javax.swing.JButton jButtonOptionSelectFolderRomM;
     private javax.swing.JButton jButtonOptionSelectFolderSource;
     private javax.swing.JButton jButtonReadJdG;
     private javax.swing.JButton jButtonReadJeuxVideo;
@@ -1594,13 +1722,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonScanSource;
     private javax.swing.JButton jButtonScore;
     private javax.swing.JButton jButtonSyncGameList;
-    private javax.swing.JButton jButtonSyncRoms;
+    private javax.swing.JButton jButtonSyncRomsRecalbox;
+    private javax.swing.JButton jButtonSyncRomsRomM;
     private javax.swing.JButton jButtonVideo;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1620,6 +1747,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private static javax.swing.JProgressBar jProgressBarConsole;
     private static javax.swing.JProgressBar jProgressBarGame;
     private javax.swing.JRadioButton jRadioButtonConsole;
@@ -1643,7 +1774,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JTable jTableRom;
     private javax.swing.JTextArea jTextAreaDescription;
     private javax.swing.JTextField jTextFieldFilename;
-    private static javax.swing.JTextField jTextFieldPathExport;
+    private static javax.swing.JTextField jTextFieldPathRecalbox;
+    private static javax.swing.JTextField jTextFieldPathRomM;
     private static javax.swing.JTextField jTextFieldPathSource;
     private javax.swing.JTextField jTextFieldSearch;
     private rommanager.utils.TriStateCheckBox triStateCheckBoxAdult;

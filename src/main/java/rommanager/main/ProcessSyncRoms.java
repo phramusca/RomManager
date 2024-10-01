@@ -55,6 +55,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
     private List<RomContainer> romSourceList;
     private List<File> romDestinationList;
     private boolean onlyCultes;
+    private final boolean forceZip;
+    private final boolean flat;
 
     public ProcessSyncRoms(
             String sourcePath,
@@ -62,7 +64,9 @@ public class ProcessSyncRoms extends ProcessAbstract {
             ProgressBar progressBarConsole,
             ProgressBar progressBarGame,
             TableModelRom tableModel,
-            ICallBackProcess callBack) {
+            ICallBackProcess callBack, 
+            boolean forceZip, 
+            boolean flat) {
         super("Thread.ProcessExport");
         this.sourcePath = sourcePath;
         this.exportPath = exportPath;
@@ -70,6 +74,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
         this.progressBarGame = progressBarGame;
         this.tableModel = tableModel;
         this.callBack = callBack;
+        this.forceZip = forceZip;
+        this.flat = flat;
     }
 
     @Override
@@ -151,7 +157,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     checkAbort();
                     sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
                     File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
-                    File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath));
+                    File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, forceZip, flat));
                     String ext = FilenameUtils.getExtension(filename);
                     if (ext.equals("7z")) {
                         try (SevenZFile sevenZFile = new SevenZFile(new File(
@@ -159,7 +165,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
                             while (entry != null) {
                                 if (entry.getName().equals(romVersion.getFilename())) {
-                                    String exportFolder = romVersion.getExportFolder(romContainer.getConsole(), exportPath);
+                                    String exportFolder = romVersion.getExportFolder(romContainer.getConsole(), exportPath, flat);
                                     File file = new File(exportFolder);
                                     if (!file.exists()) {
                                         file.mkdirs();
@@ -219,7 +225,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
     private boolean checkFile(RomContainer romContainer, RomVersion romVersion) throws IOException {
         String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
         File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
-        File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath));
+        File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, forceZip, flat));
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
         if (containerFileExtension.equals("7z")) {
             if (romContainer.getConsole().isZip()) {
@@ -299,7 +305,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         for (RomContainer romContainer : romSourceList) {
             for (RomVersion romVersion : romContainer.getToCopyVersions()) {
                 this.checkAbort();
-                String exportFilename = romVersion.getExportPath(romContainer.getConsole(), exportPath);
+                String exportFilename = romVersion.getExportPath(romContainer.getConsole(), exportPath, forceZip, flat);
                 if (exportFilename.equals(file.getAbsolutePath())) {
                     return Pair.of(romContainer, romVersion);
                 }

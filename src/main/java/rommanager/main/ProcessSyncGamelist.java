@@ -31,7 +31,6 @@ import rommanager.utils.ProcessAbstract;
 import rommanager.utils.ProgressBar;
 
 //FIXME 7 Handle default roms from recalbox (move to "recalbox-default-roms" folder, get in local and integrate in export feature)
-
 /**
  *
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
@@ -39,40 +38,43 @@ import rommanager.utils.ProgressBar;
 public class ProcessSyncGamelist extends ProcessAbstract {
 
     private final String sourcePath;
-	private final String exportPath;
+    private final String exportPath;
     private final ProgressBar progressBarConsole;
-	private final ProgressBar progressBarGame;
-	private final TableModelRom tableModel;
-	private final ICallBackProcess callBack;
-	
-	public ProcessSyncGamelist(
+    private final ProgressBar progressBarGame;
+    private final TableModelRom tableModel;
+    private final ICallBackProcess callBack;
+    private final boolean forceZip;
+
+    public ProcessSyncGamelist(
             String sourcePath,
-			String exportPath, 
-            ProgressBar progressBarConsole, 
-			ProgressBar progressBarGame, 
-			TableModelRom tableModel, 
-			ICallBackProcess callBack) {
-		super("Thread.ProcessRead");
+            String exportPath,
+            ProgressBar progressBarConsole,
+            ProgressBar progressBarGame,
+            TableModelRom tableModel,
+            ICallBackProcess callBack,
+             boolean forceZip) {
+        super("Thread.ProcessRead");
         this.sourcePath = sourcePath;
-		this.exportPath = exportPath;
+        this.exportPath = exportPath;
         this.progressBarConsole = progressBarConsole;
-		this.progressBarGame = progressBarGame;
-		this.tableModel = tableModel;
-		this.callBack = callBack;
-	}
+        this.progressBarGame = progressBarGame;
+        this.tableModel = tableModel;
+        this.callBack = callBack;
+        this.forceZip = forceZip;
+    }
 
     @Override
-	public void run() {
-		try {
+    public void run() {
+        try {
             //Read all gamelist.xml files from export folder
-			Map<Console, Gamelist> gamelists = new HashMap<>();
+            Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
-			for(Console console : Console.values()) {
-				checkAbort();
+            for (Console console : Console.values()) {
+                checkAbort();
                 progressBarConsole.progress(console.getName());
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
                 File backupFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml.bak"));
-                if(remoteFile.exists()) {
+                if (remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, backupFile);
                     String consolePath = FilenameUtils.concat(exportPath, console.name());
                     //FIXME 0 Gamelist - Use this 
@@ -80,11 +82,11 @@ public class ProcessSyncGamelist extends ProcessAbstract {
 
                     List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
                             .stream()
-                            .filter(r->r.console.equals(console))
-                            .map(r->r.getExportableVersions())
+                            .filter(r -> r.console.equals(console))
+                            .map(r -> r.getExportableVersions())
                             .flatMap(List::stream)
                             .collect(Collectors.toList());
-                    
+
                     Gamelist gamelist = new Gamelist(remoteFile);
                     progressBarGame.setup(gamelist.getGames().values().size());
                     for (Pair<Element, Game> entry : gamelist.getGames().values()) {
@@ -93,69 +95,74 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         Game remoteGame = entry.getRight();
                         progressBarGame.progress(remoteGame.getName());
                         File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), remoteGame.getPath()));
-                        if(!gameFile.exists()) {
+                        if (!gameFile.exists()) {
                             gamelist.deleteGame(remoteGameElement);
                             continue;
                         }
-                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) continue; 
-                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) continue; 
-                        if(!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) continue; 
-                        
+                        if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) {
+                            continue;
+                        }
+                        if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) {
+                            continue;
+                        }
+                        if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) {
+                            continue;
+                        }
+
                         String keyVersion = FilenameUtils.getName(gameFile.getAbsolutePath());
                         List<RomVersion> collect = romVersionsForConsole.stream()
-                                .filter(v->v.getExportFilename(console).equals(keyVersion))
+                                .filter(v -> v.getExportFilename(console, forceZip).equals(keyVersion))
                                 .collect(Collectors.toList());
-                        if(collect.size()==1) {
+                        if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);
                             Game localGame = localVersion.getGame();
-                            
+
                             //FIXME 0 Gamelist - !! CONTINUE FROM HERE !!! (for now, it only reads from remote)
                             Game newGame = gamelist.compareGame(localGame, remoteGame);
                             gamelist.setGame(newGame); //FIXME 0 Gamelist - set as changed (if changed of course) so that it is saved later
-                            if(!newGame.getImage().isBlank()) {
+                            if (!newGame.getImage().isBlank()) {
                                 BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
                             }
                             localVersion.setGame(newGame);
-                            
-                            
+
                         } else {
                             //FIXME 1 Gamelist - manage if file not found, though should not happen
-                            Popup.warning(keyVersion+" could not be found on "+console.getName());
+                            Popup.warning(keyVersion + " could not be found on " + console.getName());
                         }
                     }
-                   if(gamelist.hasChanged()) {
+                    if (gamelist.hasChanged()) {
                         gamelist.save();
                     }
-                    if(gamelist.getGames().isEmpty()) {
+                    if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();
                     } else {
                         //FIXME 1 Gamelist - Delete all media files not in gamelist
                         gamelists.put(console, gamelist);
-                    }                   
+                    }
                 } else {
                     //FIXME 1 Gamelist - Create the file and fill it up with local data (if any)
-                    
+
 //                    Popup.warning("No gamelist.xml on remote for " + console.getName());
                 }
-			}
-			progressBarConsole.reset();
- 			tableModel.fireTableDataChanged();
-			
+            }
+            progressBarConsole.reset();
+            tableModel.fireTableDataChanged();
+
             progressBarGame.setIndeterminate("Saving ods file");
-			if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+            if (RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
                 callBack.actionPerformed();
             }
-			progressBarGame.reset();
+            progressBarGame.reset();
             //FIXME 1 Gamelist - display modification counters
-			Popup.info("Sync game data complete.");
-		} catch (InterruptedException ex) {
+            Popup.info("Sync game data complete.");
+        } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
-		} catch (IOException ex) {
+        } catch (IOException ex) {
             Popup.error(ex);
         } finally {
-			callBack.completed();
-		}
-	}
+            callBack.completed();
+        }
+    }
 
     private boolean checkMedia(Console console, Gamelist gamelist, Element remoteGameElement, String filename) {
         File mediaFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), filename));
