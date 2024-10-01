@@ -90,7 +90,7 @@ public enum Console {
     private final String name;
 	private int nbFiles;
 	private boolean isSelected;
-	private boolean zip;
+	private boolean zip; //FIXME 0 0 EXPORT RomM - Zip depends on destination. Here done for recalbox. Need to support others, such as romM
     private boolean excludeUnknownAttributes;
 
 	private Console(int idJeuxVideo, String suffixJeuxVideo, String name) {

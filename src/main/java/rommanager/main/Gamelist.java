@@ -127,7 +127,7 @@ public class Gamelist {
 	}
         
     private void setGame(Element elementGame, Game newGame) {
-        //FIXME 0 Do all other modified values !!
+        //FIXME 0 Gamelist - Do all other modified values !!
         
         setElementValue(elementGame, "favorite", newGame.isFavorite());
         nbGamesModified++;
