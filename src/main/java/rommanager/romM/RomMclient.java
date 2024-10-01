@@ -25,12 +25,17 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.commons.codec.binary.Base64;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -108,7 +113,31 @@ public class RomMclient {
         }
         return fromJson;
     }
-
+    
+    public boolean putRom(Rom rom) throws IOException, ServerException {
+		HttpUrl.Builder urlBuilder = getUrlBuilder("roms/"+rom.getId()); //NON-NLS
+		Request request = getRequestBuilder(urlBuilder) //NON-NLS
+				.put(RequestBody.create(rom.toString(), MediaType.parse("application/json; charset=utf-8"))).build(); //NON-NLS
+        
+        Response response = client.newCall(request).execute();
+        System.out.println(response.code() + ": " + response.body().string());
+		return response.isSuccessful();
+	}
+    
+    public boolean postCollection(Collection collection) throws IOException, ServerException {
+		HttpUrl.Builder urlBuilder = getUrlBuilder("collections/"); //NON-NLS
+		
+        String requestBody = "{'name': 'TUTU', 'is_public': true}";
+//        String requestBody = collection.toString();
+        
+        Request request = getRequestBuilder(urlBuilder) //NON-NLS
+				.post(RequestBody.create(requestBody, MediaType.parse("application/json; charset=utf-8"))).build(); //NON-NLS
+        
+        Response response = client.newCall(request).execute();
+        System.out.println(response.code()); // + ": " + response.body().string());
+		return response.isSuccessful();
+	}
+    
     // TODO: Move below a library (used in Slskd in JaMuz too for instance
     private HttpUrl.Builder getUrlBuilder(String url) {
         return Objects.requireNonNull(HttpUrl.parse(BASE_URL + "/" + url)).newBuilder(); //NON-NLS
