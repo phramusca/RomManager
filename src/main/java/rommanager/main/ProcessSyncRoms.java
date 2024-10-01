@@ -96,7 +96,12 @@ public class ProcessSyncRoms extends ProcessAbstract {
                 if (console.isSelected()) {
                     String consolePath = FilenameUtils.concat(exportPath, console.name());
                     if (new File(consolePath).exists()) {
-                        browsePath(new File(consolePath));
+                        File consoleFilePath = new File(consolePath);
+                        if(flat) {
+                            browseFiles(consoleFilePath);
+                        } else {
+                            browsePath(consoleFilePath);
+                        }
                     }
                 }
                 progressBarGame.progress(console.getName());
