@@ -296,7 +296,7 @@ public class RomVersion {
 	}
     
     public String getExportFilename(Console console, boolean forceZip) {
-        if(console.isZip()) {
+        if(console.isZip() || forceZip) {
             return FilenameUtils.getBaseName(filename).concat(".zip");
         } else {
             return filename;

@@ -176,7 +176,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                         sevenZFile.read(content, 0, content.length);
                                         out.write(content);
                                         out.close();
-                                        if (romContainer.getConsole().isZip()) {
+                                        if (romContainer.getConsole().isZip() || forceZip) {
                                             FileSystem.zipFile(unzippedFile, exportFile);
                                             unzippedFile.delete();
                                         }
@@ -190,7 +190,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                             sevenZFile.close();
                         }
                     } else if (ProcessList.allowedExtensions.contains(ext)) {
-                        if (romContainer.getConsole().isZip()) {
+                        if (romContainer.getConsole().isZip() || forceZip) {
                             FileSystem.zipFile(sourceFile, exportFile);
                         } else {
                             FileSystem.copyFile(sourceFile, exportFile);
@@ -228,13 +228,13 @@ public class ProcessSyncRoms extends ProcessAbstract {
         File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, forceZip, flat));
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
         if (containerFileExtension.equals("7z")) {
-            if (romContainer.getConsole().isZip()) {
+            if (romContainer.getConsole().isZip() || forceZip) {
                 return exportFile.exists() && checkFile(exportFile, romVersion.getFilename(), romVersion.getCrcValue(), romVersion.getSize());
             } else {
                 return exportFile.exists() && (exportFile.length() == romVersion.getSize());
             }
         } else if (ProcessList.allowedExtensions.contains(containerFileExtension)) {
-            if (romContainer.getConsole().isZip()) {
+            if (romContainer.getConsole().isZip() || forceZip) {
                 return exportFile.exists() && checkFile(exportFile, sourceFile);
             } else {
                 return exportFile.exists() && (exportFile.length() == sourceFile.length());
