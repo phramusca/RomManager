@@ -40,7 +40,7 @@ public class BufferVideo {
      * @return
      */
     public static File getCacheFile(String key, File file) {
-        File cacheFile;
+        File cacheFile = null;
         if(VIDEOS.containsKey(key)) {
             cacheFile = VIDEOS.get(key);
         } else {

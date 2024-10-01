@@ -16,8 +16,6 @@
  */
 package rommanager.main;
 
-import java.io.IOException;
-
 /**
  *
  * @author phramusca ( https://github.com/phramusca/ )
@@ -37,7 +35,7 @@ public class RomContainerFlat extends RomContainer {
         switch(console) {
             case amstradcpc:
                 for(RomVersion version : versions) {
-                    //FIXME 2 Amstrad: Only extract several if "Disk" inside versions, otherwise do as default: take best version
+                    //FIXME 3 Amstrad: Only extract several if "Disk" inside versions, otherwise do as default: take best version
                     version.setExportable(version.getErrorLevel()==0);
                 }        
                 break;

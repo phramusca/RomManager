@@ -85,15 +85,15 @@
                                           <Component id="jButtonScanSource" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="jButtonScore" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jButtonExport" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="jButtonReadGameList" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jButtonSyncRoms" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jButtonSendGamelist" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButtonSyncGameList" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="jButtonReadJeuxVideo" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButtonReadJdG" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="39" max="32767" attributes="0"/>
                                       </Group>
                                       <Component id="jProgressBarConsole" alignment="1" max="32767" attributes="0"/>
                                       <Component id="jProgressBarGame" alignment="1" max="32767" attributes="0"/>
@@ -139,11 +139,11 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButtonScanSource" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonScore" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonExport" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonReadGameList" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonSyncRoms" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonSyncGameList" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonSave" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButtonReadJeuxVideo" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonSendGamelist" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonReadJdG" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -231,20 +231,20 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonScoreActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButtonExport">
+        <Component class="javax.swing.JButton" name="jButtonSyncRoms">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Sync" noResource="true"/>
+            <Property name="text" type="java.lang.String" value="Sync roms" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSyncRomsActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButtonReadGameList">
+        <Component class="javax.swing.JButton" name="jButtonSyncGameList">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Read gamelist.xml"/>
+            <Property name="text" type="java.lang.String" value="Sync game data"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonReadGameListActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSyncGameListActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonAbort">
@@ -291,12 +291,12 @@
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="jButtonSendGamelist">
+        <Component class="javax.swing.JButton" name="jButtonReadJdG">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Send gamelist.xml"/>
+            <Property name="text" type="java.lang.String" value="Read JdG"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSendGamelistActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonReadJdGActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -904,6 +904,7 @@
                 <Component class="javax.swing.JButton" name="jButtonEdit">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Edit"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEditActionPerformed"/>

@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -62,9 +63,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static TableModelRom tableModel;
     
 	private ProcessList processList;
-	private ProcessRead processRead;
-    private ProcessSend processSend;
-	private ProcessExport processExport;
+	private ProcessSyncGamelist processSyncGamelist;
+	private ProcessSyncRoms processSyncRoms;
 	private ProcessSetScore processSetScore;
 	
     /**
@@ -128,9 +128,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
           });
         
 		disableGUI("Reading ods file: ");
-		new ReadOds(() -> {
-            enableGuiAndFilter();
-        }, jTextFieldPathSource.getText()).start();
+		new ReadOds(new CallBackProcessWithOutSaving(), jTextFieldPathSource.getText()).start();
     }
 
     class TableHeaderMouseListener extends MouseAdapter {
@@ -219,14 +217,14 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jProgressBarGame = new ProgressBar();
         jButtonScanSource = new javax.swing.JButton();
         jButtonScore = new javax.swing.JButton();
-        jButtonExport = new javax.swing.JButton();
-        jButtonReadGameList = new javax.swing.JButton();
+        jButtonSyncRoms = new javax.swing.JButton();
+        jButtonSyncGameList = new javax.swing.JButton();
         jButtonAbort = new javax.swing.JButton();
         jLabelAction = new javax.swing.JLabel();
         jButtonSave = new javax.swing.JButton();
         jButtonReadJeuxVideo = new javax.swing.JButton();
         jProgressBarConsole = new ProgressBar();
-        jButtonSendGamelist = new javax.swing.JButton();
+        jButtonReadJdG = new javax.swing.JButton();
         jSplitPaneFilters = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
@@ -325,17 +323,17 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonExport.setText("Sync"); // NOI18N
-        jButtonExport.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSyncRoms.setText("Sync roms"); // NOI18N
+        jButtonSyncRoms.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonExportActionPerformed(evt);
+                jButtonSyncRomsActionPerformed(evt);
             }
         });
 
-        jButtonReadGameList.setText("Read gamelist.xml");
-        jButtonReadGameList.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSyncGameList.setText("Sync game data");
+        jButtonSyncGameList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonReadGameListActionPerformed(evt);
+                jButtonSyncGameListActionPerformed(evt);
             }
         });
 
@@ -367,10 +365,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jProgressBarConsole.setString(""); // NOI18N
         jProgressBarConsole.setStringPainted(true);
 
-        jButtonSendGamelist.setText("Send gamelist.xml");
-        jButtonSendGamelist.addActionListener(new java.awt.event.ActionListener() {
+        jButtonReadJdG.setText("Read JdG");
+        jButtonReadJdG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSendGamelistActionPerformed(evt);
+                jButtonReadJdGActionPerformed(evt);
             }
         });
 
@@ -394,15 +392,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
                                         .addComponent(jButtonScanSource)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jButtonScore)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonExport)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jButtonReadGameList)
+                                        .addComponent(jButtonSyncRoms)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonSendGamelist)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonSyncGameList)
+                                        .addGap(18, 18, 18)
                                         .addComponent(jButtonReadJeuxVideo)
-                                        .addGap(0, 0, Short.MAX_VALUE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonReadJdG)
+                                        .addGap(0, 39, Short.MAX_VALUE))
                                     .addComponent(jProgressBarConsole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jProgressBarGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
@@ -435,11 +433,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonScanSource)
                     .addComponent(jButtonScore)
-                    .addComponent(jButtonExport)
-                    .addComponent(jButtonReadGameList)
+                    .addComponent(jButtonSyncRoms)
+                    .addComponent(jButtonSyncGameList)
                     .addComponent(jButtonSave)
                     .addComponent(jButtonReadJeuxVideo)
-                    .addComponent(jButtonSendGamelist))
+                    .addComponent(jButtonReadJdG))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -774,6 +772,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTextFieldFilename.setEnabled(false);
 
         jButtonEdit.setText("Edit");
+        jButtonEdit.setEnabled(false);
         jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonEditActionPerformed(evt);
@@ -831,7 +830,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 213, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -847,11 +846,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
 			return;
 		}
-		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
+		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcessWithSaving());
 		processList.browseNbFiles();		
 		DialogConsole.main(this, new CallBackDialogConsoleScan(), true, "Scan Source", false);
     }//GEN-LAST:event_jButtonScanSourceActionPerformed
 
+    private void setButtonBold(JButton button, boolean bold) {
+        if(bold) {
+            button.setFont(new Font(button.getFont().getName(), Font.BOLD, 16));
+        } else {
+            button.setFont(new Font(button.getFont().getName(), Font.PLAIN, 12));
+        }
+    }
+    
 	private class CallBackDialogConsoleScan implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh, boolean onlyCultes) {
@@ -864,11 +871,37 @@ public class RomManagerGUI extends javax.swing.JFrame {
         }
 	}
 	
-	private class CallBackProcess implements ICallBackProcess {
+	private class CallBackProcessWithSaving implements ICallBackProcess {
 		@Override
 		public void completed() {
 			enableGuiAndFilter();
 		}
+
+        @Override
+        public void actionPerformed() {
+            setButtonBold(jButtonSave, false);
+        }
+	}
+    
+    private class CallBackProcessWithOutSaving implements ICallBackProcess {
+		@Override
+		public void completed() {
+			enableGuiAndFilter();
+		}
+
+        @Override
+        public void actionPerformed() {
+        }
+	}
+    
+    private class CallBackProcessVoid implements ICallBackProcess {
+		@Override
+		public void completed() {
+		}
+
+        @Override
+        public void actionPerformed() {
+        }
 	}
     
     private void fillFilters() {
@@ -904,7 +937,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
     
     private void fillFilterRating() {
-        //FIXME 1 Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
+        //FIXME 2 Gamelist - Merge 3 ratings (one from gamelist.xml, 2 from jeuxvideo.com) (or distinct ?)
         String selectedConsole = (String) jListFilterConsole.getSelectedValue();
         String selectedGenre = (String) jListFilterGenre.getSelectedValue();
         List<String> ratings = tableModel.getRoms().values().stream()
@@ -965,7 +998,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListFilterDecade.setSelectedIndex(0);
     }
     
-    private void jButtonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportActionPerformed
+    private void jButtonSyncRomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsActionPerformed
         disableGUI("Exporting : ");
 		String exportPath = jTextFieldPathExport.getText();
 		File folder = new File(exportPath);
@@ -981,17 +1014,28 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		processExport = new ProcessExport(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
-		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
+		processSyncRoms = new ProcessSyncRoms(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new ICallBackProcess() {
+            @Override
+            public void completed() {
+                enableGuiAndFilter();
+            }
+
+            @Override
+            public void actionPerformed() {
+                setButtonBold(jButtonSyncRoms, false);
+            }
+            
+        });
+		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcessVoid());
 		processList.browseNbFiles();
 		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync", true);
-    }//GEN-LAST:event_jButtonExportActionPerformed
+    }//GEN-LAST:event_jButtonSyncRomsActionPerformed
 
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
 		@Override
 		public void completed(boolean refresh, boolean onlyCultes) {
-            processExport.setOnlyCultes(onlyCultes);
-			processExport.start();
+            processSyncRoms.setOnlyCultes(onlyCultes);
+			processSyncRoms.start();
 		}
 
         @Override
@@ -1020,11 +1064,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	private void enableGUI(boolean enable) {
 		jButtonScanSource.setEnabled(enable);
 		jButtonScore.setEnabled(enable);
-		jButtonExport.setEnabled(enable);
-		jButtonReadGameList.setEnabled(enable);
+		jButtonSyncRoms.setEnabled(enable);
+		jButtonSyncGameList.setEnabled(enable);
         jButtonReadJeuxVideo.setEnabled(enable);
+        jButtonReadJdG.setEnabled(enable);
 		jButtonSave.setEnabled(enable);
-        jButtonSendGamelist.setEnabled(enable);
 		jButtonEdit.setEnabled(enable);
         jButtonAuto.setEnabled(enable);
 		jButtonOptionSelectFolderExport.setEnabled(enable);
@@ -1090,11 +1134,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		return romContainer;
 	}
 	
-    private void jButtonReadGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadGameListActionPerformed
-		readGamelist();
-    }//GEN-LAST:event_jButtonReadGameListActionPerformed
+    private void jButtonSyncGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncGameListActionPerformed
+		syncGamelist();
+    }//GEN-LAST:event_jButtonSyncGameListActionPerformed
 
-    private void readGamelist() {
+    private void syncGamelist() {
         disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathExport.getText();
 		File file = new File(exportPath);
@@ -1110,8 +1154,19 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-		processRead = new ProcessRead(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
-		processRead.start();
+		processSyncGamelist = new ProcessSyncGamelist(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new ICallBackProcess() {
+            @Override
+            public void completed() {
+                enableGuiAndFilter();
+            }
+
+            @Override
+            public void actionPerformed() {
+                setButtonBold(jButtonSyncGameList, false);
+                setButtonBold(jButtonSave, false);
+            }
+        });
+		processSyncGamelist.start();
     }
     
     private void jButtonOptionSelectFolderExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderExportActionPerformed
@@ -1136,9 +1191,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jButtonAbort.setEnabled(false);
 		jButtonAbort.setText("Aborting...");
 		abort(processList);
-		abort(processExport);
-		abort(processRead);
-        abort(processSend);
+		abort(processSyncRoms);
+		abort(processSyncGamelist);
     }//GEN-LAST:event_jButtonAbortActionPerformed
 
     private void jButtonScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScoreActionPerformed
@@ -1150,8 +1204,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
             enableGUI();
             return;
         }
-        processSetScore = new ProcessSetScore(progressBarGame, tableModel, new CallBackProcess(), sourcePath);
-        processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcess());
+        processSetScore = new ProcessSetScore(progressBarGame, tableModel, new CallBackProcessWithSaving(), sourcePath);
+        processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcessVoid());
         processList.browseNbFiles();
         DialogConsole.main(this, new CallBackDialogConsoleScore(), false, "Set Score", false);
     }//GEN-LAST:event_jButtonScoreActionPerformed
@@ -1184,6 +1238,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			romVersion.setExportable(selectedIndicesContains(i));
 			i++;
 		}
+        setButtonBold(jButtonSave, true);
+        setButtonBold(jButtonSyncRoms, true);
     }//GEN-LAST:event_jListVersionsFocusLost
 
     private void jButtonAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAutoActionPerformed
@@ -1204,13 +1260,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			enableGUI();
 			return;
 		}
-		new SaveOds(new ICallBackProcess() {
-            @Override
-            public void completed() {
-                jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.PLAIN, 12));
-                enableGuiAndFilter();
-            }
-        } , sourcePath).start();
+		new SaveOds(new CallBackProcessWithSaving(), sourcePath).start();
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
     private static boolean isListFilterManualChange = true;
@@ -1279,9 +1329,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
             String consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());           
             File cacheFile = BufferVideo.getCacheFile(romContainer.getGame().getName(), new File(FilenameUtils.concat(consolePath, romContainer.getGame().getVideo())));
-            Desktop.openFile(cacheFile.getAbsolutePath());
-            
-            
+            if(cacheFile==null) {
+                Popup.warning("No video found.");
+            } else {
+                Desktop.openFile(cacheFile.getAbsolutePath());
+            }
             
 //			romContainer.setExportableVersions();
 //			displayVersions(romContainer.getVersions());
@@ -1334,50 +1386,20 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
         RomContainer romContainer = getRomContainer();
 		if(romContainer!=null) {
-            String sourcePath = jTextFieldPathSource.getText();
-            File sourceFile = new File(sourcePath);
-            if(!sourceFile.exists()) {
-                Popup.warning("Source path does not exist.");
-                enableGUI();
-                return;
-            }
-            File localFile = new File(FilenameUtils.concat(FilenameUtils.concat(sourcePath, romContainer.getConsole().name()), "gamelist.xml"));
-            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, localFile.getAbsolutePath(), new ICallBackProcess() {
+            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, new ICallBackProcess() {
                 @Override
                 public void completed() {
                     tableModel.filter();
-                    jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.BOLD, 16));
-                    jButtonSave.setFont(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
+                }
+
+                @Override
+                public void actionPerformed() {
+                    setButtonBold(jButtonSyncGameList, true);
+                    setButtonBold(jButtonSave, true);
                 }
             });
         }
     }//GEN-LAST:event_jButtonEditActionPerformed
-
-    private void jButtonSendGamelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendGamelistActionPerformed
-        disableGUI("Sending gamelist.xml : ");
-		String exportPath = jTextFieldPathExport.getText();
-		File file = new File(exportPath);
-		if(!file.exists()) {
-			enableGUI();
-			Popup.warning("Export path does not exist.");
-			return;
-		}
-        String sourcePath = jTextFieldPathSource.getText();
-        File sourceFile = new File(sourcePath);
-        if(!sourceFile.exists()) {
-            Popup.warning("Source path does not exist.");
-            enableGUI();
-            return;
-        }
-		processSend = new ProcessSend(sourcePath, exportPath, progressBarConsole, progressBarGame, new ICallBackProcess() {
-            @Override
-            public void completed() {
-                jButtonSendGamelist.setFont(new Font(jButtonSendGamelist.getFont().getName(), Font.PLAIN, 12));
-                enableGuiAndFilter();
-            }
-        });
-		processSend.start();
-    }//GEN-LAST:event_jButtonSendGamelistActionPerformed
 
     private void jRadioButtonRatingItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonRatingItemStateChanged
         JRadioButton source = (JRadioButton) evt.getSource();
@@ -1429,10 +1451,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jListFilterDecadeValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        boolean isSendGameBold = jButtonSendGamelist.getFont().equals(new Font(jButtonSendGamelist.getFont().getName(), Font.BOLD, 16));
+        boolean isSyncGameListBold = jButtonSyncGameList.getFont().equals(new Font(jButtonSyncGameList.getFont().getName(), Font.BOLD, 16));
+        boolean isExportBold = jButtonSyncRoms.getFont().equals(new Font(jButtonSyncRoms.getFont().getName(), Font.BOLD, 16));
         boolean isSaveBold = jButtonSave.getFont().equals(new Font(jButtonSave.getFont().getName(), Font.BOLD, 16));
-        if(isSendGameBold || isSaveBold) {
-            int result = JOptionPane.showConfirmDialog(this, "Exit the application?");
+        
+        if(isSyncGameListBold || isSaveBold || isExportBold) {
+            int result = JOptionPane.showConfirmDialog(this, "UNSAVED CHANGES !! \n Exit the application?");
             if (result==JOptionPane.OK_OPTION) {
                 System.exit(0);     
             }
@@ -1440,6 +1464,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             System.exit(0); 
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void jButtonReadJdGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReadJdGActionPerformed
+        disableGUI("Reading JdG Tier List : ");
+        String sourcePath = jTextFieldPathSource.getText();
+		JdG jdGRead = new JdG(new CallBackJeuxVideo(), tableModel, progressBarGame, sourcePath);
+		jdGRead.start();
+    }//GEN-LAST:event_jButtonReadJdGActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {
 		
@@ -1459,20 +1490,27 @@ public class RomManagerGUI extends javax.swing.JFrame {
             Popup.info("Error: " + ex.getLocalizedMessage());
 			enableGUI();
 		}
+
+        @Override
+        public void saved() {
+            setButtonBold(jButtonSave, false);
+        }
 	}
     
 	private class SaveOds extends ProcessAbstract {
 		private final ICallBackProcess callBack;
-		private final String sourceFolder;
+		private final String sourcePath;
 		public SaveOds(ICallBackProcess callBack, String sourceFolder) {
 			super("Thread.RomManagerGUI.ReadOds");
 			this.callBack = callBack;
-			this.sourceFolder = sourceFolder;
+			this.sourcePath = sourceFolder;
 		}
 		@Override
 		public void run() {
 			progressBarGame.setIndeterminate("Saving ods file");
-			RomManagerOds.createFile(tableModel, progressBarGame, sourceFolder);
+			if(RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
+                callBack.actionPerformed();
+            }
 			progressBarGame.reset();
 			callBack.completed();
 		}
@@ -1548,15 +1586,15 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonAbort;
     private javax.swing.JButton jButtonAuto;
     private javax.swing.JButton jButtonEdit;
-    private javax.swing.JButton jButtonExport;
     private javax.swing.JButton jButtonOptionSelectFolderExport;
     private javax.swing.JButton jButtonOptionSelectFolderSource;
-    private javax.swing.JButton jButtonReadGameList;
+    private javax.swing.JButton jButtonReadJdG;
     private javax.swing.JButton jButtonReadJeuxVideo;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JButton jButtonScanSource;
     private javax.swing.JButton jButtonScore;
-    private javax.swing.JButton jButtonSendGamelist;
+    private javax.swing.JButton jButtonSyncGameList;
+    private javax.swing.JButton jButtonSyncRoms;
     private javax.swing.JButton jButtonVideo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

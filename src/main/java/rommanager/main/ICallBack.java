@@ -9,4 +9,5 @@ public interface ICallBack {
 	public void completed();
 	public void interrupted();
 	public void error(Exception ex);
+    public void saved();
 }

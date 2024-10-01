@@ -18,10 +18,8 @@ package rommanager.main;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
@@ -248,6 +246,5 @@ public class Game {
 
     public void setAdult(boolean adult) {
         this.adult = adult;
-    }
-
+    }    
 }

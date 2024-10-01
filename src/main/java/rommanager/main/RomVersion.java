@@ -116,7 +116,8 @@ public class RomVersion {
 		this.errorLevel = errorLevel;
 		this.exportable = isExportable;
         if(!tags.trim().equals("")) {
-            this.tags = Arrays.asList(tags.split(","));
+            List<String> arraylist = Arrays.asList(tags.split(","));
+            this.tags = new ArrayList<>(arraylist);
         }
         this.crcValue = crcValue;
         this.size = size;
@@ -279,10 +280,11 @@ public class RomVersion {
     }
     
     public String getExportFolder(Console console, String exportPath) {
+        String folderName = getTags().isEmpty()?"1_"+console.name():getTags().get(0)+"_"+console.name();
         return FilenameUtils.concat(
-				FilenameUtils.concat(
+                    FilenameUtils.concat(
 						exportPath, console.name()), 
-				console.getName());
+                            folderName);
     }
     
 	public String getExportPath(Console console, String exportPath) {

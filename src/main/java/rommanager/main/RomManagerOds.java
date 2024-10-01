@@ -47,14 +47,14 @@ public class RomManagerOds {
 	public RomManagerOds() {
 	}
 
-	public static void createFile(
+	public static boolean createFile(
 			TableModelRom model, 
 			ProgressBar progressBar, String sourceFolder) {
 		
-		createFile(model, progressBar, false, sourceFolder);
+		return createFile(model, progressBar, false, sourceFolder);
 	}
 	
-	public static void createFile(
+	public static boolean createFile(
 			TableModelRom model, 
 			ProgressBar progressBar, 
 			boolean open, String sourceFolder) {
@@ -180,9 +180,10 @@ public class RomManagerOds {
 				OOUtils.open(odsFile);
 			}
         } catch (IOException ex) {
-            Logger.getLogger(RomManagerOds.class.getName())
-					.log(Level.SEVERE, null, ex);
+            Logger.getLogger(RomManagerOds.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
 	public static void readFile( 
