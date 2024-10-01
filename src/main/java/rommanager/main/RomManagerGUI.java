@@ -308,7 +308,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Recalbox"));
 
-        jButtonSyncGameList.setText("Sync game data");
+        jButtonSyncGameList.setText("Get game data");
         jButtonSyncGameList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSyncGameListActionPerformed(evt);
@@ -324,7 +324,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonSyncRomsRecalbox.setText("Sync roms"); // NOI18N
+        jButtonSyncRomsRecalbox.setText("Export roms"); // NOI18N
         jButtonSyncRomsRecalbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSyncRomsRecalboxActionPerformed(evt);
@@ -342,7 +342,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jButtonSyncRomsRecalbox, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonSyncGameList)
-                        .addGap(0, 137, Short.MAX_VALUE))
+                        .addGap(0, 235, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jTextFieldPathRecalbox)
                         .addGap(6, 6, 6)
@@ -425,7 +425,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonSave.setText("Save");
+        jButtonSave.setText("Save Ods");
         jButtonSave.setToolTipText("");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -444,8 +444,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addComponent(jButtonScanSource)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonScore, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                        .addComponent(jButtonSave))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonSave)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jTextFieldPathSource))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonOptionSelectFolderSource)
@@ -477,7 +478,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonSyncRomsRomM.setText("Sync roms"); // NOI18N
+        jButtonSyncRomsRomM.setText("Export roms"); // NOI18N
         jButtonSyncRomsRomM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSyncRomsRomMActionPerformed(evt);
@@ -492,7 +493,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addComponent(jTextFieldPathRomM, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                        .addComponent(jTextFieldPathRomM, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonOptionSelectFolderRomM))
                     .addGroup(jPanel9Layout.createSequentialGroup()
@@ -938,7 +939,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jSplitPaneFilters, javax.swing.GroupLayout.PREFERRED_SIZE, 213, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
