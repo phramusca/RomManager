@@ -281,12 +281,13 @@ public class RomVersion {
     
     public String getExportFolder(Console console, String exportPath, Destination destination) {
         if(destination.isFlat()) {
-            return FilenameUtils.concat(exportPath, console.name());
+            return FilenameUtils.concat(exportPath, console.getDestinationFolderName(destination));
         } else {
-            String folderName = getTags().isEmpty()?"1_"+console.name():getTags().get(0)+"_"+console.name();
+            //TODO: This is a bit specific to Recalbox. Refactor once RomM API are working, to add getTags to Collections
+            String folderName = getTags().isEmpty()?"1_"+console.getSourceFolderName():getTags().get(0)+"_"+console.getSourceFolderName();
             return FilenameUtils.concat(
                     FilenameUtils.concat(
-                            exportPath, console.name()),
+                            exportPath, console.getSourceFolderName()),
                     folderName);
         }
     }

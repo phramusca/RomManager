@@ -83,7 +83,7 @@ public class ProcessList extends ProcessAbstract {
                 checkAbort();
                 progressBarConsole.progress(console.getName());
 				if(console.isSelected()) {
-					list(console, FilenameUtils.concat(sourcePath, console.name()));
+					list(console, FilenameUtils.concat(sourcePath, console.getSourceFolderName()));
 				}
 			}
             progressBarGame.setIndeterminate("Saving ods file");
@@ -104,7 +104,7 @@ public class ProcessList extends ProcessAbstract {
 		progressBarGame.setIndeterminate("Getting number of files");
 		for(Console console : Console.values()) {
 			nbFiles=0;
-			browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.name())), console);
+			browseNbFiles(new File(FilenameUtils.concat(sourcePath, console.getSourceFolderName())), console);
 			console.setNbFiles(nbFiles);
 		}
 		progressBarGame.reset();
@@ -119,7 +119,7 @@ public class ProcessList extends ProcessAbstract {
         }
         
         if(console.getName().trim().toUpperCase().equals("CHANGEME")) {
-            Popup.warning("Unsupported console: "+console.name()+" ("+console.getName()+")");
+            Popup.warning("Unsupported console: "+console.getSourceFolderName()+" ("+console.getName()+")");
             return;
         }
 		if(refresh) {
@@ -189,7 +189,7 @@ public class ProcessList extends ProcessAbstract {
                 if(ext.equals("7z")) {
                     try {
                         RomContainer7z romSevenZipFile;
-                        String key = console.name()+"/"+FilenameUtils.getName(file.getAbsolutePath());
+                        String key = console.getSourceFolderName()+"/"+FilenameUtils.getName(file.getAbsolutePath());
                         if(!tableModel.getRoms().containsKey(key)) {
                             romSevenZipFile = 
                                     new RomContainer7z(
@@ -203,7 +203,7 @@ public class ProcessList extends ProcessAbstract {
                     }
                 } else if(allowedExtensions.contains(ext)) {
                     String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);
-                    String key = console.name()+"/"+romName;
+                    String key = console.getSourceFolderName()+"/"+romName;
                     if(!tableModel.getRoms().containsKey(key)) {
                         RomContainerFlat romContainerFlat;
                         if(flatContainers.containsKey(key)) {

@@ -90,7 +90,7 @@ public enum Console {
     private final String name;
 	private int nbFiles;
 	private boolean isSelected;
-    private final String romM;
+    private final String rommFolderName;
 	private boolean zip;
     private boolean excludeUnknownAttributes;
 
@@ -98,11 +98,11 @@ public enum Console {
 		this(idJeuxVideo, suffixJeuxVideo, name, romM, true, true);
 	}
 
-	private Console(int idJeuxVideo, String suffixJeuxVideo, String name, String romM, boolean zip, boolean excludeUnknownAttributes) {
+	private Console(int idJeuxVideo, String suffixJeuxVideo, String name, String rommFolderName, boolean zip, boolean excludeUnknownAttributes) {
         this.idJeuxVideo = idJeuxVideo;
         this.suffixJeuxVideo = suffixJeuxVideo;
 		this.name = name;
-        this.romM = romM;
+        this.rommFolderName = rommFolderName;
 		this.zip = zip;
         this.excludeUnknownAttributes = excludeUnknownAttributes;
 	}
@@ -128,7 +128,7 @@ public enum Console {
 	}
 
 	public boolean isZip(Destination destination) {
-		return zip || destination.isForceZip();
+		return zip || destination.forceZip();
 	}
     
     public boolean excludeUnknownAttributes() {
@@ -143,12 +143,24 @@ public enum Console {
         return suffixJeuxVideo;
     }
 
-    public String getRomM() {
-        return romM;
+    public String getDestinationFolderName(Destination destination) {
+        switch (destination) {
+            case recalbox:
+                return name();
+            case romM:
+                return rommFolderName;
+            default:
+                throw new AssertionError();
+        }
+    }
+    
+    public String getSourceFolderName() {
+        return name();
     }
     
 	@Override
 	public String toString() {
 		return getName()+" ("+getNbFiles()+")";
 	}
+
 }

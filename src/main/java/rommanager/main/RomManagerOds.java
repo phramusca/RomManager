@@ -81,7 +81,7 @@ public class RomManagerOds {
                 }
 				
                 data[i++] = new Object[] { 
-					romContainer.getConsole().name(),
+					romContainer.getConsole().getSourceFolderName(),
 					romContainer.getFilename(), 
 					romVersion.getFilename(), 
 					romVersion.getAlternativeName(),
@@ -284,7 +284,7 @@ public class RomManagerOds {
                 JeuVideo jeuVideo = new JeuVideo(url, title, releaseDateJeuVideo, ratingJeuVideo, userRating, description);
                 romVersion.setJeuVideo(jeuVideo);
                 
-				model.getRoms().get(console.name()+"/"+filename).getVersions().add(romVersion);
+				model.getRoms().get(console.getSourceFolderName()+"/"+filename).getVersions().add(romVersion);
 				progressBarGame.progress(filename);
 			}
 			progressBarGame.reset();

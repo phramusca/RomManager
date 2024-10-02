@@ -70,7 +70,7 @@ public class JdG extends ProcessAbstract {
             for(RomContainer romContainer : romCollection) {
                 checkAbort();
                 progressBarGame.progress(romContainer.getFilename());
-                String key = romContainer.getConsole().name()+"_"+romContainer.getFilename();
+                String key = romContainer.getConsole().getSourceFolderName()+"_"+romContainer.getFilename();
                 if(tags.containsKey(key)) {
                     JdgEntry jdgEntry = tags.get(key);
                     for(RomVersion romVersion : romContainer.getVersions()) {

@@ -1248,11 +1248,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
     private void jButtonSyncGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncGameListActionPerformed
-		syncGamelist(Destination.recalbox);
-    }//GEN-LAST:event_jButtonSyncGameListActionPerformed
-
-    private void syncGamelist(Destination destination) {
-        disableGUI("Reading gamelist.xml : ");
+		disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathRecalbox.getText();
 		File file = new File(exportPath);
 		if(!file.exists()) {
@@ -1278,9 +1274,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 setButtonBold(jButtonSyncGameList, false);
                 setButtonBold(jButtonSave, false);
             }
-        }, destination);
+        });
 		processSyncGamelist.start();
-    }
+    }//GEN-LAST:event_jButtonSyncGameListActionPerformed
     
     private void jButtonOptionSelectFolderRecalboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderRecalboxActionPerformed
         String selectedFolder=selectFolder(jTextFieldPathRecalbox.getText());
@@ -1441,7 +1437,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 Popup.warning("Export path does not exist.");
                 return;
             }
-            String consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().name());           
+            String consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().getSourceFolderName());           
             File cacheFile = BufferVideo.getCacheFile(romContainer.getGame().getName(), new File(FilenameUtils.concat(consolePath, romContainer.getGame().getVideo())));
             if(cacheFile==null) {
                 Popup.warning("No video found.");

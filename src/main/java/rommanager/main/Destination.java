@@ -34,7 +34,7 @@ public enum Destination {
         this.flat = flat;
     }
 
-    public boolean isForceZip() {
+    public boolean forceZip() {
         return forceZip;
     }
 

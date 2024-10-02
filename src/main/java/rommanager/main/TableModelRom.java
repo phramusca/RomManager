@@ -207,7 +207,7 @@ public class TableModelRom extends TableModelGeneric {
 	 * @param romContainer
     */
     public void addRow(RomContainer romContainer){
-		roms.put(romContainer.getConsole().name()+"/"+romContainer.getFilename(), romContainer);
+		roms.put(romContainer.getConsole().getSourceFolderName()+"/"+romContainer.getFilename(), romContainer);
 		fireTableDataChanged();
     }
 
@@ -218,7 +218,7 @@ public class TableModelRom extends TableModelGeneric {
 	 * @throws IOException
 	 */
 	public void addRow(Console console, String filename) throws IOException {
-        String key = console.name()+"/"+filename;
+        String key = console.getSourceFolderName()+"/"+filename;
 		if(!roms.containsKey(key)) {
 			RomContainer romContainer=null;
             String ext = FilenameUtils.getExtension(filename);

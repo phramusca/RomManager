@@ -91,7 +91,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
             for (Console console : consoles) {
                 checkAbort();
                 if (console.isSelected()) {
-                    String consolePath = FilenameUtils.concat(exportPath, console.name());
+                    String consolePath = FilenameUtils.concat(exportPath, console.getDestinationFolderName(destination));
                     if (new File(consolePath).exists()) {
                         File consoleFilePath = new File(consolePath);
                         if(destination.isFlat()) {
@@ -157,7 +157,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                 .filter(r -> r.isToCopy())
                                 .collect(Collectors.toList())) {
                     checkAbort();
-                    sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
+                    sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().getSourceFolderName());
                     File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
                     File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, destination));
                     String ext = FilenameUtils.getExtension(filename);
@@ -225,7 +225,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
     }
 
     private boolean checkFile(RomContainer romContainer, RomVersion romVersion) throws IOException {
-        String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().name());
+        String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().getSourceFolderName());
         File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
         File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, destination));
         String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());

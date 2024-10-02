@@ -88,7 +88,7 @@ public class RomContainer7z extends RomContainer {
                     }
                 }
                 if(!console.equals(moveToConsole)) {
-                    File destFile = new File(sourceFile.getAbsolutePath().replace("/"+console.name()+"/", "/"+moveToConsole.name()+"/"));
+                    File destFile = new File(sourceFile.getAbsolutePath().replace("/"+console.getSourceFolderName()+"/", "/"+moveToConsole.getSourceFolderName()+"/"));
                     if(FileSystem.moveFile(sourceFile, destFile)) {
                         console = moveToConsole;
                     }

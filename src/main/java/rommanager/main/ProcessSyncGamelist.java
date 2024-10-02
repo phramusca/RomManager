@@ -43,7 +43,6 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private final ProgressBar progressBarGame;
     private final TableModelRom tableModel;
     private final ICallBackProcess callBack;
-    private final Destination destination;
 
     public ProcessSyncGamelist(
             String sourcePath,
@@ -51,8 +50,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             ProgressBar progressBarConsole,
             ProgressBar progressBarGame,
             TableModelRom tableModel,
-            ICallBackProcess callBack,
-            Destination destination) {
+            ICallBackProcess callBack) {
         super("Thread.ProcessRead");
         this.sourcePath = sourcePath;
         this.exportPath = exportPath;
@@ -60,7 +58,6 @@ public class ProcessSyncGamelist extends ProcessAbstract {
         this.progressBarGame = progressBarGame;
         this.tableModel = tableModel;
         this.callBack = callBack;
-        this.destination = destination;
     }
 
     @Override
@@ -72,11 +69,11 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             for (Console console : Console.values()) {
                 checkAbort();
                 progressBarConsole.progress(console.getName());
-                File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml"));
-                File backupFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), "gamelist.xml.bak"));
+                File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), "gamelist.xml"));
+                File backupFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), "gamelist.xml.bak"));
                 if (remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, backupFile);
-                    String consolePath = FilenameUtils.concat(exportPath, console.name());
+                    String consolePath = FilenameUtils.concat(exportPath, console.getSourceFolderName());
                     //FIXME 0 Gamelist - Use this 
                     long remoteLastModified = remoteFile.lastModified();
 
@@ -94,7 +91,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         Element remoteGameElement = entry.getLeft();
                         Game remoteGame = entry.getRight();
                         progressBarGame.progress(remoteGame.getName());
-                        File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), remoteGame.getPath()));
+                        File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), remoteGame.getPath()));
                         if (!gameFile.exists()) {
                             gamelist.deleteGame(remoteGameElement);
                             continue;
@@ -111,7 +108,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
 
                         String keyVersion = FilenameUtils.getName(gameFile.getAbsolutePath());
                         List<RomVersion> collect = romVersionsForConsole.stream()
-                                .filter(v -> v.getExportFilename(console, destination).equals(keyVersion))
+                                .filter(v -> v.getExportFilename(console, Destination.recalbox).equals(keyVersion))
                                 .collect(Collectors.toList());
                         if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);
@@ -165,7 +162,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     }
 
     private boolean checkMedia(Console console, Gamelist gamelist, Element remoteGameElement, String filename) {
-        File mediaFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.name()), filename));
+        File mediaFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), filename));
         if (!filename.contains("ZZZ") && !mediaFile.exists()) {
             gamelist.removeScraped(remoteGameElement);
             //Some file is missing and the only way (I found) to force re-scrap is removing entry from xml

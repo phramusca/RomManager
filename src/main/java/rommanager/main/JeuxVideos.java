@@ -86,9 +86,9 @@ public class JeuxVideos extends ProcessAbstract {
             boolean atLeastOneModif = false;
             for(Console console : Console.values()) {
                 if(console.getIdJeuxVideo() > -1) {
-                    if(!jeuxVideos.containsKey(console.name())) {
+                    if(!jeuxVideos.containsKey(console.getSourceFolderName())) {
                         List<JeuVideo> list = read(console);
-                        jeuxVideos.put(console.name(), list);
+                        jeuxVideos.put(console.getSourceFolderName(), list);
                         atLeastOneModif = true;
                     }
                 }
@@ -108,8 +108,8 @@ public class JeuxVideos extends ProcessAbstract {
                 checkAbort();
                 progressBarGame.progress(romContainer.getFilename());
                 List<JeuVideo> consoleJeuVideos = null;
-                if(jeuxVideos.containsKey(romContainer.getConsole().name())) {
-                    consoleJeuVideos = jeuxVideos.get(romContainer.getConsole().name());
+                if(jeuxVideos.containsKey(romContainer.getConsole().getSourceFolderName())) {
+                    consoleJeuVideos = jeuxVideos.get(romContainer.getConsole().getSourceFolderName());
                 }
                 for(RomVersion romVersion : romContainer.getVersions()) {
                     if(consoleJeuVideos != null) {
