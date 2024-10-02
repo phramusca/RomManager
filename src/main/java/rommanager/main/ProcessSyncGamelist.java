@@ -43,7 +43,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private final ProgressBar progressBarGame;
     private final TableModelRom tableModel;
     private final ICallBackProcess callBack;
-    private final boolean forceZip;
+    private final Destination destination;
 
     public ProcessSyncGamelist(
             String sourcePath,
@@ -52,7 +52,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             ProgressBar progressBarGame,
             TableModelRom tableModel,
             ICallBackProcess callBack,
-             boolean forceZip) {
+            Destination destination) {
         super("Thread.ProcessRead");
         this.sourcePath = sourcePath;
         this.exportPath = exportPath;
@@ -60,7 +60,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
         this.progressBarGame = progressBarGame;
         this.tableModel = tableModel;
         this.callBack = callBack;
-        this.forceZip = forceZip;
+        this.destination = destination;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
 
                         String keyVersion = FilenameUtils.getName(gameFile.getAbsolutePath());
                         List<RomVersion> collect = romVersionsForConsole.stream()
-                                .filter(v -> v.getExportFilename(console, forceZip).equals(keyVersion))
+                                .filter(v -> v.getExportFilename(console, destination).equals(keyVersion))
                                 .collect(Collectors.toList());
                         if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);

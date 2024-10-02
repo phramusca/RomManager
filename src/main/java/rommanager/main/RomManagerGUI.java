@@ -1108,11 +1108,11 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
     
     private void jButtonSyncRomsRecalboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsRecalboxActionPerformed
-        startSyncRom(jTextFieldPathRecalbox.getText(), "Recalbox", false, false, jButtonSyncRomsRecalbox);
+        startSyncRom(Destination.recalbox, jTextFieldPathRecalbox.getText(), jButtonSyncRomsRecalbox);
     }//GEN-LAST:event_jButtonSyncRomsRecalboxActionPerformed
 
-    private void startSyncRom(String exportPath, String destinationName, boolean forceZip, boolean flat, JButton button) {
-        disableGUI("Exporting to " + destinationName + ": ");
+    private void startSyncRom(Destination destination, String exportPath, JButton button) {
+        disableGUI("Exporting to " + destination.getName() + ": ");
 		File folder = new File(exportPath);
 		if(!folder.exists()) {
 			enableGUI();
@@ -1137,10 +1137,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 setButtonBold(button, false);
             }
             
-        }, forceZip, flat, destinationName);
+        }, destination);
 		processList = new ProcessList(sourcePath, progressBarConsole, progressBarGame, tableModel, new CallBackProcessVoid());
 		processList.browseNbFiles();
-		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync Roms to " + destinationName, true);
+		DialogConsole.main(this, new CallBackDialogConsoleExport(), false, "Sync Roms to " + destination.getName(), true);
     }
     
 	private class CallBackDialogConsoleExport implements ICallBackConsole {
@@ -1248,10 +1248,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	}
 	
     private void jButtonSyncGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncGameListActionPerformed
-		syncGamelist();
+		syncGamelist(Destination.recalbox);
     }//GEN-LAST:event_jButtonSyncGameListActionPerformed
 
-    private void syncGamelist() {
+    private void syncGamelist(Destination destination) {
         disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathRecalbox.getText();
 		File file = new File(exportPath);
@@ -1278,7 +1278,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 setButtonBold(jButtonSyncGameList, false);
                 setButtonBold(jButtonSave, false);
             }
-        }, false);
+        }, destination);
 		processSyncGamelist.start();
     }
     
@@ -1597,7 +1597,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonOptionSelectFolderRomMActionPerformed
 
     private void jButtonSyncRomsRomMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsRomMActionPerformed
-        startSyncRom(jTextFieldPathRomM.getText(), "RomM", true, true, jButtonSyncRomsRomM);
+        startSyncRom(Destination.romM, jTextFieldPathRomM.getText(), jButtonSyncRomsRomM);
     }//GEN-LAST:event_jButtonSyncRomsRomMActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {

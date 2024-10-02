@@ -279,8 +279,8 @@ public class RomVersion {
         return filename;
     }
     
-    public String getExportFolder(Console console, String exportPath, boolean flat) {
-        if(flat) {
+    public String getExportFolder(Console console, String exportPath, Destination destination) {
+        if(destination.isFlat()) {
             return FilenameUtils.concat(exportPath, console.name());
         } else {
             String folderName = getTags().isEmpty()?"1_"+console.name():getTags().get(0)+"_"+console.name();
@@ -291,12 +291,12 @@ public class RomVersion {
         }
     }
     
-	public String getExportPath(Console console, String exportPath, boolean forceZip, boolean flat) {
-        return FilenameUtils.concat(getExportFolder(console, exportPath, flat), getExportFilename(console, forceZip));
+	public String getExportPath(Console console, String exportPath, Destination destination) {
+        return FilenameUtils.concat(getExportFolder(console, exportPath, destination), getExportFilename(console, destination));
 	}
     
-    public String getExportFilename(Console console, boolean forceZip) {
-        if(console.isZip() || forceZip) {
+    public String getExportFilename(Console console, Destination destination) {
+        if(console.isZip(destination)) {
             return FilenameUtils.getBaseName(filename).concat(".zip");
         } else {
             return filename;

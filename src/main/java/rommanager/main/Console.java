@@ -127,8 +127,8 @@ public enum Console {
 		return name;
 	}
 
-	public boolean isZip() {
-		return zip;
+	public boolean isZip(Destination destination) {
+		return zip || destination.isForceZip();
 	}
     
     public boolean excludeUnknownAttributes() {
