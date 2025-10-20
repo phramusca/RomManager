@@ -20,6 +20,9 @@ package rommanager.utils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
 
 /**
  * Popup class
@@ -45,6 +48,21 @@ public class Popup {
 	 */
 	public static void info(String str) {
 		javax.swing.JOptionPane.showMessageDialog(null, str, APP_NAME, JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	/**
+	 * Show a potentially long text in a scrollable, word-wrapped dialog.
+	 * @param title dialog title
+	 * @param text full text to display
+	 */
+	public static void showText(String title, String text) {
+		JTextArea ta = new JTextArea(text);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		ta.setEditable(false);
+		JScrollPane scroll = new JScrollPane(ta);
+		scroll.setPreferredSize(new Dimension(700, 400));
+		javax.swing.JOptionPane.showMessageDialog(null, scroll, APP_NAME + " - " + title, JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	/**

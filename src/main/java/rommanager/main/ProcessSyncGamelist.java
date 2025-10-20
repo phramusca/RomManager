@@ -43,6 +43,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private final ProgressBar progressBarGame;
     private final TableModelRom tableModel;
     private final ICallBackProcess callBack;
+    private final StringBuilder gamelistLog = new StringBuilder();
 
     public ProcessSyncGamelist(
             String sourcePath,
@@ -74,7 +75,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 if (remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, backupFile);
                     String consolePath = FilenameUtils.concat(exportPath, console.getSourceFolderName());
-                    // TODO Gamelist - Use this 
+                    // FIXME 1c Gamelist - Use this 
 //                    long remoteLastModified = remoteFile.lastModified();
                     
                     List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
@@ -122,23 +123,34 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             localVersion.setGame(newGame);
 
                         } else {
-                            // FIXME 1 Gamelist - manage if file not found, though should not happen
-                            Popup.warning(keyVersion + " could not be found on " + console.getName());
+                                String warn = keyVersion + " could not be found on " + console.getName();
+                                gamelistLog.append("[Missing] ").append(warn).append("\n");
                         }
                     }
                     if (gamelist.hasChanged()) {
                         gamelist.save();
+                        gamelistLog.append("[Saved] gamelist for ").append(console.getName()).append(" updated.\n");
                     }
                     if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();
+                        gamelistLog.append("[Deleted] empty gamelist for ").append(console.getName()).append(" removed.\n");
                     } else {
-                        //FIXME 1 Gamelist - Delete all media files not in gamelist
+                        //FIXME 1d Gamelist - Delete all media files not in gamelist
                         gamelists.put(console, gamelist);
                     }
                 } else {
-                    //FIXME 1 Gamelist - Create the file and fill it up with local data (if any)
+                    List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
+                            .stream()
+                            .filter(r -> r.console.equals(console))
+                            .map(r -> r.getExportableVersions())
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
 
-//                    Popup.warning("No gamelist.xml on remote for " + console.getName());
+                    if (romVersionsForConsole.isEmpty()) {
+                        gamelistLog.append("[MissingGamelist] No gamelist.xml on remote for ").append(console.getName()).append(" and no local data.\n");
+                    } else {
+                        gamelistLog.append("[MissingGamelist] No gamelist.xml on remote for ").append(console.getName()).append(" - local data found: ").append(romVersionsForConsole.size()).append(" entries.\n");
+                    }
                 }
             }
             progressBarConsole.reset();
@@ -149,8 +161,12 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 callBack.actionPerformed();
             }
             progressBarGame.reset();
-            //FIXME 1 Gamelist - display modification counters
-            Popup.info("Sync game data complete.");
+            //FIXME 1b Gamelist - display modification counters
+            if (gamelistLog.length() > 0) {
+                Popup.showText("Sync game data complete", gamelistLog.toString());
+            } else {
+                Popup.info("Sync game data complete.");
+            }
         } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
         } catch (IOException ex) {
