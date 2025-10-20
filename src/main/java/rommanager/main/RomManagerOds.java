@@ -230,12 +230,12 @@ public class RomManagerOds {
 				int score = Integer.parseInt(row.getValue(i++));
 				int errorLevel = Integer.parseInt(row.getValue(i++));
 				boolean isExportable = Boolean.parseBoolean(row.getValue(i++));
-                String tags = row.getValue(i++);
-                String crcStr = row.getValue(i++);
-                Long crcValue = Long.valueOf(crcStr.isBlank()?"-1":crcStr);
-                String sizeStr = row.getValue(i++);
-                Long size = Long.valueOf(sizeStr.isBlank()?"-1":sizeStr);
-                
+				String tags = row.getValue(i++);
+				String crcStr = row.getValue(i++);
+				Long crcValue = Long.valueOf((crcStr == null || crcStr.trim().isEmpty()) ? "-1" : crcStr);
+				String sizeStr = row.getValue(i++);
+				Long size = Long.valueOf((sizeStr == null || sizeStr.trim().isEmpty()) ? "-1" : sizeStr);
+				
 				String gameName = row.getValue(i++);
 				String desc = row.getValue(i++);
 				String genre = row.getValue(i++);

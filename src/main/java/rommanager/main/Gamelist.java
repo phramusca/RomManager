@@ -143,7 +143,7 @@ public class Gamelist {
         String pc = XML.getElementValue(element, "playcount");
         int playCounter=pc.equals("")?-1:Integer.parseInt(pc);
         String t = XML.getAttribute(element, "timestamp");
-        long timestamp = (!t.isBlank()?Long.parseLong(t):-1);
+        long timestamp = (t != null && !t.trim().isEmpty() ? Long.parseLong(t) : -1);
         return new Game(XML.getElementValue(element, "path"),
                     XML.getElementValue(element, "hash"),
                     XML.getElementValue(element, "name"),
