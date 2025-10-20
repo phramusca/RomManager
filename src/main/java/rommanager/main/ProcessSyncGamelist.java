@@ -74,9 +74,9 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 if (remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, backupFile);
                     String consolePath = FilenameUtils.concat(exportPath, console.getSourceFolderName());
-                    //FIXME 0 Gamelist - Use this 
-                    long remoteLastModified = remoteFile.lastModified();
-
+                    // TODO Gamelist - Use this 
+//                    long remoteLastModified = remoteFile.lastModified();
+                    
                     List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
                             .stream()
                             .filter(r -> r.console.equals(console))
@@ -112,18 +112,17 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                                 .collect(Collectors.toList());
                         if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);
+                                // Use below code to enable updating, but needs to really implement compareGame function
                             Game localGame = localVersion.getGame();
-
-                            //FIXME 0 Gamelist - !! CONTINUE FROM HERE !!! (for now, it only reads from remote)
                             Game newGame = gamelist.compareGame(localGame, remoteGame);
-                            gamelist.setGame(newGame); //FIXME 0 Gamelist - set as changed (if changed of course) so that it is saved later
-                            if (!newGame.getImage().isBlank()) {
+                            gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
+                            if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
                                 BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
                             }
                             localVersion.setGame(newGame);
 
                         } else {
-                            //FIXME 1 Gamelist - manage if file not found, though should not happen
+                            // FIXME 1 Gamelist - manage if file not found, though should not happen
                             Popup.warning(keyVersion + " could not be found on " + console.getName());
                         }
                     }

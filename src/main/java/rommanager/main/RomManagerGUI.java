@@ -946,6 +946,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //FIXME 9 Support NoIntro & Redump
+    //FIXME 10 Use RomM API
+    
     private void jButtonScanSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonScanSourceActionPerformed
 		disableGUI("Listing : ");
 		String sourcePath = jTextFieldPathSource.getText();

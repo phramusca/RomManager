@@ -211,7 +211,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
             }
 
             Popup.info("Export complete.\n" + nbAlreadyExported + " already exported\n" + nbExported + " exported / " + nbToCopy + "\n" + nbFailed + " error(s)\n" + nbDeleted + " deleted");
-            //FIXME: If nbFailed>0, propose to open log (and make one file per process run)
+            //FIXME 8 If nbFailed>0, propose to open log (and make one file per process run)
             callBack.actionPerformed();
             progressBarConsole.reset();
             progressBarGame.reset();
