@@ -185,16 +185,16 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             //FIXME 1b Gamelist - display modification counters
             if (gamelistLog.length() > 0) {
                 StringBuilder summary = new StringBuilder();
-                summary.append("✅ Sync complete\n\n");
-                summary.append("📦 Consoles processed: ").append(consolesProcessed).append("\n");
-                summary.append("🎮 Games checked: ").append(totalGamesProcessed).append("\n");
-                summary.append("🔁 Update attempts: ").append(gamesUpdateAttempts).append("\n");
-                summary.append("⚠️ Missing locally: ").append(gamesMissingLocal).append("\n");
-                summary.append("🧾 Missing media: ").append(gamesMissingMedia).append("\n");
-                summary.append("🗑️ Games deleted: ").append(gamesDeleted).append("\n");
-                summary.append("💾 Gamelists saved: ").append(gamelistsSaved).append("\n");
-                summary.append("🗃️ Gamelists deleted: ").append(gamelistsDeleted).append("\n");
-                summary.append("➕ Gamelists created: ").append(gamelistsCreated).append("\n\n");
+                summary.append("Sync complete\n\n");
+                summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
+                summary.append("Games checked: ").append(totalGamesProcessed).append("\n");
+                summary.append("Update attempts: ").append(gamesUpdateAttempts).append("\n");
+                summary.append("Missing locally: ").append(gamesMissingLocal).append("\n");
+                summary.append("Missing media: ").append(gamesMissingMedia).append("\n");
+                summary.append("Games deleted: ").append(gamesDeleted).append("\n");
+                summary.append("Gamelists saved: ").append(gamelistsSaved).append("\n");
+                summary.append("Gamelists deleted: ").append(gamelistsDeleted).append("\n");
+                summary.append("Gamelists created: ").append(gamelistsCreated).append("\n\n");
                 summary.append("Details:\n");
                 summary.append(gamelistLog.toString());
                 Popup.showText("Sync game data complete", summary.toString());
