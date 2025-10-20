@@ -50,62 +50,6 @@ public class Gamelist {
         read();
     }
 
-    public void setGame(Game newGame) {
-        String key = FilenameUtils.getBaseName(newGame.getPath());
-        Element elementGame = games.get(key).getLeft();
-        setGame(elementGame, newGame);
-    }
-    
-    public Game compareGame(Game localGame, Game remoteGame) {
-        Game newGame = new Game(remoteGame.getPath(), 
-                remoteGame.getHash(), 
-                remoteGame.getName(), 
-                remoteGame.getDesc(), 
-                remoteGame.getImage(), 
-                remoteGame.getVideo(), 
-                remoteGame.getThumbnail(), 
-                remoteGame.getRating(), 
-                remoteGame.getReleaseDate(), 
-                remoteGame.getDeveloper(), 
-                remoteGame.getPublisher(), 
-                remoteGame.getGenre(), 
-                remoteGame.getGenreId(), 
-                remoteGame.getPlayers(), 
-                remoteGame.getPlaycount(), 
-                remoteGame.getLastplayed(), 
-                remoteGame.isFavorite(), 
-                remoteGame.getTimestamp(), 
-                remoteGame.isHidden(), 
-                remoteGame.isAdult(), 
-                remoteGame.getRatio(), 
-                remoteGame.getRegion());
-
-        if(localGame.isFavorite()) {
-            
-        }
-
-        
-        return newGame;
-    }
-    
-    private void setElementValue(Element elementGame, String key, boolean value) {
-        Element element = XML.getElement(elementGame, key);
-        if(element!=null) {
-            element.setTextContent(String.valueOf(value));
-        } else {
-            Element createElement = doc.createElement(key);
-            createElement.setTextContent(String.valueOf(value));
-            elementGame.appendChild(createElement);
-        }
-    }
-    
-    void removeElement(Element elementGame, String key) {
-        Element element = XML.getElement(elementGame, key);
-        if(element != null) {
-            elementGame.removeChild(element);
-        }
-    }
-    
     private void read() {
         games = new HashMap<>();
         if(!file.exists()) {
@@ -125,13 +69,6 @@ public class Gamelist {
             games.put(FilenameUtils.getBaseName(game.getPath()), Pair.of(element, game));
         }
 	}
-        
-    private void setGame(Element elementGame, Game newGame) {
-        // TODO Gamelist - Do all other modified values !!
-        
-        setElementValue(elementGame, "favorite", newGame.isFavorite());
-        nbGamesModified++;
-    }
 
     public Map<String, Pair<Element, Game>> getGames() {
         return games;
@@ -172,9 +109,68 @@ public class Gamelist {
         element.getParentNode().removeChild(element);
         nbGamesDeleted++;
     }
-    
+
     boolean hasChanged() {
         return nbGamesDeleted>0 || nbGamesFixed>0 || nbGamesModified>0;
+    }
+
+    public Game compareGame(Game localGame, Game remoteGame) {
+        Game newGame = new Game(remoteGame.getPath(), 
+                remoteGame.getHash(), 
+                remoteGame.getName(), 
+                remoteGame.getDesc(), 
+                remoteGame.getImage(), 
+                remoteGame.getVideo(), 
+                remoteGame.getThumbnail(), 
+                remoteGame.getRating(), 
+                remoteGame.getReleaseDate(), 
+                remoteGame.getDeveloper(), 
+                remoteGame.getPublisher(), 
+                remoteGame.getGenre(), 
+                remoteGame.getGenreId(), 
+                remoteGame.getPlayers(), 
+                remoteGame.getPlaycount(), 
+                remoteGame.getLastplayed(), 
+                remoteGame.isFavorite(), 
+                remoteGame.getTimestamp(), 
+                remoteGame.isHidden(), 
+                remoteGame.isAdult(), 
+                remoteGame.getRatio(), 
+                remoteGame.getRegion());
+
+        if(localGame.isFavorite()) {
+            
+        }
+
+        
+        return newGame;
+    }
+
+    public void setGame(Game newGame) {
+        String key = FilenameUtils.getBaseName(newGame.getPath());
+        Element elementGame = games.get(key).getLeft();
+        setGame(elementGame, newGame);
+    }
+    
+    //FIXME 0 CHECK IF MODIFICATIONS ARE PRESERVED IN RECALBOX
+    //And which one(s)
+    // (From memory only removeScraped works, but need to retest all and document this time)
+    private void setGame(Element elementGame, Game newGame) {
+        // TODO Gamelist - Do all other modified values !!
+        
+        setElementValue(elementGame, "favorite", newGame.isFavorite());
+        nbGamesModified++;
+    }
+
+    private void setElementValue(Element elementGame, String key, boolean value) {
+        Element element = XML.getElement(elementGame, key);
+        if(element!=null) {
+            element.setTextContent(String.valueOf(value));
+        } else {
+            Element createElement = doc.createElement(key);
+            createElement.setTextContent(String.valueOf(value));
+            elementGame.appendChild(createElement);
+        }
     }
 
     void removeScraped(Element remoteGameElement) {
@@ -192,5 +188,12 @@ public class Gamelist {
         removeElement(remoteGameElement, "video");
         removeElement(remoteGameElement, "players");
         nbGamesFixed++;
+    }
+
+    void removeElement(Element elementGame, String key) {
+        Element element = XML.getElement(elementGame, key);
+        if(element != null) {
+            elementGame.removeChild(element);
+        }
     }
 }
