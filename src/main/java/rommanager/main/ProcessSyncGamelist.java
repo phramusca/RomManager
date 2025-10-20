@@ -44,6 +44,16 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private final TableModelRom tableModel;
     private final ICallBackProcess callBack;
     private final StringBuilder gamelistLog = new StringBuilder();
+    // Counters for summary
+    private int consolesProcessed = 0;
+    private int totalGamesProcessed = 0;
+    private int gamesDeleted = 0;
+    private int gamesMissingMedia = 0;
+    private int gamesMissingLocal = 0;
+    private int gamesUpdateAttempts = 0;
+    private int gamelistsSaved = 0;
+    private int gamelistsDeleted = 0;
+    private int gamelistsCreated = 0;
 
     public ProcessSyncGamelist(
             String sourcePath,
@@ -69,6 +79,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             progressBarConsole.setup(Console.values().length);
             for (Console console : Console.values()) {
                 checkAbort();
+                consolesProcessed++;
                 progressBarConsole.progress(console.getName());
                 File remoteFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), "gamelist.xml"));
                 File backupFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), "gamelist.xml.bak"));
@@ -92,18 +103,23 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         Element remoteGameElement = entry.getLeft();
                         Game remoteGame = entry.getRight();
                         progressBarGame.progress(remoteGame.getName());
+                        totalGamesProcessed++;
                         File gameFile = new File(FilenameUtils.concat(FilenameUtils.concat(exportPath, console.getSourceFolderName()), remoteGame.getPath()));
                         if (!gameFile.exists()) {
                             gamelist.deleteGame(remoteGameElement);
+                            gamesDeleted++;
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) {
+                            gamesMissingMedia++;
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) {
+                            gamesMissingMedia++;
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) {
+                            gamesMissingMedia++;
                             continue;
                         }
 
@@ -117,23 +133,27 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             Game localGame = localVersion.getGame();
                             Game newGame = gamelist.compareGame(localGame, remoteGame);
                             gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
+                            gamesUpdateAttempts++;
                             if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
                                 BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
                             }
                             localVersion.setGame(newGame);
 
                         } else {
-                                String warn = keyVersion + " could not be found on " + console.getName();
-                                gamelistLog.append("[Missing] ").append(warn).append("\n");
+                            String warn = keyVersion + " could not be found on " + console.getName();
+                            gamelistLog.append("[Missing] ").append(warn).append("\n");
+                            gamesMissingLocal++;
                         }
                     }
                     if (gamelist.hasChanged()) {
                         gamelist.save();
                         gamelistLog.append("[Saved] gamelist for ").append(console.getName()).append(" updated.\n");
+                        gamelistsSaved++;
                     }
                     if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();
                         gamelistLog.append("[Deleted] empty gamelist for ").append(console.getName()).append(" removed.\n");
+                        gamelistsDeleted++;
                     } else {
                         //FIXME 1d Gamelist - Delete all media files not in gamelist
                         gamelists.put(console, gamelist);
@@ -145,11 +165,12 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             .map(r -> r.getExportableVersions())
                             .flatMap(List::stream)
                             .collect(Collectors.toList());
-
                     if (romVersionsForConsole.isEmpty()) {
-                        gamelistLog.append("[MissingGamelist] No gamelist.xml on remote for ").append(console.getName()).append(" and no local data.\n");
+                        // No gamelist and no local data: expected, ignore
                     } else {
                         gamelistLog.append("[MissingGamelist] No gamelist.xml on remote for ").append(console.getName()).append(" - local data found: ").append(romVersionsForConsole.size()).append(" entries.\n");
+                        // If creation implemented elsewhere, increment created counter when used
+                        // gamelistsCreated++;
                     }
                 }
             }
@@ -163,7 +184,20 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             progressBarGame.reset();
             //FIXME 1b Gamelist - display modification counters
             if (gamelistLog.length() > 0) {
-                Popup.showText("Sync game data complete", gamelistLog.toString());
+                StringBuilder summary = new StringBuilder();
+                summary.append("✅ Sync complete\n\n");
+                summary.append("📦 Consoles processed: ").append(consolesProcessed).append("\n");
+                summary.append("🎮 Games checked: ").append(totalGamesProcessed).append("\n");
+                summary.append("🔁 Update attempts: ").append(gamesUpdateAttempts).append("\n");
+                summary.append("⚠️ Missing locally: ").append(gamesMissingLocal).append("\n");
+                summary.append("🧾 Missing media: ").append(gamesMissingMedia).append("\n");
+                summary.append("🗑️ Games deleted: ").append(gamesDeleted).append("\n");
+                summary.append("💾 Gamelists saved: ").append(gamelistsSaved).append("\n");
+                summary.append("🗃️ Gamelists deleted: ").append(gamelistsDeleted).append("\n");
+                summary.append("➕ Gamelists created: ").append(gamelistsCreated).append("\n\n");
+                summary.append("Details:\n");
+                summary.append(gamelistLog.toString());
+                Popup.showText("Sync game data complete", summary.toString());
             } else {
                 Popup.info("Sync game data complete.");
             }
