@@ -19,10 +19,13 @@ package rommanager.main;
 import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.io.IOException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Element;
 import rommanager.utils.FileSystem;
@@ -73,7 +76,27 @@ public class ProcessSyncGamelist extends ProcessAbstract {
 
     @Override
     public void run() {
+        String sshHost = RomManager.options.get("romset.recalbox.ssh.host");
+        String sshUser = RomManager.options.get("romset.recalbox.ssh.user");
+        String sshPort = RomManager.options.get("romset.recalbox.ssh.port");
+        String sshKey = RomManager.options.get("romset.recalbox.ssh.key");
         try {
+            // If SSH host is configured, ask user whether we should stop EmulationStation during sync
+            if (sshHost != null && !sshHost.equals("{Missing}") && !sshHost.trim().isEmpty()) {
+                int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshHost + " during sync (will be restarted after)?", "Confirm sync", JOptionPane.YES_NO_OPTION);
+                if (ans == JOptionPane.YES_OPTION) {
+                    try {
+                        if (stopEmulationStation(sshHost, sshUser, sshPort, sshKey)) {
+                            gamelistLog.append("[Info] EmulationStation stopped on ").append(sshHost).append("\n");
+                        } else {
+                            gamelistLog.append("[Warn] Could not stop EmulationStation on ").append(sshHost).append(" - continuing without stop\n");
+                        }
+                    } catch (Exception ex) {
+                        Popup.error(ex);
+                        gamelistLog.append("[Error] Exception while stopping EmulationStation: ").append(ex.getMessage()).append("\n");
+                    }
+                }
+            }
             //Read all gamelist.xml files from export folder
             Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
@@ -203,9 +226,18 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             }
         } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Popup.error(ex);
         } finally {
+            // If we stopped EmulationStation earlier, try to start it again
+            try {
+                if (sshHost != null && !sshHost.equals("{Missing}") && !sshHost.trim().isEmpty()) {
+                    // attempt to restart (best-effort)
+                    startEmulationStation(sshHost, sshUser, sshPort, sshKey);
+                }
+            } catch (Exception ex) {
+                gamelistLog.append("[Warn] could not restart EmulationStation: ").append(ex.getMessage()).append("\n");
+            }
             callBack.completed();
         }
     }
@@ -219,6 +251,35 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             return false;
         }
         return true;
+    }
+
+    private boolean stopEmulationStation(String host, String user, String port, String key) throws IOException, InterruptedException {
+        List<String> cmd = new ArrayList<>();
+        cmd.add("ssh");
+        if (port != null && !port.equals("{Missing}") && !port.trim().isEmpty()) { cmd.add("-p"); cmd.add(port); }
+        if (key != null && !key.equals("{Missing}") && !key.trim().isEmpty()) { cmd.add("-i"); cmd.add(key); }
+        String target = (user != null && !user.equals("{Missing}") ? user + "@" + host : host);
+        cmd.add(target);
+        cmd.add("/etc/init.d/S31emulationstation stop");
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        Process p = pb.start();
+        int rc = p.waitFor();
+        return rc == 0;
+    }
+
+    private boolean startEmulationStation(String host, String user, String port, String key) throws IOException, InterruptedException {
+        List<String> cmd = new ArrayList<>();
+        cmd.add("ssh");
+        if (port != null && !port.equals("{Missing}") && !port.trim().isEmpty()) { cmd.add("-p"); cmd.add(port); }
+        if (key != null && !key.equals("{Missing}") && !key.trim().isEmpty()) { cmd.add("-i"); cmd.add(key); }
+        String target = (user != null && !user.equals("{Missing}") ? user + "@" + host : host);
+        cmd.add(target);
+        // start in background so ssh returns
+        cmd.add("/etc/init.d/S31emulationstation start &>/dev/null &");
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        Process p = pb.start();
+        int rc = p.waitFor();
+        return rc == 0;
     }
 
 }
