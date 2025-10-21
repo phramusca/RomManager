@@ -112,3 +112,52 @@ Read at startup (cheap but convenient sort of database).
 | snes | Super Nintendo |
 | supergrafx | NEC SuperGrafX |
 | virtualboy | Nintendo Virtual Boy |
+
+## Configuration SSH pour Recalbox
+
+RomManager peut arrêter/redémarrer EmulationStation sur une Recalbox distante pendant la synchronisation des gamelists. Deux modes d'authentification SSH sont supportés :
+
+### Authentification par clé SSH (recommandée)
+
+1. Générez une clé SSH sur la machine exécutant RomManager :
+   ```bash
+   ssh-keygen
+   ```
+
+2. Copiez la clé publique sur la Recalbox :
+   ```bash
+   ssh-copy-id root@recalbox.local
+   ```
+
+3. Dans `RomManager.properties`, configurez :
+   ```properties
+   romset.recalbox.ssh.key=~/.ssh/id_rsa
+   # Ou laissez vide pour utiliser la clé par défaut
+   ```
+
+### Authentification par mot de passe (pour tests)
+
+1. Installez `sshpass` sur la machine exécutant RomManager :
+   ```bash
+   sudo apt update && sudo apt install sshpass
+   ```
+
+2. Dans `RomManager.properties`, ajoutez :
+   ```properties
+   romset.recalbox.ssh.password=recalboxroot
+   ```
+
+Note de sécurité : stocker un mot de passe en clair n'est pas recommandé pour une utilisation durable. Préférez l'authentification par clé SSH.
+
+### Diagnostics SSH
+
+Si `sshpass` n'est pas installé et qu'un mot de passe est configuré, vous verrez :
+```
+[Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, Aucun fichier ou dossier de ce nom
+```
+
+Solutions :
+- Installez `sshpass` comme indiqué ci-dessus, ou
+- Passez à l'authentification par clé SSH (recommandé)
+
+```
