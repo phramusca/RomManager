@@ -101,6 +101,10 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
             for (Console console : Console.values()) {
+                // FIXME (temporary): limit sync to atari2600 for quick testing. Remove this after verification.
+                if (console != Console.atari2600) {
+                    continue;
+                }
                 checkAbort();
                 consolesProcessed++;
                 progressBarConsole.progress(console.getName());
