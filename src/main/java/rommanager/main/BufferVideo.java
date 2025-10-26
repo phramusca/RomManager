@@ -46,7 +46,7 @@ public class BufferVideo {
         } else {
             try {
                 //TODO: Offer at least a cache cleanup function (better would be a smart auto cleanup)
-                cacheFile = new File(FilenameUtils.concat("cache", FilenameUtils.concat("video", StringManager.removeIllegal(key)+".mp4")));
+                cacheFile = new File(FilenameUtils.concat("cache", FilenameUtils.concat("videos", StringManager.removeIllegal(key)+".mp4")));
                 if(!cacheFile.exists()) {
                     if(file.exists() && file.isFile()) {
                         FileSystem.copyFile(file, cacheFile);

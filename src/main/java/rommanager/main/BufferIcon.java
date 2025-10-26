@@ -101,7 +101,7 @@ public class BufferIcon {
     }
     
     private static File getCacheFile(String key) {
-        return new File(FilenameUtils.concat("cache", StringManager.removeIllegal(key)+".png")); //, "data", "cache", "book");
+        return new File(FilenameUtils.concat(FilenameUtils.concat("cache", "images"), StringManager.removeIllegal(key)+".png")); //, "data", "cache", "book");
     }
 
     private static ImageIcon readIcon(String key, String file) {
