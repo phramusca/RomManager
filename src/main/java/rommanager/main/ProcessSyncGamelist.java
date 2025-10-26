@@ -19,13 +19,15 @@ package rommanager.main;
 import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Element;
 import rommanager.utils.FileSystem;
@@ -46,7 +48,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private final ProgressBar progressBarGame;
     private final TableModelRom tableModel;
     private final ICallBackProcess callBack;
-    private final StringBuilder gamelistLog = new StringBuilder();
+    private final Map<String, Map<String, List<String>>> groupedLogs = new HashMap<>();
+    private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
     // Counters for summary
     private int consolesProcessed = 0;
     private int totalGamesProcessed = 0;
@@ -76,10 +79,10 @@ public class ProcessSyncGamelist extends ProcessAbstract {
 
     @Override
     public void run() {
-    
+
         try {
             Pair<Boolean, String> stopResult = EmulStation.stop();
-            gamelistLog.append(stopResult.getRight());
+            addLogEntry("system", "info", stopResult.getRight().trim());
 
             boolean emulationStationStopped = stopResult.getLeft();
 
@@ -121,18 +124,22 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         if (!gameFile.exists()) {
                             gamelist.deleteGame(remoteGameElement);
                             gamesDeleted++;
+                            addLogEntry(console.getName(), "deleted", remoteGame.getName() + " - file not found");
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getImage())) {
                             gamesMissingMedia++;
+                            addLogEntry(console.getName(), "missingMedia", remoteGame.getName() + " - image: " + remoteGame.getImage());
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getThumbnail())) {
                             gamesMissingMedia++;
+                            addLogEntry(console.getName(), "missingMedia", remoteGame.getName() + " - thumbnail: " + remoteGame.getThumbnail());
                             continue;
                         }
                         if (!checkMedia(console, gamelist, remoteGameElement, remoteGame.getVideo())) {
                             gamesMissingMedia++;
+                            addLogEntry(console.getName(), "missingMedia", remoteGame.getName() + " - video: " + remoteGame.getVideo());
                             continue;
                         }
 
@@ -147,6 +154,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                                 Game newGame = gamelist.compareGame(localGame, remoteGame);
                                 gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
                                 gamesUpdateAttempts++;
+                                addLogEntry(console.getName(), "updated", remoteGame.getName());
                                 if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
                                     BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
                                 }
@@ -159,20 +167,19 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             }
 
                         } else {
-                            String warn = keyVersion + " could not be found on " + console.getName();
-                            gamelistLog.append("[Missing] ").append(warn).append("\n");
                             gamesMissingLocal++;
+                            addLogEntry(console.getName(), "missing", keyVersion);
                         }
                     }
                     if (gamelist.hasChanged()) {
                         gamelist.save();
-                        gamelistLog.append("[Saved] gamelist for ").append(console.getName()).append(" updated.\n");
                         gamelistsSaved++;
+                        addLogEntry(console.getName(), "saved", "gamelist updated");
                     }
                     if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();
-                        gamelistLog.append("[Deleted] empty gamelist for ").append(console.getName()).append(" removed.\n");
                         gamelistsDeleted++;
+                        addLogEntry(console.getName(), "deleted", "empty gamelist removed");
                     } else {
                         //FIXME 1d Gamelist - Delete all media files not in gamelist
                         gamelists.put(console, gamelist);
@@ -187,7 +194,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                     if (romVersionsForConsole.isEmpty()) {
                         // No gamelist and no local data: expected, ignore
                     } else {
-                        gamelistLog.append("[MissingGamelist] No gamelist.xml on remote for ").append(console.getName()).append(" - local data found: ").append(romVersionsForConsole.size()).append(" entries.\n");
+                        addLogEntry(console.getName(), "missingGamelist", "No gamelist.xml on remote - local data found: " + romVersionsForConsole.size() + " entries");
                         // If creation implemented elsewhere, increment created counter when used
                         // gamelistsCreated++;
                     }
@@ -201,10 +208,14 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 callBack.actionPerformed();
             }
             progressBarGame.reset();
+
+            // Write grouped logs to file
+            writeLogFile();
+
             //FIXME 1b Gamelist - display modification counters
-            if (gamelistLog.length() > 0) {
+            if (!groupedLogs.isEmpty()) {
                 Pair<Boolean, String> startResult = EmulStation.start();
-                gamelistLog.append(startResult.getRight());
+                addLogEntry("system", "info", startResult.getRight().trim());
                 StringBuilder summary = new StringBuilder();
                 summary.append("Sync complete\n\n");
                 summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
@@ -216,8 +227,19 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 summary.append("Gamelists saved: ").append(gamelistsSaved).append("\n");
                 summary.append("Gamelists deleted: ").append(gamelistsDeleted).append("\n");
                 summary.append("Gamelists created: ").append(gamelistsCreated).append("\n\n");
-                summary.append("Details:\n");
-                summary.append(gamelistLog.toString());
+
+                // Add grouped summary
+                summary.append("Summary by console and type:\n");
+                for (Map.Entry<String, Map<String, List<String>>> consoleEntry : groupedLogs.entrySet()) {
+                    String console = consoleEntry.getKey();
+                    summary.append("- ").append(console).append(":\n");
+                    for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
+                        String type = typeEntry.getKey();
+                        int count = typeEntry.getValue().size();
+                        summary.append("  * ").append(type).append(": ").append(count).append("\n");
+                    }
+                }
+                summary.append("\nLog file: cache/gamelists/sync-").append(timestamp).append(".log\n");
                 Popup.showText("Sync game data complete", summary.toString());
             } else {
                 EmulStation.start();
@@ -241,5 +263,47 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             return false;
         }
         return true;
+    }
+
+    private void addLogEntry(String console, String type, String message) {
+        groupedLogs.computeIfAbsent(console, k -> new HashMap<>())
+                   .computeIfAbsent(type, k -> new ArrayList<>())
+                   .add(message);
+    }
+
+    private void writeLogFile() {
+        try {
+            File cacheDir = new File("cache/gamelists");
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs();
+            }
+            File logFile = new File(cacheDir, "sync-" + timestamp + ".log");
+            try (PrintWriter writer = new PrintWriter(logFile)) {
+                writer.println("RomManager Gamelist Sync Log - " + timestamp);
+                writer.println("=====================================");
+                writer.println();
+
+                for (Map.Entry<String, Map<String, List<String>>> consoleEntry : groupedLogs.entrySet()) {
+                    String console = consoleEntry.getKey();
+                    writer.println("Console: " + console);
+                    String dashes = new String(new char[console.length() + 9]).replace('\0', '-');
+                    writer.println(dashes);
+
+                    for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
+                        String type = typeEntry.getKey();
+                        List<String> messages = typeEntry.getValue();
+                        writer.println("  " + type.toUpperCase() + " (" + messages.size() + "):");
+                        for (String message : messages) {
+                            writer.println("    - " + message);
+                        }
+                        writer.println();
+                    }
+                    writer.println();
+                }
+            }
+        } catch (IOException ex) {
+            // Log error to console or handle it appropriately
+            System.err.println("[Error] Failed to write log file: " + ex.getMessage());
+        }
     }
 }
