@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 phramusca ( https://github.com/phramusca/ )
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import rommanager.utils.DateTime;
  * @author phramusca ( https://github.com/phramusca/JaMuz/ )
  */
 public class Game {
-   
+
 	private final String path;
     private final String hash; //Not used, what for ?
 	private final String name;
@@ -54,12 +54,25 @@ public class Game {
     private boolean adult;
     private final String ratio; //Not used, what for ?
     private final String region; //Not used, what for ?
+    private int timeplayed; // Temps de jeu en secondes (récupéré depuis Recalbox)
+    private long lastModifiedDate; // Date de dernière modification locale (pour comparaison avec Recalbox)
 
-	public Game(String path, String hash, String name, String desc, String image, 
-            String video, String thumbnail, float rating, String releaseDate, 
-			String developer, String publisher, String genre, String genreId, 
+	public Game(String path, String hash, String name, String desc, String image,
+            String video, String thumbnail, float rating, String releaseDate,
+			String developer, String publisher, String genre, String genreId,
             String players, int playcount, String lastplayed, boolean favorite,
             long timestamp, boolean hidden, boolean adult, String ratio, String region) {
+		this(path, hash, name, desc, image, video, thumbnail, rating, releaseDate,
+			 developer, publisher, genre, genreId, players, playcount, lastplayed,
+			 favorite, timestamp, hidden, adult, ratio, region, 0, 0);
+	}
+
+	public Game(String path, String hash, String name, String desc, String image,
+            String video, String thumbnail, float rating, String releaseDate,
+			String developer, String publisher, String genre, String genreId,
+            String players, int playcount, String lastplayed, boolean favorite,
+            long timestamp, boolean hidden, boolean adult, String ratio, String region,
+            int timeplayed, long lastModifiedDate) {
 		this.path = path;
         this.hash = hash;
 		this.name = name;
@@ -83,12 +96,14 @@ public class Game {
         this.adult = adult;
         this.ratio = ratio;
         this.region = region;
+        this.timeplayed = timeplayed;
+        this.lastModifiedDate = lastModifiedDate;
 	}
-    
+
 	public boolean delete(String rootPath) {
 		return getFile(rootPath).delete();
 	}
-	
+
 	public boolean exists(String rootPath) {
 		return getFile(rootPath).exists();
 	}
@@ -116,11 +131,11 @@ public class Game {
 	public String getGenre() {
 		return genre;
 	}
-    
+
     public List<String> getGenres() {
         return genres;
     }
-    
+
     public String getGenreId() {
 		return genreId;
 	}
@@ -136,7 +151,7 @@ public class Game {
     public String getVideo() {
 		return video;
 	}
-    
+
 	public String getThumbnail() {
 		return thumbnail;
 	}
@@ -144,28 +159,28 @@ public class Game {
     public String getReleaseDateFormatted() {
 		return DateTime.formatUTC(getDate(releaseDate), "MM/yyyy", false);
 	}
-    
+
     public String getReleaseDecade() {
         String year = DateTime.formatUTC(getDate(releaseDate), "yyyy", false);
         return (year.substring(0, year.length()-1))+"0's";
 	}
-    
+
 	public String getReleaseDateSql() {
 		return DateTime.formatUTCtoSqlUTC(getDate(releaseDate));
 	}
-    
+
     public String getReleaseDate() {
 		return releaseDate;
 	}
-    
+
     public String getLastplayedFormatted() {
 		return DateTime.formatUTC(getDate(lastplayed), "dd/MM/yyyy HH:mm:ss", false);
 	}
-    
+
     public String getLastplayed() {
 		return lastplayed;
 	}
-    
+
     public static Date getDate(String line) {
 		Pattern patterner = Pattern.compile("^(\\d{4})(\\d{2})(\\d{2})T(\\d{2})(\\d{2})(\\d{2})$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patterner.matcher(line);
@@ -184,7 +199,7 @@ public class Game {
 	private File getFile(String rootPath) {
 		return new File(FilenameUtils.concat(rootPath, path));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Game{"  + "\n"
@@ -207,7 +222,7 @@ public class Game {
 	public String getPath() {
 		return path;
 	}
-    
+
     public String getHash() {
 		return hash;
 	}
@@ -218,6 +233,14 @@ public class Game {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public int getTimeplayed() {
+        return timeplayed;
+    }
+
+    public long getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
     public boolean isHidden() {
@@ -246,5 +269,5 @@ public class Game {
 
     public void setAdult(boolean adult) {
         this.adult = adult;
-    }    
+    }
 }

@@ -156,4 +156,56 @@ public class GamelistTest {
         assertEquals(remoteGame.isHidden(), result.isHidden());
         assertEquals(remoteGame.isAdult(), result.isAdult());
     }
+    @Test
+    public void testCompareGame_TimeplayedAndLastModifiedDate() {
+        // Create a remote game (from Recalbox) with timeplayed=3600 (1 hour)
+        Game remoteGame = new Game("/path/to/rom.zip", "hash123", "Remote Name", "Description",
+                "/path/to/image.png", "/path/to/video.mp4", "/path/to/thumb.png", 4.5f,
+                "1990-01-01", "Developer", "Publisher", "Action", 
+                "25", "1-2", 0, "", false, 
+                1234567890L, false, false, "4/3", "US", 
+                3600, 1234567890L);
+
+        // Create a local game (from RomManager) with timeplayed=7200 (2 hours) and lastModifiedDate=1234567891L
+        Game localGame = new Game("/path/to/rom.zip", "hash123", "Local Name", "Local Description",
+                "/path/to/local/image.png", "/path/to/local/video.mp4", "/path/to/local/thumb.png", 3.0f,
+                "1991-01-01", "Local Developer", "Local Publisher", "Adventure", 
+                "26", "1", 5, "2023-01-01", false, 
+                1234567891L, false, false, "16/9", "EU", 
+                7200, 1234567891L);
+
+        Gamelist gamelist = new Gamelist(null);
+        Game result = gamelist.compareGame(localGame, remoteGame);
+
+        // Should use remote data as base (more complete metadata) but override timeplayed with local value
+        assertEquals(remoteGame.getPath(), result.getPath());
+        assertEquals(remoteGame.getName(), result.getName()); // Name comes from remote (more complete)
+        assertEquals(remoteGame.getDesc(), result.getDesc());
+        assertEquals(remoteGame.getImage(), result.getImage());
+        assertEquals(remoteGame.getVideo(), result.getVideo());
+        assertEquals(remoteGame.getThumbnail(), result.getThumbnail());
+        assertEquals(remoteGame.getRating(), result.getRating());
+        assertEquals(remoteGame.getReleaseDate(), result.getReleaseDate());
+        assertEquals(remoteGame.getDeveloper(), result.getDeveloper());
+        assertEquals(remoteGame.getPublisher(), result.getPublisher());
+        assertEquals(remoteGame.getGenre(), result.getGenre());
+        assertEquals(remoteGame.getGenreId(), result.getGenreId());
+        assertEquals(remoteGame.getPlayers(), result.getPlayers());
+        assertEquals(5, result.getPlaycount()); // Should take max of local (5) and remote (0)
+        assertEquals("2023-01-01", result.getLastplayed()); // Should take most recent date
+        assertEquals(1234567891L, result.getTimestamp()); // Should take most recent timestamp
+        assertEquals(remoteGame.getRatio(), result.getRatio());
+        assertEquals(remoteGame.getRegion(), result.getRegion());
+
+        // Timeplayed should come from remote (not modifiable locally)
+        assertEquals(3600, result.getTimeplayed(), "Timeplayed should come from remote");
+
+        // LastModifiedDate should come from local
+        assertEquals(1234567891L, result.getLastModifiedDate(), "LastModifiedDate should come from local");
+
+        // Local preferences should remain unchanged
+        assertFalse(result.isFavorite(), "Favorite should remain false");
+        assertFalse(result.isHidden(), "Hidden should remain false");
+        assertFalse(result.isAdult(), "Adult should remain false");
+    }
 }

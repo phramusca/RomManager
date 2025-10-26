@@ -95,7 +95,9 @@ Actuellement, seuls les champs suivants sont écrits/modifiés :
 1. **Lecture seule depuis Recalbox** si EmulationStation n'est pas stoppé
 2. **Écriture possible** si EmulationStation est stoppé
 3. **Préférences locales** (favorite/hidden/adult) prennent le dessus
-4. **Fusion intelligente** basée sur la complétude des métadonnées
+4. **Fusion intelligente** basée sur les timestamps pour déterminer les données les plus récentes
+5. **Champs modifiables localement** (favorite/hidden/adult/name) sont synchronisés selon la date de dernière modification
+6. **Champs non modifiables localement** (desc/rating/timeplayed/etc.) sont toujours pris depuis Recalbox
 
 ### Problèmes identifiés
 
