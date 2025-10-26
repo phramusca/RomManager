@@ -9,26 +9,43 @@ Voici une liste de choses à faire par l'IA
 
 ## Liste des taches
 
-1) Stop/Start emulationstation
-
-   - A finir:
-     - readme en anglais
-     - prévoir de ne pas faire la synchro vers recalbox si pas possible de fermer emulationstation (car sinon recalbox écrase les changements) et avertir l'utilisateur qu'il n'y aura que la lecture depuis recalbox mais pas sa mise à jour
-
-2) Amélioration des logs
-
-   - Grouper les logs par console et par type (missing, missingMedia, updated, deleted).
-   - Écrire dans `cache/gamelists/sync-<timestamp>.log`.
-   - Afficher un résumé groupé dans la popup finale.
-
-3) Finaliser la logique de comparaison/fusion
+1) Faire un état des lieux
 
    - Actuellement RomManager ne permet de modifier que name/favorite/hidden/adult
+   - Code source gamelist.xml : https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp (et.h)
+   - Faire un markdown pour lister tous les champs d'un game en xml, et si on le lit dans RomManager, si on l'écrit et les règles de synchro
+
+Example (sans tous les champs):
+
+```xml
+<game source="Recalbox" timestamp="1761076000">
+   <timeplayed>169</timeplayed>
+   <hash>BD08D915</hash>
+   <lastplayed>20251026T165737</lastplayed>
+   <playcount>1</playcount>
+   <genreid>257</genreid>
+   <genre>Plateforme</genre>
+   <publisher>Tigervision</publisher>
+   <developer>Tigervision</developer>
+   <releasedate>19820101T000000</releasedate>
+   <video>media/videos/Miner 2049er 319732c72fcae8a3fe94c43b8b66091e.mp4</video>
+   <thumbnail>media/thumbnails/Miner 2049er f5b2676350b791b6257df46391743cf6.png</thumbnail>
+   <image>media/images/Miner 2049er f5b2676350b791b6257df46391743cf6.png</image>
+   <desc>"Bounty Bob" exploite une mine radioactive en 2049. Aidez-le à "revendiquer" toutes les différentes stations (écrans multiples). Évitez tout contact avec les organismes mutants mortels en vous enfuyant ou en sautant dessus. Collectez divers articles laissés par les mineurs précédents pour des points bonus.</desc>
+   <ratio>auto</ratio>
+   <favorite>true</favorite>
+   <name>Miner 2049er</name>
+   <path>1_atari2600/Miner 2049er (1982) (Tigervision).zip</path>
+</game>
+```
+
+1) Finaliser la logique de comparaison/fusion
+
    - Si EmulStation pas stoppée: seulement lecture de recalbox
    - Il faut implémenter/compléter l'ébauche de code pour la syncro: compareGame, ...
    - Ajouter des tests unitaires pour `Gamelist.compareGame`.
 
-4) Interface : panneau d'options
+1) Interface : panneau d'options
 
    - Ajouter l'interface de configuration SSH.
    - Options avancées pour les règles d'import (NoIntro/Redump/RomM plus tard).

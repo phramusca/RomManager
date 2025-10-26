@@ -42,7 +42,9 @@ public class Gamelist {
 
     public Gamelist(File file) {
         this.file = file;
-        read();
+        if (file != null) {
+            read();
+        }
     }
     
     public void save() {
@@ -115,35 +117,88 @@ public class Gamelist {
     }
 
     public Game compareGame(Game localGame, Game remoteGame) {
-        Game newGame = new Game(remoteGame.getPath(), 
-                remoteGame.getHash(), 
-                remoteGame.getName(), 
-                remoteGame.getDesc(), 
-                remoteGame.getImage(), 
-                remoteGame.getVideo(), 
-                remoteGame.getThumbnail(), 
-                remoteGame.getRating(), 
-                remoteGame.getReleaseDate(), 
-                remoteGame.getDeveloper(), 
-                remoteGame.getPublisher(), 
-                remoteGame.getGenre(), 
-                remoteGame.getGenreId(), 
-                remoteGame.getPlayers(), 
-                remoteGame.getPlaycount(), 
-                remoteGame.getLastplayed(), 
-                remoteGame.isFavorite(), 
-                remoteGame.getTimestamp(), 
-                remoteGame.isHidden(), 
-                remoteGame.isAdult(), 
-                remoteGame.getRatio(), 
-                remoteGame.getRegion());
+        // Determine which game data is more recent based on timestamps
+        // For now, we prioritize local preferences for favorite/hidden/adult
+        // but use the most complete metadata from either source
 
-        if(localGame.isFavorite()) {
-            
+        // Start with the game that has more complete metadata
+        Game baseGame = chooseBaseGame(localGame, remoteGame);
+
+        // Create the merged game with local preferences taking precedence
+        Game mergedGame = new Game(
+                baseGame.getPath(),
+                baseGame.getHash(),
+                baseGame.getName(),
+                baseGame.getDesc(),
+                baseGame.getImage(),
+                baseGame.getVideo(),
+                baseGame.getThumbnail(),
+                baseGame.getRating(),
+                baseGame.getReleaseDate(),
+                baseGame.getDeveloper(),
+                baseGame.getPublisher(),
+                baseGame.getGenre(),
+                baseGame.getGenreId(),
+                baseGame.getPlayers(),
+                // For play statistics, use the most recent
+                Math.max(localGame.getPlaycount(), remoteGame.getPlaycount()),
+                // For last played, use the most recent date
+                chooseMostRecentDate(localGame.getLastplayed(), remoteGame.getLastplayed()),
+                // Local preferences always take precedence
+                localGame.isFavorite(),
+                // Use the most recent timestamp
+                Math.max(localGame.getTimestamp(), remoteGame.getTimestamp()),
+                localGame.isHidden(),
+                localGame.isAdult(),
+                baseGame.getRatio(),
+                baseGame.getRegion()
+        );
+
+        return mergedGame;
+    }
+
+    private Game chooseBaseGame(Game localGame, Game remoteGame) {
+        // Choose the game with more complete metadata
+        // Count non-null/empty fields
+        int localCompleteness = calculateCompleteness(localGame);
+        int remoteCompleteness = calculateCompleteness(remoteGame);
+
+        if (remoteCompleteness > localCompleteness) {
+            return remoteGame;
+        } else if (localCompleteness > remoteCompleteness) {
+            return localGame;
+        } else {
+            // If equal completeness, prefer remote (Recalbox) data as it's the "source of truth"
+            return remoteGame;
         }
+    }
 
-        
-        return newGame;
+    private int calculateCompleteness(Game game) {
+        int score = 0;
+        if (game.getName() != null && !game.getName().trim().isEmpty()) score++;
+        if (game.getDesc() != null && !game.getDesc().trim().isEmpty()) score++;
+        if (game.getImage() != null && !game.getImage().trim().isEmpty()) score++;
+        if (game.getVideo() != null && !game.getVideo().trim().isEmpty()) score++;
+        if (game.getThumbnail() != null && !game.getThumbnail().trim().isEmpty()) score++;
+        if (game.getReleaseDate() != null && !game.getReleaseDate().trim().isEmpty()) score++;
+        if (game.getDeveloper() != null && !game.getDeveloper().trim().isEmpty()) score++;
+        if (game.getPublisher() != null && !game.getPublisher().trim().isEmpty()) score++;
+        if (game.getGenre() != null && !game.getGenre().trim().isEmpty()) score++;
+        if (game.getPlayers() != null && !game.getPlayers().trim().isEmpty()) score++;
+        return score;
+    }
+
+    private String chooseMostRecentDate(String date1, String date2) {
+        if (date1 == null || date1.trim().isEmpty()) return date2;
+        if (date2 == null || date2.trim().isEmpty()) return date1;
+
+        try {
+            // Simple string comparison for dates in YYYY-MM-DD format
+            return date1.compareTo(date2) > 0 ? date1 : date2;
+        } catch (Exception e) {
+            // If parsing fails, prefer date1 (local)
+            return date1;
+        }
     }
 
     public void setGame(Game newGame) {
@@ -156,9 +211,15 @@ public class Gamelist {
     //And which one(s)
     // (From memory only removeScraped works, but need to retest all and document this time)
     private void setGame(Element elementGame, Game newGame) {
-        // TODO Gamelist - Do all other modified values !!
-        
+        // Set all modifiable values that RomManager manages
+
         setElementValue(elementGame, "favorite", newGame.isFavorite());
+        setElementValue(elementGame, "hidden", newGame.isHidden());
+        setElementValue(elementGame, "adult", newGame.isAdult());
+
+        // TODO: Add name modification if needed in future
+        // setElementValue(elementGame, "name", newGame.getName());
+
         nbGamesModified++;
     }
 
