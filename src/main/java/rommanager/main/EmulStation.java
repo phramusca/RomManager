@@ -37,7 +37,7 @@ public class EmulStation {
     
     public static Pair<Boolean, String> stop() {
         if (isConfigured()) {
-            int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshHost + " during sync (will be restarted after)?", "Confirm sync", JOptionPane.YES_NO_OPTION);
+            int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshHost + " during sync?\n\nWARNING: Any changes made in Recalbox UI will be lost if you haven't saved them first.\nMake sure to select 'Update game list' in Recalbox or restart Recalbox before syncing.\n\nEmulationStation will be restarted after sync.", "Confirm sync", JOptionPane.YES_NO_OPTION);
             if (ans == JOptionPane.YES_OPTION) {
                 try {
                     boolean success = stopEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword);
