@@ -78,8 +78,11 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     public void run() {
     
         try {
-            gamelistLog.append(EmulStation.stop());
-            
+            Pair<Boolean, String> stopResult = EmulStation.stop();
+            gamelistLog.append(stopResult.getRight());
+
+            boolean emulationStationStopped = stopResult.getLeft();
+
             //Read all gamelist.xml files from export folder
             Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
@@ -139,15 +142,21 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                                 .collect(Collectors.toList());
                         if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);
-                                // Use below code to enable updating, but needs to really implement compareGame function
                             Game localGame = localVersion.getGame();
-                            Game newGame = gamelist.compareGame(localGame, remoteGame);
-                            gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
-                            gamesUpdateAttempts++;
-                            if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
-                                BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
+                            if (emulationStationStopped) {
+                                Game newGame = gamelist.compareGame(localGame, remoteGame);
+                                gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
+                                gamesUpdateAttempts++;
+                                if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
+                                    BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
+                                }
+                                localVersion.setGame(newGame);
+                            } else {
+                                // Only read from Recalbox, no updates
+                                Game newGame = gamelist.compareGame(localGame, remoteGame);
+                                // Do not set the game back to gamelist, just update local version for display
+                                localVersion.setGame(newGame);
                             }
-                            localVersion.setGame(newGame);
 
                         } else {
                             String warn = keyVersion + " could not be found on " + console.getName();
@@ -194,7 +203,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             progressBarGame.reset();
             //FIXME 1b Gamelist - display modification counters
             if (gamelistLog.length() > 0) {
-                gamelistLog.append(EmulStation.start());
+                Pair<Boolean, String> startResult = EmulStation.start();
+                gamelistLog.append(startResult.getRight());
                 StringBuilder summary = new StringBuilder();
                 summary.append("Sync complete\n\n");
                 summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
@@ -210,6 +220,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 summary.append(gamelistLog.toString());
                 Popup.showText("Sync game data complete", summary.toString());
             } else {
+                EmulStation.start();
                 Popup.info("Sync game data complete.");
             }
         } catch (InterruptedException ex) {

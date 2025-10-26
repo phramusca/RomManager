@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import org.apache.commons.lang3.tuple.Pair;
 import rommanager.utils.Popup;
 
 /**
@@ -34,38 +35,40 @@ public class EmulStation {
     static String sshKey = RomManager.options.get("romset.recalbox.ssh.key");
     static String sshPassword = RomManager.options.get("romset.recalbox.ssh.password");
     
-    public static String stop() {
+    public static Pair<Boolean, String> stop() {
         if (isConfigured()) {
             int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshHost + " during sync (will be restarted after)?", "Confirm sync", JOptionPane.YES_NO_OPTION);
             if (ans == JOptionPane.YES_OPTION) {
                 try {
-                    if (stopEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword)) {
-                        return "[Info] EmulationStation stopped on ".concat(sshHost).concat("\n");
+                    boolean success = stopEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword);
+                    if (success) {
+                        return Pair.of(true, "[Info] EmulationStation stopped on ".concat(sshHost).concat("\n"));
                     } else {
-                        return "[Warn] Could not stop EmulationStation on ".concat(sshHost).concat(" - continuing without stop\n");
+                        return Pair.of(false, "[Warn] Could not stop EmulationStation on ".concat(sshHost).concat(" - continuing without stop\n"));
                     }
                 } catch (Exception ex) {
                     Popup.error(ex);
-                    return "[Error] Exception while stopping EmulationStation: ".concat(ex.getMessage()).concat("\n");
+                    return Pair.of(false, "[Error] Exception while stopping EmulationStation: ".concat(ex.getMessage()).concat("\n"));
                 }
             }
         }
-        return "[Info] SSH not configured, so EmulationStation NOT stopped.";
+        return Pair.of(false, "[Info] SSH not configured, so EmulationStation NOT stopped.");
     }
 
-    public static String start() {
+    public static Pair<Boolean, String> start() {
         if (isConfigured()) {
             try {
-                if (startEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword)) {
-                    return "[Info] EmulationStation started on ".concat(sshHost).concat(".\n");
+                boolean success = startEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword);
+                if (success) {
+                    return Pair.of(true, "[Info] EmulationStation started on ".concat(sshHost).concat(".\n"));
                 } else {
-                    return "[Warn] EmulationStation could not be started on ".concat(sshHost).concat(".\n");
+                    return Pair.of(false, "[Warn] EmulationStation could not be started on ".concat(sshHost).concat(".\n"));
                 }
             } catch (Exception ex) {
-                return "[Warn] Exception while starting EmulationStation before popup: ".concat(ex.getMessage()).concat("\n");
+                return Pair.of(false, "[Warn] Exception while starting EmulationStation before popup: ".concat(ex.getMessage()).concat("\n"));
             }
         }
-        return "[Info] SSH not configured, so EmulationStation NOT started.";
+        return Pair.of(false, "[Info] SSH not configured, so EmulationStation NOT started.");
     }
 
     private static boolean isConfigured() {

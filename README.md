@@ -113,56 +113,56 @@ Read at startup (cheap but convenient sort of database).
 | supergrafx | NEC SuperGrafX |
 | virtualboy | Nintendo Virtual Boy |
 
-## Configuration SSH pour Recalbox
+## SSH Configuration for Recalbox
 
-RomManager peut arrêter/redémarrer EmulationStation sur une Recalbox distante pendant la synchronisation des gamelists. Deux modes d'authentification SSH sont supportés :
+RomManager can stop/restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication modes are supported:
 
-### Authentification par clé SSH (recommandée)
+### SSH Key Authentication (recommended)
 
-1. Générez une clé SSH sur la machine exécutant RomManager :
+1. Generate an SSH key on the machine running RomManager:
 
    ```bash
    ssh-keygen
    ```
 
-2. Copiez la clé publique sur la Recalbox :
+2. Copy the public key to the Recalbox:
 
    ```bash
    ssh-copy-id root@recalbox.local
    ```
 
-3. Dans `RomManager.properties`, configurez :
+3. In `RomManager.properties`, configure:
 
    ```properties
    romset.recalbox.ssh.key=~/.ssh/id_rsa
-   # Ou laissez vide pour utiliser la clé par défaut
+   # Or leave empty to use the default key
    ```
 
-### Authentification par mot de passe (pour tests)
+### Password Authentication (for testing)
 
-1. Installez `sshpass` sur la machine exécutant RomManager :
+1. Install `sshpass` on the machine running RomManager:
 
    ```bash
    sudo apt update && sudo apt install sshpass
    ```
 
-2. Dans `RomManager.properties`, ajoutez :
+2. In `RomManager.properties`, add:
 
    ```properties
    romset.recalbox.ssh.password=recalboxroot
    ```
 
-Note de sécurité : stocker un mot de passe en clair n'est pas recommandé pour une utilisation durable. Préférez l'authentification par clé SSH.
+Security note: Storing a password in plain text is not recommended for long-term use. Prefer SSH key authentication.
 
-### Diagnostics SSH
+### SSH Diagnostics
 
-Si `sshpass` n'est pas installé et qu'un mot de passe est configuré, vous verrez :
+If `sshpass` is not installed and a password is configured, you will see:
 
 ```text
-[Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, Aucun fichier ou dossier de ce nom
+[Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, No such file or directory
 ```
 
-Solutions :
+Solutions:
 
-- Installez `sshpass` comme indiqué ci-dessus, ou
-- Passez à l'authentification par clé SSH (recommandé)
+- Install `sshpass` as indicated above, or
+- Switch to SSH key authentication (recommended)
