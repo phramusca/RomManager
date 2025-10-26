@@ -11,39 +11,66 @@ Code source gamelist.xml Recalbox :
 
 ### Classe Game.java - Champs supportés
 
-| Champ XML          | Type Java | Type champ                                 | Lecture XML | Écriture XML | Mod. ODS par GUI |     | TODO                             | Règle fusion | Utilisation                         |
-| ------------------ | --------- | ------------------------------------------ | ----------- | ------------ | ---------------- | --- | -------------------------------- | ------------ | ----------------------------------- |
-| path               | String    | File info                                  | ✅          | ❌           | ❌               |     | ok (Clé)                         | Base         | Chemin du fichier ROM               |
-| hash               | String    | File info                                  | ✅          | ❌           | ❌               |     | Calculer en local et comparer    | Base         | Hash CRC32 du ROM                   |
-| timestamp          | long      | ? Est-ce mis a jour au scrap et/ou modif ? | ✅          | ❌           | ❌               |     | Utiliser pour savoir plus récent | Plus récent  | Timestamp de dernière modification  |
-| playcount          | int       | User Stats                                 | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Maximum      | Nombre de parties jouées            |
-| lastplayed         | String    | User Stats                                 | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus récent  | Dernière fois joué                  |
-| timeplayed         | int       | User Stats                                 | ❌          | ❌           | ❌               |     | Lre de recalbox et afficher      | -            | Temps total de jeu (en secondes)    |
-| favorite           | boolean   | User                                       | ✅          | ✅           | ✅               |     | Sync, le plus récemment modifié  | Local        | Jeu favori (préférence utilisateur) |
-| hidden             | boolean   | User                                       | ✅          | ✅           | ✅               |     | Sync, le plus récemment modifié  | Local        | Jeu caché (préférence utilisateur)  |
-| adult              | boolean   | Scrappé / User                             | ✅          | ✅           | ✅               |     | Sync, le plus récemment modifié  | Local        | Jeu adulte (préférence utilisateur) |
-| name               | String    | Scrappé / User                             | ✅          | ❌           | ✅               |     | Sync, le plus récemment modifié  | Base         | Nom du jeu                          |
-| desc               | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Description                         |
-| rating             | float     | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus élevé   | Note/évaluation                     |
-| image              | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Chemin de l'image                   |
-| thumbnail          | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Chemin du thumbnail                 |
-| video              | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Chemin de la vidéo                  |
-| releasedate        | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus récent  | Date de sortie                      |
-| developer          | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Développeur                         |
-| publisher          | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Éditeur                             |
-| genre              | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Genre                               |
-| genreid            | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Base         | ID du genre                         |
-| players            | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Nombre de joueurs                   |
-| region             | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Région                              |
-| ratio              | String    | Scrappé                                    | ✅          | ❌           | ❌               |     | Prendre de recalbox              | Plus complet | Ratio d'écran                       |
-| emulator           | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Émulateur                           |
-| core               | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Core de l'émulateur                 |
-| lastPatch          | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Dernier patch appliqué              |
-| rotation           | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Rotation de l'écran                 |
-| lightgunluminosity | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Luminosité du lightgun              |
-| source             | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Source des métadonnées (attribut)   |
-| aliases            | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Alias du jeu                        |
-| licences           | -         |                                            | ❌          | ❌           | ❌               |     | plus tard, peut etre             | -            | Licences                            |
+| Champ XML          | Type Java | Type champ     | Lecture XML | Écriture XML | Mod. ODS par GUI | Modif Recalbox   | TODO                            | Règle fusion | Utilisation                         |
+| ------------------ | --------- | -------------- | ----------- | ------------ | ---------------- | ---------------- | ------------------------------- | ------------ | ----------------------------------- |
+| path               | String    | File info      | ✅          | ❌           | ❌               | Non              | ok (Clé)                        | Base         | Chemin du fichier ROM               |
+| hash               | String    | File info      | ✅          | ❌           | ❌               | Non              | Calculer en local et comparer   | Base         | Hash CRC32 du ROM                   |
+| playcount          | int       | User Stats     | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Maximum      | Nombre de parties jouées            |
+| lastplayed         | String    | User Stats     | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus récent  | Dernière fois joué                  |
+| timeplayed         | int       | User Stats     | ❌          | ❌           | ❌               | Non              | Lire de recalbox et afficher    | -            | Temps total de jeu (en secondes)    |
+| favorite           | boolean   | User           | ✅          | ✅           | ✅               | Oui              | Sync, le plus récemment modifié | Local        | Jeu favori (préférence utilisateur) |
+| hidden             | boolean   | User           | ✅          | ✅           | ✅               | Oui              | Sync, le plus récemment modifié | Local        | Jeu caché (préférence utilisateur)  |
+| adult              | boolean   | Scrappé / User | ✅          | ✅           | ✅               | Oui              | Sync, le plus récemment modifié | Local        | Jeu adulte (préférence utilisateur) |
+| name               | String    | Scrappé / User | ✅          | ❌           | ✅               | Oui              | Sync, le plus récemment modifié | Base         | Nom du jeu                          |
+| desc               | String    | Scrappé        | ✅          | ❌           | ❌               | Oui              | Prendre de recalbox             | Plus complet | Description                         |
+| rating             | float     | Scrappé        | ✅          | ❌           | ❌               | Oui              | Prendre de recalbox             | Plus élevé   | Note/évaluation                     |
+| image              | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Chemin de l'image                   |
+| thumbnail          | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Chemin du thumbnail                 |
+| video              | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Chemin de la vidéo                  |
+| releasedate        | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus récent  | Date de sortie                      |
+| developer          | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Développeur                         |
+| publisher          | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Éditeur                             |
+| genre              | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Genre                               |
+| genreid            | String    | Scrappé        | ✅          | ❌           | ❌               | Oui (ou genre ?) | Prendre de recalbox             | Base         | ID du genre                         |
+| players            | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Nombre de joueurs                   |
+| region             | String    | Scrappé        | ✅          | ❌           | ❌               | Non              | Prendre de recalbox             | Plus complet | Région                              |
+| ratio              | String    | Scrappé        | ✅          | ❌           | ❌               | Oui (marche ?)   | Prendre de recalbox             | Plus complet | Ratio d'écran                       |
+| emulator           | -         |                | ❌          | ❌           | ❌               | Oui              | plus tard, peut etre            | -            | Émulateur                           |
+| core               | -         |                | ❌          | ❌           | ❌               | Oui              | plus tard, peut etre            | -            | Core de l'émulateur                 |
+| rotation           | -         |                | ❌          | ❌           | ❌               | Oui              | plus tard, peut etre            | -            | Rotation de l'écran                 |
+| lastPatch          | -         |                | ❌          | ❌           | ❌               | ???              | plus tard, peut etre            | -            | Dernier patch appliqué              |
+| lightgunluminosity | -         |                | ❌          | ❌           | ❌               | ???              | plus tard, peut etre            | -            | Luminosité du lightgun              |
+| aliases            | -         |                | ❌          | ❌           | ❌               | ???              | plus tard, peut etre            | -            | Alias du jeu                        |
+| licences           | -         |                | ❌          | ❌           | ❌               | ???              | plus tard, peut etre            | -            | Licences                            |
+| timestamp          | long      | Scrap info     | ✅          | ❌           | ❌               | Non              | ok                              | Plus récent  | Timestamp du scrap seulement !      |
+| source             | -         | Scrap info     | ❌          | ❌           | ❌               | nON              | -                               | -            | Toujours "Recalbox" (attribut).     |
+
+Voici un exemple avec tous les champs possiblement trouvés
+
+```xml
+<game source="Recalbox" timestamp="1760820863">
+   <rotation>Left</rotation>
+   <hash>2ABD0059</hash>
+   <region>us,eu</region>
+   <adult>true</adult>
+   <genreid>512</genreid>
+   <genre>Aventure</genre>
+   <publisher>SEGA</publisher>
+   <developer>Novotrade</developer>
+   <releasedate>19921201T000000</releasedate>
+   <video>media/videos/Ecco The Dolphin 52dbcf7bfbd5461815aabfa07d0dc4f8.mp4</video>
+   <thumbnail>media/thumbnails/Ecco The Dolphin 5cd758108dd246c28ea024fc3602ef8f.png</thumbnail>
+   <image>media/images/Ecco The Dolphin 5cd758108dd246c28ea024fc3602ef8f.png</image>
+   <desc>Ecco the Dolphin sur Megadrive est un jeu d'action qui a l'originalité de mettre le joueur aux commandes d'un dauphin. L'histoire débute lorsque Ecco assiste impuissant à la disparition de tout l'écosystème, emporté par une mystérieuse tempête. 25 niveaux durant, explorez les abîmes et résolvez de nombreuses énigmes afin de ramener le calme au sein de la crique.</desc>
+   <core>genesisplusgx</core>
+   <emulator>libretro</emulator>
+   <hidden>true</hidden>
+   <favorite>true</favorite>
+   <rating>0.75</rating>
+   <name>ECCO The Dolphin</name>
+   <path>2_JDG_3_ULTRA_DUR_megadrive/ECCO The Dolphin (UE) [T+Fre].zip</path>
+</game>
+```
 
 ### Lecture depuis gamelist.xml
 
