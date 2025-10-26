@@ -162,8 +162,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, destination));
                     String ext = FilenameUtils.getExtension(filename);
                     if (ext.equals("7z")) {
-                        try (SevenZFile sevenZFile = new SevenZFile(new File(
-                                FilenameUtils.concat(sourceFolder, filename)))) {
+                        try (SevenZFile sevenZFile = SevenZFile.builder().setFile(new File(
+                                FilenameUtils.concat(sourceFolder, filename))).get()) {
                             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
                             while (entry != null) {
                                 if (entry.getName().equals(romVersion.getFilename())) {

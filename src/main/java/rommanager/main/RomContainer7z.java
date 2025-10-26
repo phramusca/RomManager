@@ -42,7 +42,7 @@ public class RomContainer7z extends RomContainer {
 
     public void setVersions(ProgressBar progressBar, String path) throws IOException {
         File sourceFile = new File(FilenameUtils.concat(path, filename));
-        try (SevenZFile sevenZFile = new SevenZFile(sourceFile)) {
+        try (SevenZFile sevenZFile = SevenZFile.builder().setFile(sourceFile).get()) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             String name;
             String msg = progressBar.getString();
