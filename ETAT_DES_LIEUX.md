@@ -71,39 +71,39 @@ D'après la spécification Recalbox (MetadataDescriptor.cpp) et l'exemple fourni
 
 ### Classe Game.java - Champs supportés
 
-| Champ XML          | Type Java | Lecture (Read) | Écriture (Write) | Commentaires                                      |
-| ------------------ | --------- | -------------- | ---------------- | ------------------------------------------------- |
-| path               | String    | ✅             | ❌               | Chemin du fichier ROM                             |
-| name               | String    | ✅             | ❌               | Nom du jeu                                        |
-| aliases            | -         | ❌             | ❌               | Alias du jeu (manquant)                           |
-| licences           | -         | ❌             | ❌               | Licences (manquant)                               |
-| rating             | float     | ✅             | ❌               | Note/évaluation                                   |
-| favorite           | boolean   | ✅             | ✅               | Jeu favori                                        |
-| hidden             | boolean   | ✅             | ✅               | Jeu caché                                         |
-| emulator           | -         | ❌             | ❌               | Émulateur (manquant)                              |
-| core               | -         | ❌             | ❌               | Core de l'émulateur (manquant)                    |
-| ratio              | String    | ✅             | ❌               | Ratio d'écran (non utilisé)                       |
-| desc               | String    | ✅             | ❌               | Description                                       |
-| image              | String    | ✅             | ❌               | Chemin de l'image                                 |
-| thumbnail          | String    | ✅             | ❌               | Chemin du thumbnail (non utilisé, même que image) |
-| video              | String    | ✅             | ❌               | Chemin de la vidéo                                |
-| releasedate        | String    | ✅             | ❌               | Date de sortie                                    |
-| developer          | String    | ✅             | ❌               | Développeur                                       |
-| publisher          | String    | ✅             | ❌               | Éditeur                                           |
-| genre              | String    | ✅             | ❌               | Genre                                             |
-| genreid            | String    | ✅             | ❌               | ID du genre (non utilisé)                         |
-| adult              | boolean   | ✅             | ✅               | Jeu adulte                                        |
-| players            | String    | ✅             | ❌               | Nombre de joueurs                                 |
-| region             | String    | ✅             | ❌               | Région (non utilisé)                              |
-| playcount          | int       | ✅             | ❌               | Nombre de parties jouées                          |
-| lastplayed         | String    | ✅             | ❌               | Dernière fois joué                                |
-| hash               | String    | ✅             | ❌               | Hash CRC32 du ROM (non utilisé)                   |
-| lastPatch          | -         | ❌             | ❌               | Dernier patch appliqué (manquant)                 |
-| rotation           | -         | ❌             | ❌               | Rotation de l'écran (manquant)                    |
-| timeplayed         | -         | ❌             | ❌               | Temps total de jeu (manquant)                     |
-| lightgunluminosity | -         | ❌             | ❌               | Luminosité du lightgun (manquant)                 |
-| timestamp          | long      | ✅             | ❌               | Timestamp (non utilisé)                           |
-| source             | -         | ❌             | ❌               | Source des métadonnées (attribut, manquant)       |
+| Champ XML          | Type Java | Lecture XML | Modification par GUI | Commentaires                                      |
+| ------------------ | --------- | ----------- | -------------------- | ------------------------------------------------- |
+| path               | String    | ✅          | ❌                   | Chemin du fichier ROM                             |
+| name               | String    | ✅          | ❌                   | Nom du jeu                                        |
+| timestamp          | long      | ✅          | ❌                   | Timestamp (non utilisé)                           |
+| hash               | String    | ✅          | ❌                   | Hash CRC32 du ROM (non utilisé)                   |
+| desc               | String    | ✅          | ❌                   | Description                                       |
+| rating             | float     | ✅          | ❌                   | Note/évaluation                                   |
+| favorite           | boolean   | ✅          | ✅                   | Jeu favori                                        |
+| hidden             | boolean   | ✅          | ✅                   | Jeu caché                                         |
+| adult              | boolean   | ✅          | ✅                   | Jeu adulte                                        |
+| playcount          | int       | ✅          | ❌                   | Nombre de parties jouées                          |
+| lastplayed         | String    | ✅          | ❌                   | Dernière fois joué                                |
+| image              | String    | ✅          | ❌                   | Chemin de l'image                                 |
+| thumbnail          | String    | ✅          | ❌                   | Chemin du thumbnail (non utilisé, même que image) |
+| video              | String    | ✅          | ❌                   | Chemin de la vidéo                                |
+| releasedate        | String    | ✅          | ❌                   | Date de sortie                                    |
+| developer          | String    | ✅          | ❌                   | Développeur                                       |
+| publisher          | String    | ✅          | ❌                   | Éditeur                                           |
+| genre              | String    | ✅          | ❌                   | Genre                                             |
+| genreid            | String    | ✅          | ❌                   | ID du genre (non utilisé)                         |
+| players            | String    | ✅          | ❌                   | Nombre de joueurs                                 |
+| region             | String    | ✅          | ❌                   | Région (non utilisé)                              |
+| ratio              | String    | ✅          | ❌                   | Ratio d'écran (non utilisé)                       |
+| emulator           | -         | ❌          | ❌                   | Émulateur (manquant)                              |
+| core               | -         | ❌          | ❌                   | Core de l'émulateur (manquant)                    |
+| lastPatch          | -         | ❌          | ❌                   | Dernier patch appliqué (manquant)                 |
+| rotation           | -         | ❌          | ❌                   | Rotation de l'écran (manquant)                    |
+| timeplayed         | -         | ❌          | ❌                   | Temps total de jeu (manquant)                     |
+| lightgunluminosity | -         | ❌          | ❌                   | Luminosité du lightgun (manquant)                 |
+| source             | -         | ❌          | ❌                   | Source des métadonnées (attribut, manquant)       |
+| aliases            | -         | ❌          | ❌                   | Alias du jeu (manquant)                           |
+| licences           | -         | ❌          | ❌                   | Licences (manquant)                               |
 
 ### Champs manquants dans Game.java
 
