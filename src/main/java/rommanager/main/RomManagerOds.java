@@ -217,6 +217,11 @@ public class RomManagerOds {
 			Sheet sheet = spreadSheet.getSheet(SHEET_NAME);
 			int nRowCount = sheet.getRowCount();
 			progressBarGame.setup(nRowCount-1);	
+			// Check number of columns to handle compatibility with old ODS files
+			int totalColumns = sheet.getColumnCount();
+			//TODO: Remove hasNewColumns once latest ODS file has the new TimePlayed and LastModifiedDate columns
+			boolean hasNewColumns = totalColumns >= 41; // Check if file has the new TimePlayed and LastModifiedDate columns
+			
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
 				Console console=null;
@@ -262,8 +267,16 @@ public class RomManagerOds {
                 String ratio = row.getValue(i++);
                 String region = row.getValue(i++);
                 Long timestamp = Long.valueOf(row.getValue(i++));
-                Integer timeplayed = Integer.valueOf((row.getValue(i++) == null || row.getValue(i-1).trim().isEmpty()) ? "0" : row.getValue(i-1));
-                Long lastModifiedDate = Long.valueOf((row.getValue(i++) == null || row.getValue(i-1).trim().isEmpty()) ? "0" : row.getValue(i-1));
+                
+                // Read new columns only if they exist (compatibility with old ODS files)
+                Integer timeplayed = 0;
+                Long lastModifiedDate = 0L;
+                if (hasNewColumns) {
+                    String timeplayedStr = row.getValue(i++);
+                    timeplayed = Integer.valueOf((timeplayedStr == null || timeplayedStr.trim().isEmpty()) ? "0" : timeplayedStr);
+                    String lastModifiedDateStr = row.getValue(i++);
+                    lastModifiedDate = Long.valueOf((lastModifiedDateStr == null || lastModifiedDateStr.trim().isEmpty()) ? "0" : lastModifiedDateStr);
+                }
                 
                 String url = row.getValue(i++);
                 String title = row.getValue(i++);
