@@ -124,31 +124,31 @@ public class Gamelist {
     }
 
     public Game compareGame(Game localGame, Game remoteGame) {
-        // Règles de synchronisation basées sur les timestamps selon ETAT_DES_LIEUX.md
+        // Synchronization rules based on timestamps according to ETAT_DES_LIEUX.md
         
-        // Champs modifiables localement : utiliser le plus récemment modifié
-        // Comparer lastModifiedDate local (venant de RomManager/ODS) avec lastModifiedDate remote (venant du XML)
-        // Si lastModifiedDate local est 0 (ancien code), utiliser la logique de fallback (local prend le dessus)
+        // Locally modifiable fields: use the most recently modified
+        // Compare local lastModifiedDate (from RomManager/ODS) with remote lastModifiedDate (from XML)
+        // If local lastModifiedDate is 0 (old code), use fallback logic (local takes precedence)
         boolean isLocalNewer;
         if (localGame.getLastModifiedDate() == 0) {
-            // Ancien code : local prend toujours le dessus
+            // Old code: local always takes precedence
             isLocalNewer = true;
         } else {
-            // Nouveau code : comparer les timestamps
+            // New code: compare timestamps
             isLocalNewer = localGame.getLastModifiedDate() > remoteGame.getLastModifiedDate();
         }
         
         boolean favorite = isLocalNewer ? localGame.isFavorite() : remoteGame.isFavorite();
         boolean hidden = isLocalNewer ? localGame.isHidden() : remoteGame.isHidden();
         boolean adult = isLocalNewer ? localGame.isAdult() : remoteGame.isAdult();
-        // Le nom vient toujours du distant (plus complet) selon les tests existants
+        // Name always comes from remote (more complete) according to existing tests
         String name = remoteGame.getName();
 
-        // Champs avec règles spéciales selon ETAT_DES_LIEUX.md
-        // playcount: Maximum (règle Maximum)
+        // Fields with special rules according to ETAT_DES_LIEUX.md
+        // playcount: Maximum (Maximum rule)
         int playcount = Math.max(localGame.getPlaycount(), remoteGame.getPlaycount());
         
-        // lastplayed: Plus récent (règle Plus récent)
+        // lastplayed: Most recent (Most recent rule)
         String lastplayed;
         if (localGame.getLastplayed().isEmpty() && remoteGame.getLastplayed().isEmpty()) {
             lastplayed = "";
@@ -161,12 +161,14 @@ public class Gamelist {
                         localGame.getLastplayed() : remoteGame.getLastplayed();
         }
         
-        // timestamp: Plus récent (règle Plus récent)
+        // timestamp: Most recent (Most recent rule)
         long timestamp = Math.max(localGame.getTimestamp(), remoteGame.getTimestamp());
 
-        // Champs non modifiables localement : toujours prendre depuis Recalbox
+        // Non-locally modifiable fields: always take from Recalbox
         // (desc, rating, image, thumbnail, video, releasedate, developer, publisher, 
         //  genre, genreid, players, region, ratio, timeplayed)
+        // Note: remoteGame.getLastModifiedDate() contains the lastModified of the XML file
+        //       localGame.getLastModifiedDate() contains the local modification date (RomManager/ODS)
         
         return new Game(
             remoteGame.getPath(),
@@ -192,7 +194,7 @@ public class Gamelist {
             remoteGame.getRatio(),
             remoteGame.getRegion(),
             remoteGame.getTimeplayed(),
-            localGame.getLastModifiedDate() // Garder la valeur locale (venant de RomManager/ODS)
+            localGame.getLastModifiedDate() // Keep local value (from RomManager/ODS)
         );
     }
     

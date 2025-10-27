@@ -55,7 +55,7 @@ public class Game {
     private final String ratio; //Not used, what for ?
     private final String region; //Not used, what for ?
     private int timeplayed;
-    private long lastModifiedDate; // lastModified du fichier XML OU Date de dernière modification depuis RomManager (via ODS)
+    private long lastModifiedDate; // lastModified of XML file OR last modification date from RomManager (via ODS)
 
 	public Game(String path, String hash, String name, String desc, String image,
             String video, String thumbnail, float rating, String releaseDate,
