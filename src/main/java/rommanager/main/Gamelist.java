@@ -123,12 +123,12 @@ public class Gamelist {
         return nbGamesDeleted>0 || nbGamesFixed>0 || nbGamesModified>0;
     }
 
-    public Game compareGame(Game localGame, Game remoteGame) {
-        // Synchronization rules based on timestamps according to ETAT_DES_LIEUX.md
+    public GameComparisonResult compareGame(Game localGame, Game remoteGame) {
+        // Synchronization rules based on timestamps according to TODO.md
         
         // Locally modifiable fields: use the most recently modified
         // Compare local lastModifiedDate (from RomManager/ODS) with remote lastModifiedDate (from XML)
-        // If local lastModifiedDate is 0 (old code), use fallback logic (local takes precedence)
+        // If local lastModifiedDate is 0 (old code), use fallback logic (recalbox takes precedence)
         boolean isLocalNewer;
         if (localGame.getLastModifiedDate() == 0) {
             // Old code: recalbox always takes precedence
@@ -143,10 +143,21 @@ public class Gamelist {
         boolean adult = isLocalNewer ? localGame.isAdult() : remoteGame.isAdult();
         String name = isLocalNewer ? localGame.getName() : remoteGame.getName();
 
-        // Note: remoteGame.getLastModifiedDate() contains the lastModified of the XML file
-        //       localGame.getLastModifiedDate() contains the local modification date (RomManager/ODS)
+        // Detect if any locally modifiable fields have actually changed
+        boolean hasChanged = false;
+        if (isLocalNewer) {
+            // Local is newer, check if any local preferences differ from remote
+            hasChanged = (localGame.isFavorite() != remoteGame.isFavorite()) ||
+                        (localGame.isHidden() != remoteGame.isHidden()) ||
+                        (localGame.isAdult() != remoteGame.isAdult()) ||
+                        (!localGame.getName().equals(remoteGame.getName()));
+        }
+        // If recalbox is newer (fallback mode), no changes from local side
         
-        return new Game(
+        // Use current time as the last modified date for the synchronized game
+        long currentTime = System.currentTimeMillis();
+        
+        Game resultGame = new Game(
             remoteGame.getPath(),
             remoteGame.getHash(),
             name,
@@ -170,8 +181,10 @@ public class Gamelist {
             remoteGame.getRatio(),
             remoteGame.getRegion(),
             remoteGame.getTimeplayed(),
-            localGame.getLastModifiedDate() // FIXME: We need to use the last modified/updated date. But this may be only available after writing xml and/or ods. So, need to be careful with this.
+            currentTime // Use current time as the synchronized last modified date
         );
+        
+        return new GameComparisonResult(resultGame, hasChanged);
     }
     
     public void setGame(Game newGame) {

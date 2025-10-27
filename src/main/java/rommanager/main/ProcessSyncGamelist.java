@@ -56,7 +56,9 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private int gamesDeleted = 0;
     private int gamesMissingMedia = 0;
     private int gamesMissingLocal = 0;
-    private int gamesUpdateAttempts = 0;
+    private int gamesUpdated = 0;
+    private int gamesUnchanged = 0;
+    private int gamesSkipped = 0;
     private int gamelistsSaved = 0;
     private int gamelistsDeleted = 0;
     private int gamelistsCreated = 0;
@@ -148,31 +150,44 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         if (collect.size() == 1) {
                             RomVersion localVersion = collect.get(0);
                             Game localGame = localVersion.getGame();
+                            
+                            // Compare games to get synchronized result and change detection
+                            GameComparisonResult comparisonResult = gamelist.compareGame(localGame, remoteGame);
+                            Game synchronizedGame = comparisonResult.getGame();
+                            
                             if (emulationStationStopped) {
-                                Game newGame = gamelist.compareGame(localGame, remoteGame);
-                                gamelist.setGame(newGame); // Gamelist - set as changed (if changed of course) so that it is saved later
-                                gamesUpdateAttempts++;
-                                addLogEntry(console.getName(), "updated", remoteGame.getName());
-                                if (newGame.getImage() != null && !newGame.getImage().trim().equals("")) {
-                                    BufferIcon.checkOrGetCoverIcon(newGame.getName(), FilenameUtils.concat(consolePath, newGame.getImage()));
+                                if (comparisonResult.hasChanged()) {
+                                    // Game has local changes that need to be saved
+                                    gamelist.setGame(synchronizedGame);
+                                    gamesUpdated++;
+                                    addLogEntry(console.getName(), "updated", remoteGame.getName() + " - local changes applied");
+                                    
+                                    if (synchronizedGame.getImage() != null && !synchronizedGame.getImage().trim().equals("")) {
+                                        BufferIcon.checkOrGetCoverIcon(synchronizedGame.getName(), FilenameUtils.concat(consolePath, synchronizedGame.getImage()));
+                                    }
+                                } else {
+                                    // No local changes, just synchronized for display
+                                    gamesUnchanged++;
+                                    addLogEntry(console.getName(), "unchanged", remoteGame.getName() + " - no local changes");
                                 }
-                                localVersion.setGame(newGame);
                             } else {
-                                // Only read from Recalbox, no updates
-                                Game newGame = gamelist.compareGame(localGame, remoteGame);
-                                // Do not set the game back to gamelist, just update local version for display
-                                localVersion.setGame(newGame);
+                                // EmulationStation is running, only read from Recalbox
+                                gamesSkipped++;
+                                addLogEntry(console.getName(), "skipped", remoteGame.getName() + " - EmulationStation running");
                             }
+                            
+                            // Always update local version with synchronized game for display
+                            localVersion.setGame(synchronizedGame);
 
                         } else {
                             gamesMissingLocal++;
                             addLogEntry(console.getName(), "missing", keyVersion);
                         }
                     }
-                    if (gamelist.hasChanged()) {
+                    if (gamelist.hasChanged() && gamesUpdated > 0) {
                         gamelist.save();
                         gamelistsSaved++;
-                        addLogEntry(console.getName(), "saved", "gamelist updated");
+                        addLogEntry(console.getName(), "saved", "gamelist updated with " + gamesUpdated + " changes");
                     }
                     if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();
@@ -218,7 +233,9 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 summary.append("Sync complete\n\n");
                 summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
                 summary.append("Games checked: ").append(totalGamesProcessed).append("\n");
-                summary.append("Update attempts: ").append(gamesUpdateAttempts).append("\n");
+                summary.append("Games updated: ").append(gamesUpdated).append("\n");
+                summary.append("Games unchanged: ").append(gamesUnchanged).append("\n");
+                summary.append("Games skipped: ").append(gamesSkipped).append("\n");
                 summary.append("Missing locally: ").append(gamesMissingLocal).append("\n");
                 summary.append("Missing media: ").append(gamesMissingMedia).append("\n");
                 summary.append("Games deleted: ").append(gamesDeleted).append("\n");

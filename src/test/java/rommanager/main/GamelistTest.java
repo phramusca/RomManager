@@ -24,32 +24,33 @@ public class GamelistTest {
 
         // We don't need the file for this test, just test the compareGame method directly
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
         // Should use remote data as base (more complete metadata) but override favorite with local preference
-        assertEquals(remoteGame.getPath(), result.getPath());
-        assertEquals(remoteGame.getName(), result.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
-        assertEquals(remoteGame.getDesc(), result.getDesc());
-        assertEquals(remoteGame.getImage(), result.getImage());
-        assertEquals(remoteGame.getVideo(), result.getVideo());
-        assertEquals(remoteGame.getThumbnail(), result.getThumbnail());
-        assertEquals(remoteGame.getRating(), result.getRating());
-        assertEquals(remoteGame.getReleaseDate(), result.getReleaseDate());
-        assertEquals(remoteGame.getDeveloper(), result.getDeveloper());
-        assertEquals(remoteGame.getPublisher(), result.getPublisher());
-        assertEquals(remoteGame.getGenre(), result.getGenre());
-        assertEquals(remoteGame.getGenreId(), result.getGenreId());
-        assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
-        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
-        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
-        assertEquals(remoteGame.getRatio(), result.getRatio());
-        assertEquals(remoteGame.getRegion(), result.getRegion());
+        assertEquals(remoteGame.getPath(), game.getPath());
+        assertEquals(remoteGame.getName(), game.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
+        assertEquals(remoteGame.getDesc(), game.getDesc());
+        assertEquals(remoteGame.getImage(), game.getImage());
+        assertEquals(remoteGame.getVideo(), game.getVideo());
+        assertEquals(remoteGame.getThumbnail(), game.getThumbnail());
+        assertEquals(remoteGame.getRating(), game.getRating());
+        assertEquals(remoteGame.getReleaseDate(), game.getReleaseDate());
+        assertEquals(remoteGame.getDeveloper(), game.getDeveloper());
+        assertEquals(remoteGame.getPublisher(), game.getPublisher());
+        assertEquals(remoteGame.getGenre(), game.getGenre());
+        assertEquals(remoteGame.getGenreId(), game.getGenreId());
+        assertEquals(remoteGame.getPlayers(), game.getPlayers());
+        assertEquals(0, game.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", game.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, game.getTimestamp()); // Should take from Recalbox (1234567890L)
+        assertEquals(remoteGame.getRatio(), game.getRatio());
+        assertEquals(remoteGame.getRegion(), game.getRegion());
 
         // In fallback mode (lastModifiedDate=0), recalbox takes precedence
-        assertFalse(result.isFavorite(), "In fallback mode, recalbox takes precedence");
-        assertFalse(result.isHidden(), "Hidden should remain false");
-        assertFalse(result.isAdult(), "Adult should remain false");
+        assertFalse(game.isFavorite(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isHidden(), "Hidden should remain false");
+        assertFalse(game.isAdult(), "Adult should remain false");
     }
 
     @Test
@@ -65,11 +66,12 @@ public class GamelistTest {
                 false, 1234567891L, true, false, "16/9", "EU"); // hidden=true
 
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
-        assertFalse(result.isHidden(), "In fallback mode, recalbox takes precedence");
-        assertFalse(result.isFavorite(), "Favorite should remain false");
-        assertFalse(result.isAdult(), "Adult should remain false");
+        assertFalse(game.isHidden(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isFavorite(), "Favorite should remain false");
+        assertFalse(game.isAdult(), "Adult should remain false");
     }
 
     @Test
@@ -85,11 +87,12 @@ public class GamelistTest {
                 false, 1234567891L, false, true, "16/9", "EU"); // adult=true
 
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
-        assertFalse(result.isAdult(), "In fallback mode, recalbox takes precedence");
-        assertFalse(result.isFavorite(), "Favorite should remain false");
-        assertFalse(result.isHidden(), "Hidden should remain false");
+        assertFalse(game.isAdult(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isFavorite(), "Favorite should remain false");
+        assertFalse(game.isHidden(), "Hidden should remain false");
     }
 
     @Test
@@ -105,17 +108,18 @@ public class GamelistTest {
                 true, 1234567891L, true, true, "16/9", "EU"); // favorite, hidden, adult all true
 
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
         // All local preferences should take precedence
-        assertFalse(result.isFavorite(), "In fallback mode, recalbox takes precedence");
-        assertFalse(result.isHidden(), "In fallback mode, recalbox takes precedence");
-        assertFalse(result.isAdult(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isFavorite(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isHidden(), "In fallback mode, recalbox takes precedence");
+        assertFalse(game.isAdult(), "In fallback mode, recalbox takes precedence");
 
         // Other data should come from remote, but name follows "Plus récent" rule
-        assertEquals(remoteGame.getName(), result.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
-        assertEquals(remoteGame.getDesc(), result.getDesc());
-        assertEquals(remoteGame.getImage(), result.getImage());
+        assertEquals(remoteGame.getName(), game.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
+        assertEquals(remoteGame.getDesc(), game.getDesc());
+        assertEquals(remoteGame.getImage(), game.getImage());
     }
 
     @Test
@@ -131,30 +135,31 @@ public class GamelistTest {
                 false, 1234567891L, false, false, "16/9", "EU"); // all preferences false
 
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
         // Should use remote data as base (more complete metadata) and merge play statistics
-        assertEquals(remoteGame.getPath(), result.getPath());
-        assertEquals(remoteGame.getName(), result.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
-        assertEquals(remoteGame.getDesc(), result.getDesc());
-        assertEquals(remoteGame.getImage(), result.getImage());
-        assertEquals(remoteGame.getVideo(), result.getVideo());
-        assertEquals(remoteGame.getThumbnail(), result.getThumbnail());
-        assertEquals(remoteGame.getRating(), result.getRating());
-        assertEquals(remoteGame.getReleaseDate(), result.getReleaseDate());
-        assertEquals(remoteGame.getDeveloper(), result.getDeveloper());
-        assertEquals(remoteGame.getPublisher(), result.getPublisher());
-        assertEquals(remoteGame.getGenre(), result.getGenre());
-        assertEquals(remoteGame.getGenreId(), result.getGenreId());
-        assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
-        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
-        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
-        assertEquals(remoteGame.getRatio(), result.getRatio());
-        assertEquals(remoteGame.getRegion(), result.getRegion());
-        assertEquals(remoteGame.isFavorite(), result.isFavorite());
-        assertEquals(remoteGame.isHidden(), result.isHidden());
-        assertEquals(remoteGame.isAdult(), result.isAdult());
+        assertEquals(remoteGame.getPath(), game.getPath());
+        assertEquals(remoteGame.getName(), game.getName()); // Name follows "Plus récent" rule - but in fallback mode (lastModifiedDate=0), recalbox takes precedence
+        assertEquals(remoteGame.getDesc(), game.getDesc());
+        assertEquals(remoteGame.getImage(), game.getImage());
+        assertEquals(remoteGame.getVideo(), game.getVideo());
+        assertEquals(remoteGame.getThumbnail(), game.getThumbnail());
+        assertEquals(remoteGame.getRating(), game.getRating());
+        assertEquals(remoteGame.getReleaseDate(), game.getReleaseDate());
+        assertEquals(remoteGame.getDeveloper(), game.getDeveloper());
+        assertEquals(remoteGame.getPublisher(), game.getPublisher());
+        assertEquals(remoteGame.getGenre(), game.getGenre());
+        assertEquals(remoteGame.getGenreId(), game.getGenreId());
+        assertEquals(remoteGame.getPlayers(), game.getPlayers());
+        assertEquals(0, game.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", game.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, game.getTimestamp()); // Should take from Recalbox (1234567890L)
+        assertEquals(remoteGame.getRatio(), game.getRatio());
+        assertEquals(remoteGame.getRegion(), game.getRegion());
+        assertEquals(remoteGame.isFavorite(), game.isFavorite());
+        assertEquals(remoteGame.isHidden(), game.isHidden());
+        assertEquals(remoteGame.isAdult(), game.isAdult());
     }
     @Test
     public void testCompareGame_TimeplayedAndLastModifiedDate() {
@@ -175,37 +180,38 @@ public class GamelistTest {
                 7200, 1234567891L);
 
         Gamelist gamelist = new Gamelist(null);
-        Game result = gamelist.compareGame(localGame, remoteGame);
+        GameComparisonResult result = gamelist.compareGame(localGame, remoteGame);
+        Game game = result.getGame();
 
         // Should use remote data as base (more complete metadata) but override timeplayed with local value
-        assertEquals(remoteGame.getPath(), result.getPath());
-        assertEquals(localGame.getName(), result.getName()); // Name follows "Plus récent" rule - local is newer (1234567891L > 1234567890L)
-        assertEquals(remoteGame.getDesc(), result.getDesc());
-        assertEquals(remoteGame.getImage(), result.getImage());
-        assertEquals(remoteGame.getVideo(), result.getVideo());
-        assertEquals(remoteGame.getThumbnail(), result.getThumbnail());
-        assertEquals(remoteGame.getRating(), result.getRating());
-        assertEquals(remoteGame.getReleaseDate(), result.getReleaseDate());
-        assertEquals(remoteGame.getDeveloper(), result.getDeveloper());
-        assertEquals(remoteGame.getPublisher(), result.getPublisher());
-        assertEquals(remoteGame.getGenre(), result.getGenre());
-        assertEquals(remoteGame.getGenreId(), result.getGenreId());
-        assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
-        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
-        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
-        assertEquals(remoteGame.getRatio(), result.getRatio());
-        assertEquals(remoteGame.getRegion(), result.getRegion());
+        assertEquals(remoteGame.getPath(), game.getPath());
+        assertEquals(localGame.getName(), game.getName()); // Name follows "Plus récent" rule - local is newer (1234567891L > 1234567890L)
+        assertEquals(remoteGame.getDesc(), game.getDesc());
+        assertEquals(remoteGame.getImage(), game.getImage());
+        assertEquals(remoteGame.getVideo(), game.getVideo());
+        assertEquals(remoteGame.getThumbnail(), game.getThumbnail());
+        assertEquals(remoteGame.getRating(), game.getRating());
+        assertEquals(remoteGame.getReleaseDate(), game.getReleaseDate());
+        assertEquals(remoteGame.getDeveloper(), game.getDeveloper());
+        assertEquals(remoteGame.getPublisher(), game.getPublisher());
+        assertEquals(remoteGame.getGenre(), game.getGenre());
+        assertEquals(remoteGame.getGenreId(), game.getGenreId());
+        assertEquals(remoteGame.getPlayers(), game.getPlayers());
+        assertEquals(0, game.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", game.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, game.getTimestamp()); // Should take from Recalbox (1234567890L)
+        assertEquals(remoteGame.getRatio(), game.getRatio());
+        assertEquals(remoteGame.getRegion(), game.getRegion());
 
         // Timeplayed should come from remote (not modifiable locally)
-        assertEquals(3600, result.getTimeplayed(), "Timeplayed should come from remote");
+        assertEquals(3600, game.getTimeplayed(), "Timeplayed should come from remote");
 
-        // LastModifiedDate should come from local
-        assertEquals(1234567891L, result.getLastModifiedDate(), "LastModifiedDate should come from local");
+        // LastModifiedDate should be current time (synchronization timestamp)
+        assertTrue(game.getLastModifiedDate() > 0, "LastModifiedDate should be current time");
 
         // Local preferences should remain unchanged
-        assertFalse(result.isFavorite(), "Favorite should remain false");
-        assertFalse(result.isHidden(), "Hidden should remain false");
-        assertFalse(result.isAdult(), "Adult should remain false");
+        assertFalse(game.isFavorite(), "Favorite should remain false");
+        assertFalse(game.isHidden(), "Hidden should remain false");
+        assertFalse(game.isAdult(), "Adult should remain false");
     }
 }
