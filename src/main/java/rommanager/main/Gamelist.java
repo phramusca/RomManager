@@ -141,10 +141,7 @@ public class Gamelist {
         boolean favorite = isLocalNewer ? localGame.isFavorite() : remoteGame.isFavorite();
         boolean hidden = isLocalNewer ? localGame.isHidden() : remoteGame.isHidden();
         boolean adult = isLocalNewer ? localGame.isAdult() : remoteGame.isAdult();
-        // Name always comes from remote (more complete) according to existing tests
-
-        //FIXME: name can be modified locally, so we need to take the last modified
-        String name = remoteGame.getName();
+        String name = isLocalNewer ? localGame.getName() : remoteGame.getName();
 
         // Fields with special rules according to ETAT_DES_LIEUX.md
         // playcount: Maximum (Maximum rule)
@@ -215,6 +212,7 @@ public class Gamelist {
         setElementValue(elementGame, "favorite", newGame.isFavorite());
         setElementValue(elementGame, "hidden", newGame.isHidden());
         setElementValue(elementGame, "adult", newGame.isAdult());
+        setElementValue(elementGame, "name", newGame.getName());
         
         nbGamesModified++;
     }
@@ -226,6 +224,17 @@ public class Gamelist {
         } else {
             Element createElement = doc.createElement(key);
             createElement.setTextContent(String.valueOf(value));
+            elementGame.appendChild(createElement);
+        }
+    }
+
+    private void setElementValue(Element elementGame, String key, String value) {
+        Element element = XML.getElement(elementGame, key);
+        if(element!=null) {
+            element.setTextContent(value);
+        } else {
+            Element createElement = doc.createElement(key);
+            createElement.setTextContent(value);
             elementGame.appendChild(createElement);
         }
     }
