@@ -142,6 +142,8 @@ public class Gamelist {
         boolean hidden = isLocalNewer ? localGame.isHidden() : remoteGame.isHidden();
         boolean adult = isLocalNewer ? localGame.isAdult() : remoteGame.isAdult();
         // Name always comes from remote (more complete) according to existing tests
+
+        //FIXME: name can be modified locally, so we need to take the last modified
         String name = remoteGame.getName();
 
         // Fields with special rules according to ETAT_DES_LIEUX.md

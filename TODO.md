@@ -1,51 +1,46 @@
-# TODO pour IA
+# État des lieux - Champs Game dans RomManager
 
-Voici une liste de choses à faire par l'IA
+## Source de référence
 
-## Instructions pour l'IA
+Code source gamelist.xml Recalbox :
 
-- Ne fait qu'un item à la fois. Je veux (et habituellement doit) vérifier et corriger ce que tu as fait.
-- On se parle en français, mais les docs et le code (dont commentaires) sont en anglais
+- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp
+- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.h
 
-## Liste des taches
+## Classe Game.java / gamelist.xml
 
-1) Faire un état des lieux
+Voici la cible à implémenter, si ce n'est déjà fait
 
-   - Actuellement RomManager ne permet de modifier que name/favorite/hidden/adult
-   - Code source gamelist.xml : https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp (et.h)
-   - Faire un markdown pour lister tous les champs d'un game en xml, et si on le lit dans RomManager, si on l'écrit et les règles de synchro
-
-Example (sans tous les champs):
-
-```xml
-<game source="Recalbox" timestamp="1761076000">
-   <timeplayed>169</timeplayed>
-   <hash>BD08D915</hash>
-   <lastplayed>20251026T165737</lastplayed>
-   <playcount>1</playcount>
-   <genreid>257</genreid>
-   <genre>Plateforme</genre>
-   <publisher>Tigervision</publisher>
-   <developer>Tigervision</developer>
-   <releasedate>19820101T000000</releasedate>
-   <video>media/videos/Miner 2049er 319732c72fcae8a3fe94c43b8b66091e.mp4</video>
-   <thumbnail>media/thumbnails/Miner 2049er f5b2676350b791b6257df46391743cf6.png</thumbnail>
-   <image>media/images/Miner 2049er f5b2676350b791b6257df46391743cf6.png</image>
-   <desc>"Bounty Bob" exploite une mine radioactive en 2049. Aidez-le à "revendiquer" toutes les différentes stations (écrans multiples). Évitez tout contact avec les organismes mutants mortels en vous enfuyant ou en sautant dessus. Collectez divers articles laissés par les mineurs précédents pour des points bonus.</desc>
-   <ratio>auto</ratio>
-   <favorite>true</favorite>
-   <name>Miner 2049er</name>
-   <path>1_atari2600/Miner 2049er (1982) (Tigervision).zip</path>
-</game>
-```
-
-1) Finaliser la logique de comparaison/fusion
-
-   - Si EmulStation pas stoppée: seulement lecture de recalbox
-   - Il faut implémenter/compléter l'ébauche de code pour la syncro: compareGame, ...
-   - Ajouter des tests unitaires pour `Gamelist.compareGame`.
-
-1) Interface : panneau d'options
-
-   - Ajouter l'interface de configuration SSH.
-   - Options avancées pour les règles d'import (NoIntro/Redump/RomM plus tard).
+| Champ XML          | Type Java | Type champ     | Lecture XML | Écriture XML | Mod. ODS par GUI | Modif Recalbox  | Règle fusion | Utilisation                         |
+| ------------------ | --------- | -------------- | ----------- | ------------ | ---------------- | --------------- | ------------ | ----------------------------------- |
+| path               | String    | File info      | ✅          | ❌           | ❌               | ❌              | Recalbox     | Chemin du fichier ROM               |
+| hash               | String    | File info      | ✅          | ❌           | ❌               | ❌              | Recalbox     | Hash CRC32 du ROM                   |
+| playcount          | int       | User Stats     | ✅          | ❌           | ❌               | ❌              | Recalbox     | Nombre de parties jouées            |
+| lastplayed         | String    | User Stats     | ✅          | ❌           | ❌               | ❌              | Recalbox     | Dernière fois joué                  |
+| timeplayed         | int       | User Stats     | ✅          | ❌           | ✅               | ❌              | Maximum      | Temps total de jeu (en secondes)    |
+| favorite           | boolean   | User           | ✅          | ✅           | ✅               | ✅              | Plus récent  | Jeu favori (préférence utilisateur) |
+| hidden             | boolean   | User           | ✅          | ✅           | ✅               | ✅              | Plus récent  | Jeu caché (préférence utilisateur)  |
+| adult              | boolean   | Scrappé / User | ✅          | ✅           | ✅               | ✅              | Plus récent  | Jeu adulte (préférence utilisateur) |
+| name               | String    | Scrappé / User | ✅          | ❌           | ✅               | ✅              | Plus récent  | Nom du jeu                          |
+| desc               | String    | Scrappé        | ✅          | ❌           | ❌               | ✅              | Recalbox     | Description                         |
+| rating             | float     | Scrappé        | ✅          | ❌           | ❌               | ✅              | Recalbox     | Note/évaluation                     |
+| image              | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Chemin de l'image                   |
+| thumbnail          | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Chemin du thumbnail                 |
+| video              | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Chemin de la vidéo                  |
+| releasedate        | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Date de sortie                      |
+| developer          | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Développeur                         |
+| publisher          | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Éditeur                             |
+| genre              | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Genre                               |
+| genreid            | String    | Scrappé        | ✅          | ❌           | ❌               | ✅ (ou genre ?) | Recalbox     | ID du genre                         |
+| players            | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Nombre de joueurs                   |
+| region             | String    | Scrappé        | ✅          | ❌           | ❌               | ❌              | Recalbox     | Région                              |
+| ratio              | String    | Scrappé        | ✅          | ❌           | ❌               | ✅ (marche ?)   | Recalbox     | Ratio d'écran                       |
+| emulator           | -         |                | ❌          | ❌           | ❌               | ✅              | -            | Émulateur                           |
+| core               | -         |                | ❌          | ❌           | ❌               | ✅              | -            | Core de l'émulateur                 |
+| rotation           | -         |                | ❌          | ❌           | ❌               | ✅              | -            | Rotation de l'écran                 |
+| lastPatch          | -         |                | ❌          | ❌           | ❌               | ???             | -            | Dernier patch appliqué              |
+| lightgunluminosity | -         |                | ❌          | ❌           | ❌               | ???             | -            | Luminosité du lightgun              |
+| aliases            | -         |                | ❌          | ❌           | ❌               | ???             | -            | Alias du jeu                        |
+| licences           | -         |                | ❌          | ❌           | ❌               | ???             | -            | Licences                            |
+| timestamp          | long      | Scrap info     | ✅          | ❌           | ❌               | ❌              | Recalbox     | Timestamp du scrap seulement !      |
+| source             | -         | Scrap info     | ❌          | ❌           | ❌               | ❌              | -            | Toujours "Recalbox" (attribut).     |
