@@ -131,8 +131,8 @@ public class Gamelist {
         // If local lastModifiedDate is 0 (old code), use fallback logic (local takes precedence)
         boolean isLocalNewer;
         if (localGame.getLastModifiedDate() == 0) {
-            // Old code: local always takes precedence
-            isLocalNewer = true;
+            // Old code: recalbox always takes precedence
+            isLocalNewer = false;
         } else {
             // New code: compare timestamps
             isLocalNewer = localGame.getLastModifiedDate() > remoteGame.getLastModifiedDate();
