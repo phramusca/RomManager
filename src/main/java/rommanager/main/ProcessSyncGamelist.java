@@ -176,7 +176,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                                 addLogEntry(console.getName(), "skipped", remoteGame.getName() + " - EmulationStation running");
                             }
                             
-                            // Always update local version with synchronized game for display
+                            // Update local version with synchronized game for display
+                            // The lastModifiedDate will be updated after XML save if needed
                             localVersion.setGame(synchronizedGame);
 
                         } else {
@@ -188,6 +189,14 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         gamelist.save();
                         gamelistsSaved++;
                         addLogEntry(console.getName(), "saved", "gamelist updated with " + gamesUpdated + " changes");
+                        
+                        // Update lastModifiedDate for all synchronized games after XML save
+                        // This ensures consistency between game.lastModifiedDate and file.lastModified()
+                        for (RomVersion romVersion : romVersionsForConsole) {
+                            Game currentGame = romVersion.getGame();
+                            Game updatedGame = gamelist.updateGameLastModifiedDate(currentGame);
+                            romVersion.setGame(updatedGame);
+                        }
                     }
                     if (gamelist.getGames().isEmpty()) {
                         remoteFile.delete();

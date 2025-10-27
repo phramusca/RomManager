@@ -206,8 +206,8 @@ public class GamelistTest {
         // Timeplayed should come from remote (not modifiable locally)
         assertEquals(3600, game.getTimeplayed(), "Timeplayed should come from remote");
 
-        // LastModifiedDate should be current time (synchronization timestamp)
-        assertTrue(game.getLastModifiedDate() > 0, "LastModifiedDate should be current time");
+        // LastModifiedDate should come from local (1234567891L) since local has lastModifiedDate > 0
+        assertEquals(1234567891L, game.getLastModifiedDate(), "LastModifiedDate should come from local");
 
         // Local preferences should remain unchanged
         assertFalse(game.isFavorite(), "Favorite should remain false");

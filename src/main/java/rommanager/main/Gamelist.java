@@ -154,8 +154,11 @@ public class Gamelist {
         }
         // If recalbox is newer (fallback mode), no changes from local side
         
-        // Use current time as the last modified date for the synchronized game
-        long currentTime = System.currentTimeMillis();
+        // Use local lastModifiedDate if available, otherwise use remote
+        // This will be updated after XML save with the actual file.lastModified()
+        long resultLastModifiedDate = localGame.getLastModifiedDate() > 0 ? 
+                                     localGame.getLastModifiedDate() : 
+                                     remoteGame.getLastModifiedDate();
         
         Game resultGame = new Game(
             remoteGame.getPath(),
@@ -181,7 +184,7 @@ public class Gamelist {
             remoteGame.getRatio(),
             remoteGame.getRegion(),
             remoteGame.getTimeplayed(),
-            currentTime // Use current time as the synchronized last modified date
+            resultLastModifiedDate // Will be updated after XML save
         );
         
         return new GameComparisonResult(resultGame, hasChanged);
@@ -191,6 +194,43 @@ public class Gamelist {
         String key = FilenameUtils.getBaseName(newGame.getPath());
         Element elementGame = games.get(key).getLeft();
         setGame(elementGame, newGame);
+    }
+    
+    /**
+     * Updates the lastModifiedDate of a game with the current file.lastModified()
+     * This should be called after save() to ensure consistency
+     */
+    public Game updateGameLastModifiedDate(Game game) {
+        if (file != null && file.exists()) {
+            long xmlLastModified = file.lastModified();
+            return new Game(
+                game.getPath(),
+                game.getHash(),
+                game.getName(),
+                game.getDesc(),
+                game.getImage(),
+                game.getVideo(),
+                game.getThumbnail(),
+                game.getRating(),
+                game.getReleaseDate(),
+                game.getDeveloper(),
+                game.getPublisher(),
+                game.getGenre(),
+                game.getGenreId(),
+                game.getPlayers(),
+                game.getPlaycount(),
+                game.getLastplayed(),
+                game.isFavorite(),
+                game.getTimestamp(),
+                game.isHidden(),
+                game.isAdult(),
+                game.getRatio(),
+                game.getRegion(),
+                game.getTimeplayed(),
+                xmlLastModified // Use actual file.lastModified() after save
+            );
+        }
+        return game; // Return unchanged if file doesn't exist
     }
     
     private void setGame(Element elementGame, Game newGame) {
