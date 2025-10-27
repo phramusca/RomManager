@@ -143,29 +143,6 @@ public class Gamelist {
         boolean adult = isLocalNewer ? localGame.isAdult() : remoteGame.isAdult();
         String name = isLocalNewer ? localGame.getName() : remoteGame.getName();
 
-        // Fields with special rules according to ETAT_DES_LIEUX.md
-        // playcount: Maximum (Maximum rule)
-        int playcount = Math.max(localGame.getPlaycount(), remoteGame.getPlaycount());
-        
-        // lastplayed: Most recent (Most recent rule)
-        String lastplayed;
-        if (localGame.getLastplayed().isEmpty() && remoteGame.getLastplayed().isEmpty()) {
-            lastplayed = "";
-        } else if (localGame.getLastplayed().isEmpty()) {
-            lastplayed = remoteGame.getLastplayed();
-        } else if (remoteGame.getLastplayed().isEmpty()) {
-            lastplayed = localGame.getLastplayed();
-        } else {
-            lastplayed = localGame.getLastplayed().compareTo(remoteGame.getLastplayed()) > 0 ? 
-                        localGame.getLastplayed() : remoteGame.getLastplayed();
-        }
-        
-        // timestamp: Most recent (Most recent rule)
-        long timestamp = Math.max(localGame.getTimestamp(), remoteGame.getTimestamp());
-
-        // Non-locally modifiable fields: always take from Recalbox
-        // (desc, rating, image, thumbnail, video, releasedate, developer, publisher, 
-        //  genre, genreid, players, region, ratio, timeplayed)
         // Note: remoteGame.getLastModifiedDate() contains the lastModified of the XML file
         //       localGame.getLastModifiedDate() contains the local modification date (RomManager/ODS)
         
@@ -184,10 +161,10 @@ public class Gamelist {
             remoteGame.getGenre(),
             remoteGame.getGenreId(),
             remoteGame.getPlayers(),
-            playcount,
-            lastplayed,
+            remoteGame.getPlaycount(),
+            remoteGame.getLastplayed(),
             favorite,
-            timestamp,
+            remoteGame.getTimestamp(),
             hidden,
             adult,
             remoteGame.getRatio(),

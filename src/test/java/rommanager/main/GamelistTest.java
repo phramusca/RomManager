@@ -40,9 +40,9 @@ public class GamelistTest {
         assertEquals(remoteGame.getGenre(), result.getGenre());
         assertEquals(remoteGame.getGenreId(), result.getGenreId());
         assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(5, result.getPlaycount()); // Should take max of local (5) and remote (0)
-        assertEquals("2023-01-01", result.getLastplayed()); // Should take most recent date
-        assertEquals(1234567891L, result.getTimestamp()); // Should take most recent timestamp
+        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
         assertEquals(remoteGame.getRatio(), result.getRatio());
         assertEquals(remoteGame.getRegion(), result.getRegion());
 
@@ -147,9 +147,9 @@ public class GamelistTest {
         assertEquals(remoteGame.getGenre(), result.getGenre());
         assertEquals(remoteGame.getGenreId(), result.getGenreId());
         assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(5, result.getPlaycount()); // Should take max of local (5) and remote (0)
-        assertEquals("2023-01-01", result.getLastplayed()); // Should take most recent date
-        assertEquals(1234567891L, result.getTimestamp()); // Should take most recent timestamp
+        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
         assertEquals(remoteGame.getRatio(), result.getRatio());
         assertEquals(remoteGame.getRegion(), result.getRegion());
         assertEquals(remoteGame.isFavorite(), result.isFavorite());
@@ -191,9 +191,9 @@ public class GamelistTest {
         assertEquals(remoteGame.getGenre(), result.getGenre());
         assertEquals(remoteGame.getGenreId(), result.getGenreId());
         assertEquals(remoteGame.getPlayers(), result.getPlayers());
-        assertEquals(5, result.getPlaycount()); // Should take max of local (5) and remote (0)
-        assertEquals("2023-01-01", result.getLastplayed()); // Should take most recent date
-        assertEquals(1234567891L, result.getTimestamp()); // Should take most recent timestamp
+        assertEquals(0, result.getPlaycount()); // Should take from Recalbox (0)
+        assertEquals("", result.getLastplayed()); // Should take from Recalbox (empty)
+        assertEquals(1234567890L, result.getTimestamp()); // Should take from Recalbox (1234567890L)
         assertEquals(remoteGame.getRatio(), result.getRatio());
         assertEquals(remoteGame.getRegion(), result.getRegion());
 
