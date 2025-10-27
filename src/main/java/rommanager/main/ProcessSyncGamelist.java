@@ -102,8 +102,6 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 if (remoteFile.exists()) {
                     FileSystem.copyFile(remoteFile, backupFile);
                     String consolePath = FilenameUtils.concat(exportPath, console.getSourceFolderName());
-                    // FIXME 1c Gamelist - Use this 
-//                    long remoteLastModified = remoteFile.lastModified();
                     
                     List<RomVersion> romVersionsForConsole = tableModel.getRoms().values()
                             .stream()

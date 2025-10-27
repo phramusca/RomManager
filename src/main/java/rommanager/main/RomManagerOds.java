@@ -59,7 +59,7 @@ public class RomManagerOds {
 			ProgressBar progressBar, 
 			boolean open, String sourceFolder) {
 
-        int nbColumns=39;
+        int nbColumns=41;
         int nbRows=0;
         for(RomContainer romContainer : model.getRoms().values()) {
             nbRows+=romContainer.getVersions().size();
@@ -72,7 +72,7 @@ public class RomManagerOds {
 				
 				Game game = romVersion.getGame();
 				if(game==null) {
-					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false, 0, false, false, "", "");
+					game = new Game("", "","","", "", "", "", -1, "", "","", "", "", "", -1, "", false, 0, false, false, "", "", 0, 0);
 				}
                 
                 JeuVideo jeuVideo = romVersion.getJeuVideo();
@@ -114,6 +114,8 @@ public class RomManagerOds {
                     game.getRatio(),
                     game.getRegion(),
                     game.getTimestamp(),
+                    game.getTimeplayed(),
+                    game.getLastModifiedDate(),
                     jeuVideo.getUrl(),
                     jeuVideo.getTitle(),
                     jeuVideo.getReleaseDate(),
@@ -159,6 +161,8 @@ public class RomManagerOds {
         columns[i++] = "Ratio";
         columns[i++] = "Region";
         columns[i++] = "TimeStamp";
+        columns[i++] = "TimePlayed";
+        columns[i++] = "LastModifiedDate";
         
         columns[i++] = "JeuxVideo.com";
         columns[i++] = "Title";
@@ -258,6 +262,8 @@ public class RomManagerOds {
                 String ratio = row.getValue(i++);
                 String region = row.getValue(i++);
                 Long timestamp = Long.valueOf(row.getValue(i++));
+                Integer timeplayed = Integer.valueOf((row.getValue(i++) == null || row.getValue(i-1).trim().isEmpty()) ? "0" : row.getValue(i-1));
+                Long lastModifiedDate = Long.valueOf((row.getValue(i++) == null || row.getValue(i-1).trim().isEmpty()) ? "0" : row.getValue(i-1));
                 
                 String url = row.getValue(i++);
                 String title = row.getValue(i++);
@@ -277,7 +283,8 @@ public class RomManagerOds {
 				Game game = new Game(path, hash, gameName, desc, image, 
 					video,thumbnail, rating, releaseDate, 
 					developer, publisher, genre, genreId, players, 
-					playcount, lastplayed, isFavorite, timestamp, isHidden, isAdult, ratio, region);
+					playcount, lastplayed, isFavorite, timestamp, isHidden, isAdult, ratio, region,
+					timeplayed, lastModifiedDate);
 				BufferIcon.checkOrGetCoverIcon(game.getName(), "");
 				romVersion.setGame(game);
                 

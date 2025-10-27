@@ -32,7 +32,7 @@ import rommanager.utils.DateTime;
 public class Game {
 
 	private final String path;
-    private final String hash; //Not used, what for ?
+    private final String hash; // TODO: use this (compare during sync)
 	private final String name;
 	private final String desc;
 	private final String image;
@@ -49,13 +49,13 @@ public class Game {
 	private final int playcount;
 	private final String lastplayed;
 	private boolean favorite;
-    private final long timestamp; //Not used, what for ?
+    private final long timestamp; //Not used, recalbox scrap datetime
     private boolean hidden;
     private boolean adult;
     private final String ratio; //Not used, what for ?
     private final String region; //Not used, what for ?
-    private int timeplayed; // Temps de jeu en secondes (récupéré depuis Recalbox)
-    private long lastModifiedDate; // Date de dernière modification locale (pour comparaison avec Recalbox)
+    private int timeplayed;
+    private long lastModifiedDate; // lastModified du fichier XML OU Date de dernière modification depuis RomManager (via ODS)
 
 	public Game(String path, String hash, String name, String desc, String image,
             String video, String thumbnail, float rating, String releaseDate,
@@ -259,15 +259,19 @@ public class Game {
         return region;
     }
 
+
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+        this.lastModifiedDate = System.currentTimeMillis();
     }
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+        this.lastModifiedDate = System.currentTimeMillis();
     }
 
     public void setAdult(boolean adult) {
         this.adult = adult;
+        this.lastModifiedDate = System.currentTimeMillis();
     }
 }
