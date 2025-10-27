@@ -170,7 +170,7 @@ public class Gamelist {
             remoteGame.getRatio(),
             remoteGame.getRegion(),
             remoteGame.getTimeplayed(),
-            localGame.getLastModifiedDate() // Keep local value (from RomManager/ODS)
+            localGame.getLastModifiedDate() // FIXME: We need to use the last modified/updated date. But this may be only available after writing xml and/or ods. So, need to be careful with this.
         );
     }
     
@@ -180,17 +180,11 @@ public class Gamelist {
         setGame(elementGame, newGame);
     }
     
-    //FIXME 0 CHECK IF MODIFICATIONS ARE PRESERVED IN RECALBOX
-    //And which one(s)
-    // (From memory only removeScraped works, but need to retest all and document this time)
     private void setGame(Element elementGame, Game newGame) {
-        // Set all modifiable values that RomManager manages
-
         setElementValue(elementGame, "favorite", newGame.isFavorite());
         setElementValue(elementGame, "hidden", newGame.isHidden());
         setElementValue(elementGame, "adult", newGame.isAdult());
-        setElementValue(elementGame, "name", newGame.getName());
-        
+        setElementValue(elementGame, "name", newGame.getName());       
         nbGamesModified++;
     }
 
