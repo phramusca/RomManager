@@ -88,11 +88,25 @@ public abstract class RomContainer {
 	}
 	
     public String getName() {
-        String name = getGame().getName();
-        if(name.isEmpty()) {
-            name = getJeuVideo().getTitle();
+        // Get all unique names from exportable versions
+        List<String> names = getExportableVersions().stream()
+            .filter(v -> v.getGame() != null && !v.getGame().getName().isEmpty())
+            .map(v -> v.getGame().getName())
+            .distinct()
+            .collect(Collectors.toList());
+        
+        if (!names.isEmpty()) {
+            if (names.size() == 1) {
+                return names.get(0);
+            } else {
+                // Multiple different names: show "[Multiple values]"
+                return "[Multiple values]";
+            }
         }
-        if(name.isEmpty()) {
+        
+        // Fallback to JeuVideo title
+        String name = getJeuVideo().getTitle();
+        if (name.isEmpty()) {
             name = getFilename();
         }
         return name;
@@ -129,6 +143,91 @@ public abstract class RomContainer {
 	public void setToCopyTrue() {
 		versions.forEach(v->v.setToCopy(false));
 		getExportableVersions().forEach(v->v.setToCopy(true));
+	}
+	
+	/**
+	 * Invalidate cached Game to force recalculation
+	 * Call this after modifying RomVersion games
+	 */
+	public void invalidateCache() {
+		this.game = null;
+		// Force immediate recalculation to avoid returning default Game
+		getGame();
+	}
+	
+	/**
+	 * Check if at least one exportable version has the favorite flag set
+	 * @return true if at least one version is favorite
+	 */
+	public boolean hasAnyVersionFavorite() {
+		return getExportableVersions().stream()
+			.anyMatch(v -> v.getGame() != null && v.getGame().isFavorite());
+	}
+	
+	/**
+	 * Check if at least one exportable version has the hidden flag set
+	 * @return true if at least one version is hidden
+	 */
+	public boolean hasAnyVersionHidden() {
+		return getExportableVersions().stream()
+			.anyMatch(v -> v.getGame() != null && v.getGame().isHidden());
+	}
+	
+	/**
+	 * Check if at least one exportable version has the adult flag set
+	 * @return true if at least one version is adult
+	 */
+	public boolean hasAnyVersionAdult() {
+		return getExportableVersions().stream()
+			.anyMatch(v -> v.getGame() != null && v.getGame().isAdult());
+	}
+	
+	/**
+	 * Get a summary of favorite status across all exportable versions
+	 * @return "Mixed" if versions have different values, "true"/"false" if all same
+	 */
+	public String getFavoriteStatus() {
+		List<Boolean> favorites = getExportableVersions().stream()
+			.filter(v -> v.getGame() != null)
+			.map(v -> v.getGame().isFavorite())
+			.distinct()
+			.collect(Collectors.toList());
+		
+		if (favorites.isEmpty()) return "false";
+		if (favorites.size() == 1) return String.valueOf(favorites.get(0));
+		return "Mixed";
+	}
+	
+	/**
+	 * Get a summary of hidden status across all exportable versions
+	 * @return "Mixed" if versions have different values, "true"/"false" if all same
+	 */
+	public String getHiddenStatus() {
+		List<Boolean> hidden = getExportableVersions().stream()
+			.filter(v -> v.getGame() != null)
+			.map(v -> v.getGame().isHidden())
+			.distinct()
+			.collect(Collectors.toList());
+		
+		if (hidden.isEmpty()) return "false";
+		if (hidden.size() == 1) return String.valueOf(hidden.get(0));
+		return "Mixed";
+	}
+	
+	/**
+	 * Get a summary of adult status across all exportable versions
+	 * @return "Mixed" if versions have different values, "true"/"false" if all same
+	 */
+	public String getAdultStatus() {
+		List<Boolean> adult = getExportableVersions().stream()
+			.filter(v -> v.getGame() != null)
+			.map(v -> v.getGame().isAdult())
+			.distinct()
+			.collect(Collectors.toList());
+		
+		if (adult.isEmpty()) return "false";
+		if (adult.size() == 1) return String.valueOf(adult.get(0));
+		return "Mixed";
 	}
 	
 	public List<RomVersion> getExportableVersions() {

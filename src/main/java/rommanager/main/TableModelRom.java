@@ -132,12 +132,52 @@ public class TableModelRom extends TableModelGeneric {
             switch (columnIndex) {
                 case 0: return icon!= null ? icon: new ImageIcon();
                 case 1: 
-                    return "<html>"+romContainer.getName()
-                            +"<BR/><BR/>"+(romContainer.getGame().isFavorite()?" [Favorite] ":"")
-                            +(romContainer.getGame().isHidden()?" [Hidden] ":"")
-                            +(romContainer.getGame().isAdult()?" [Adult] ":"")
-                            +(romContainer.getGame().getPlaycount()>0?"Played "+romContainer.getGame().getPlaycount()+" times, last "+romContainer.getGame().getLastplayedFormatted():"")
-                            +"</html>";
+                    StringBuilder nameBuilder = new StringBuilder();
+                    nameBuilder.append("<html>").append(romContainer.getName());
+                    
+                    // Add status indicators for multiple versions
+                    String favoriteStatus = romContainer.getFavoriteStatus();
+                    String hiddenStatus = romContainer.getHiddenStatus();
+                    String adultStatus = romContainer.getAdultStatus();
+                    
+                    if (!favoriteStatus.equals("false")) {
+                        nameBuilder.append("<BR/><BR/>");
+                        if (favoriteStatus.equals("Mixed")) {
+                            nameBuilder.append(" [Favorite: Mixed] ");
+                        } else {
+                            nameBuilder.append(" [Favorite] ");
+                        }
+                    }
+                    
+                    if (!hiddenStatus.equals("false")) {
+                        if (favoriteStatus.equals("false")) nameBuilder.append("<BR/><BR/>");
+                        if (hiddenStatus.equals("Mixed")) {
+                            nameBuilder.append(" [Hidden: Mixed] ");
+                        } else {
+                            nameBuilder.append(" [Hidden] ");
+                        }
+                    }
+                    
+                    if (!adultStatus.equals("false")) {
+                        if (favoriteStatus.equals("false") && hiddenStatus.equals("false")) nameBuilder.append("<BR/><BR/>");
+                        if (adultStatus.equals("Mixed")) {
+                            nameBuilder.append(" [Adult: Mixed] ");
+                        } else {
+                            nameBuilder.append(" [Adult] ");
+                        }
+                    }
+                    
+                    // Add playcount info (use first game for now)
+                    if (romContainer.getGame().getPlaycount() > 0) {
+                        if (favoriteStatus.equals("false") && hiddenStatus.equals("false") && adultStatus.equals("false")) {
+                            nameBuilder.append("<BR/><BR/>");
+                        }
+                        nameBuilder.append("Played ").append(romContainer.getGame().getPlaycount())
+                                .append(" times, last ").append(romContainer.getGame().getLastplayedFormatted());
+                    }
+                    
+                    nameBuilder.append("</html>");
+                    return nameBuilder.toString();
                 case 2: 
                     StringBuilder builder = new StringBuilder();
                     builder.append("<html>")

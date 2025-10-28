@@ -1520,7 +1520,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     setButtonBold(jButtonSyncGameList, true);
                     setButtonBold(jButtonSave, true);
                 }
-            });
+            }, tableModel);
         }
     }//GEN-LAST:event_jButtonEditActionPerformed
 

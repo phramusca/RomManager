@@ -28,18 +28,21 @@ public class DialogRomEdition extends javax.swing.JDialog {
 
     List<RomVersion> romVersions;
     private final ICallBackProcess callback;
+    private TableModelRom tableModel;
 	
 	/** Creates new form StatSourceGUI
 	 * @param parent
 	 * @param modal  
      * @param romVersions  
      * @param callback
+     * @param tableModel
 	 */
-    public DialogRomEdition(Frame parent, boolean modal, List<RomVersion> romVersions, ICallBackProcess callback) {
+    public DialogRomEdition(Frame parent, boolean modal, List<RomVersion> romVersions, ICallBackProcess callback, TableModelRom tableModel) {
         super(parent, modal);
         initComponents();
         this.romVersions = romVersions;
         this.callback = callback;
+        this.tableModel = tableModel;
         
         // Initialize UI with values from the first RomVersion (or show mixed state if different)
         initializeUI();
@@ -169,6 +172,16 @@ public class DialogRomEdition extends javax.swing.JDialog {
             romVersion.getGame().setHidden(jCheckBoxHidden.isSelected());
             romVersion.getGame().setAdult(jCheckBoxAdult.isSelected());
         }
+        
+        // Invalidate cache for affected RomContainers to force table refresh
+        if (tableModel != null) {
+            romVersions.stream()
+                .map(romVersion -> findRomContainerForVersion(romVersion))
+                .filter(romContainer -> romContainer != null)
+                .distinct()
+                .forEach(romContainer -> romContainer.invalidateCache());
+        }
+        
         callback.actionPerformed();
         callback.completed();
         this.dispose();
@@ -177,16 +190,33 @@ public class DialogRomEdition extends javax.swing.JDialog {
 	private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
 		this.dispose();
 	}//GEN-LAST:event_jButtonCancelActionPerformed
+	
+	/**
+	 * Find the RomContainer that contains the given RomVersion
+	 * @param romVersion the RomVersion to search for
+	 * @return the RomContainer containing the RomVersion, or null if not found
+	 */
+	private RomContainer findRomContainerForVersion(RomVersion romVersion) {
+		if (tableModel == null) {
+			return null;
+		}
+		
+		return tableModel.getRoms().values().stream()
+			.filter(romContainer -> romContainer.getVersions().contains(romVersion))
+			.findFirst()
+			.orElse(null);
+	}
 
     /**
 	 * Open the GUI
 	 * @param parent
      * @param romVersions 
      * @param callback 
+     * @param tableModel
 	 */
-    public static void main(Frame parent, List<RomVersion> romVersions, ICallBackProcess callback) {
+    public static void main(Frame parent, List<RomVersion> romVersions, ICallBackProcess callback, TableModelRom tableModel) {
         java.awt.EventQueue.invokeLater(() -> {
-			DialogRomEdition dialog = new DialogRomEdition(parent, true, romVersions, callback);
+			DialogRomEdition dialog = new DialogRomEdition(parent, true, romVersions, callback, tableModel);
 			dialog.setLocationRelativeTo(parent);
 			dialog.setVisible(true);
 		});

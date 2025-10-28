@@ -162,30 +162,30 @@ public class TableFilter {
             case ALL:
                 break;
             case SELECTED:
-                stream = stream.filter(r -> r.getGame().isFavorite());
+                stream = stream.filter(r -> r.hasAnyVersionFavorite());
                 break;
             case UNSELECTED:
-                stream = stream.filter(r -> !r.getGame().isFavorite());
+                stream = stream.filter(r -> !r.hasAnyVersionFavorite());
                 break;
         }
         switch(displayHidden) {
             case ALL:
                 break;
             case SELECTED:
-                stream = stream.filter(r -> r.getGame().isHidden());
+                stream = stream.filter(r -> r.hasAnyVersionHidden());
                 break;
             case UNSELECTED:
-                stream = stream.filter(r -> !r.getGame().isHidden());
+                stream = stream.filter(r -> !r.hasAnyVersionHidden());
                 break;
         }
         switch(displayAdult) {
             case ALL:
                 break;
             case SELECTED:
-                stream = stream.filter(r -> r.getGame().isAdult());
+                stream = stream.filter(r -> r.hasAnyVersionAdult());
                 break;
             case UNSELECTED:
-                stream = stream.filter(r -> !r.getGame().isAdult());
+                stream = stream.filter(r -> !r.hasAnyVersionAdult());
                 break;
         }
         switch(exportFilesNumber) {
