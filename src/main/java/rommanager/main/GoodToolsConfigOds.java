@@ -65,7 +65,7 @@ public class GoodToolsConfigOds {
 			int nRowCount = sheet.getRowCount();
 			for(int nRowIndex = 1; nRowIndex < nRowCount; nRowIndex++) {
 				Row row = new Row(sheet, nRowIndex);
-				String category = row.getValue(0).trim();
+				// String category = row.getValue(0).trim(); // TODO: use category if needed
 				
 				
 				if(row.getValue(1).trim().equals("")) {

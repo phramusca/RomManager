@@ -167,8 +167,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 	 * @param sort
 	 * @return
 	 */
-	public static DefaultListModel getModel(List<String> list, boolean sort) {
-        DefaultListModel model = new DefaultListModel();
+	public static DefaultListModel<String> getModel(List<String> list, boolean sort) {
+        DefaultListModel<String> model = new DefaultListModel<>();
         if(sort) { Collections.sort(list); }
         model.addElement("All");
         list.forEach(element -> {
@@ -1094,7 +1094,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }
     
     private void fillFilterNumberFilesExport() {
-        DefaultListModel model = new DefaultListModel();
+        DefaultListModel<ExportFilesNumber> model = new DefaultListModel<>();
         for(ExportFilesNumber element : ExportFilesNumber.values()) {
             model.addElement(element);
         }
@@ -1213,9 +1213,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableRomMouseClicked
 
 	private void displayVersions(List<RomVersion> versions) {
-		DefaultListModel versionsModel = new DefaultListModel();
+		DefaultListModel<RomVersion> versionsModel = new DefaultListModel<>();
 			int i=0;
-			List<Integer> indices=new ArrayList();
+			List<Integer> indices = new ArrayList<>();
 			Collections.sort(versions, (RomVersion o1, RomVersion o2) -> {
 				//ORDER BY getScore DESC
 				if (o1.getScore() == o2.getScore())
@@ -1248,6 +1248,16 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			romContainer = tableModel.getRom(selectedRow);
 		}
 		return romContainer;
+	}
+	
+	private List<RomVersion> getSelectedRomVersions() {
+		List<RomVersion> selectedVersions = new ArrayList<>();
+		int[] selectedIndices = jListVersions.getSelectedIndices();
+		for (int index : selectedIndices) {
+			RomVersion romVersion = jListVersions.getModel().getElementAt(index);
+			selectedVersions.add(romVersion);
+		}
+		return selectedVersions;
 	}
 	
     private void jButtonSyncGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncGameListActionPerformed
@@ -1497,9 +1507,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_triStateCheckBoxAdultStateChanged
 
     private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
-        RomContainer romContainer = getRomContainer();
-		if(romContainer!=null) {
-            DialogRomEdition.main(this, romContainer.getConsole(), romContainer, new ICallBackProcess() {
+        List<RomVersion> selectedVersions = getSelectedRomVersions();
+		if(!selectedVersions.isEmpty()) {
+            DialogRomEdition.main(this, selectedVersions, new ICallBackProcess() {
                 @Override
                 public void completed() {
                     tableModel.filter();
@@ -1743,7 +1753,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JList jListFilterPlayCount;
     private javax.swing.JList jListFilterPlayers;
     private javax.swing.JList jListFilterRating;
-    private javax.swing.JList<String> jListVersions;
+    private javax.swing.JList<RomVersion> jListVersions;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

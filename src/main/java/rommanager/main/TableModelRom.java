@@ -168,7 +168,7 @@ public class TableModelRom extends TableModelGeneric {
 	 */
     @Override
     public void setValueAt(Object value, int row, int col) {
-		RomContainer romContainer = getRom(row);
+		// RomContainer romContainer = getRom(row); // TODO: implement when needed
 
 //        switch (col) {
 //            case 0: 

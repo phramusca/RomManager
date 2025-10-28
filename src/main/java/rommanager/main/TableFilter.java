@@ -21,12 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import static rommanager.main.TableModelColumn.Console;
 import rommanager.utils.TriStateCheckBox;
 import rommanager.utils.TriStateCheckBox.State;
-import static rommanager.utils.TriStateCheckBox.State.ALL;
-import static rommanager.utils.TriStateCheckBox.State.SELECTED;
-import static rommanager.utils.TriStateCheckBox.State.UNSELECTED;
 
 /**
  *

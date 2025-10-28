@@ -33,7 +33,7 @@ public class Game {
 
 	private final String path;
     private final String hash; // TODO: use this (compare during sync)
-	private final String name;
+	private String name;
 	private final String desc;
 	private final String image;
     private final String video;
@@ -272,6 +272,11 @@ public class Game {
 
     public void setAdult(boolean adult) {
         this.adult = adult;
+        this.lastModifiedDate = System.currentTimeMillis();
+    }
+
+    public void setName(String name) {
+        this.name = name;
         this.lastModifiedDate = System.currentTimeMillis();
     }
 }

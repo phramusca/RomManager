@@ -18,6 +18,7 @@
 package rommanager.main;
 
 import java.awt.Frame;
+import java.util.List;
 
 /**
  * JDialog extension to add/modify Stat source
@@ -25,26 +26,51 @@ import java.awt.Frame;
  */
 public class DialogRomEdition extends javax.swing.JDialog {
 
-    RomContainer romContainer;
+    List<RomVersion> romVersions;
     private final ICallBackProcess callback;
 	
 	/** Creates new form StatSourceGUI
 	 * @param parent
 	 * @param modal  
-     * @param console  
-     * @param romContainer  
+     * @param romVersions  
      * @param callback
 	 */
-    public DialogRomEdition(Frame parent, boolean modal, Console console, RomContainer romContainer, ICallBackProcess callback) {
+    public DialogRomEdition(Frame parent, boolean modal, List<RomVersion> romVersions, ICallBackProcess callback) {
         super(parent, modal);
         initComponents();
-        this.romContainer = romContainer;
+        this.romVersions = romVersions;
         this.callback = callback;
-        Game game = romContainer.getGame();
-        jTextName.setText(game.getName());
-        jCheckBoxFavorite.setSelected(game.isFavorite());
-        jCheckBoxHidden.setSelected(game.isHidden());
-        jCheckBoxAdult.setSelected(game.isAdult());
+        
+        // Initialize UI with values from the first RomVersion (or show mixed state if different)
+        initializeUI();
+    }
+    
+    private void initializeUI() {
+        if (romVersions.isEmpty()) {
+            return;
+        }
+        
+        // Get values from first RomVersion
+        Game firstGame = romVersions.get(0).getGame();
+        String firstName = firstGame.getName();
+        boolean firstFavorite = firstGame.isFavorite();
+        boolean firstHidden = firstGame.isHidden();
+        boolean firstAdult = firstGame.isAdult();
+        
+        // Check if all versions have the same values
+        boolean allSameName = romVersions.stream().allMatch(rv -> rv.getGame().getName().equals(firstName));
+        boolean allSameFavorite = romVersions.stream().allMatch(rv -> rv.getGame().isFavorite() == firstFavorite);
+        boolean allSameHidden = romVersions.stream().allMatch(rv -> rv.getGame().isHidden() == firstHidden);
+        boolean allSameAdult = romVersions.stream().allMatch(rv -> rv.getGame().isAdult() == firstAdult);
+        
+        // Set UI values
+        jTextName.setText(allSameName ? firstName : "[Multiple values]");
+        jCheckBoxFavorite.setSelected(allSameFavorite ? firstFavorite : false);
+        jCheckBoxHidden.setSelected(allSameHidden ? firstHidden : false);
+        jCheckBoxAdult.setSelected(allSameAdult ? firstAdult : false);
+        
+        // Update title to show number of selected versions
+        setTitle("Edit " + romVersions.size() + " rom version(s)");
     }
 
     /** This method is called from within the constructor to
@@ -133,10 +159,16 @@ public class DialogRomEdition extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
 	private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
-        romContainer.getGame().setFavorite(jCheckBoxFavorite.isSelected());
-        romContainer.getGame().setHidden(jCheckBoxHidden.isSelected());
-        romContainer.getGame().setAdult(jCheckBoxAdult.isSelected());
-        romContainer.resetGame();
+        // Apply changes to all selected RomVersions
+        for (RomVersion romVersion : romVersions) {
+            // Only update name if it's not "[Multiple values]"
+            if (!jTextName.getText().equals("[Multiple values]")) {
+                romVersion.getGame().setName(jTextName.getText());
+            }
+            romVersion.getGame().setFavorite(jCheckBoxFavorite.isSelected());
+            romVersion.getGame().setHidden(jCheckBoxHidden.isSelected());
+            romVersion.getGame().setAdult(jCheckBoxAdult.isSelected());
+        }
         callback.actionPerformed();
         callback.completed();
         this.dispose();
@@ -149,13 +181,12 @@ public class DialogRomEdition extends javax.swing.JDialog {
     /**
 	 * Open the GUI
 	 * @param parent
-     * @param console 
-     * @param romContainer 
+     * @param romVersions 
      * @param callback 
 	 */
-    public static void main(Frame parent, Console console, RomContainer romContainer, ICallBackProcess callback) {
+    public static void main(Frame parent, List<RomVersion> romVersions, ICallBackProcess callback) {
         java.awt.EventQueue.invokeLater(() -> {
-			DialogRomEdition dialog = new DialogRomEdition(parent, true, console, romContainer, callback);
+			DialogRomEdition dialog = new DialogRomEdition(parent, true, romVersions, callback);
 			dialog.setLocationRelativeTo(parent);
 			dialog.setVisible(true);
 		});

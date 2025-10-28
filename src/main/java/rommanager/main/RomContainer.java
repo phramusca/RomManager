@@ -97,11 +97,7 @@ public abstract class RomContainer {
         }
         return name;
     }
-    
-    public void resetGame() {
-        game = null;
-    }
-    
+       
 	public Game getGame() {
 		if(game==null) {
 			List<Game> games = versions.stream()
