@@ -22,7 +22,12 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Popup class
@@ -61,8 +66,39 @@ public class Popup {
 		ta.setWrapStyleWord(true);
 		ta.setEditable(false);
 		JScrollPane scroll = new JScrollPane(ta);
-		scroll.setPreferredSize(new Dimension(700, 400));
+		scroll.setPreferredSize(new Dimension(700, 420));
 		javax.swing.JOptionPane.showMessageDialog(null, scroll, APP_NAME + " - " + title, JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	/**
+	 * Show a potentially long text in a scrollable, word-wrapped dialog with a clickable log file link.
+	 * @param title dialog title
+	 * @param text full text to display
+	 * @param logFilePath path to the log file to open when button is clicked
+	 */
+	public static void showTextWithLogLink(String title, String text, String logFilePath) {
+		JTextArea ta = new JTextArea(text);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		ta.setEditable(false);
+		JScrollPane scroll = new JScrollPane(ta);
+		scroll.setPreferredSize(new Dimension(700, 420));
+		
+		// Create a button to open the log file
+		JButton openLogButton = new JButton("Open Log File");
+		openLogButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Desktop.openFile(logFilePath);
+			}
+		});
+		
+		// Create a panel with the scroll pane and button
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(scroll, BorderLayout.CENTER);
+		panel.add(openLogButton, BorderLayout.SOUTH);
+		
+		javax.swing.JOptionPane.showMessageDialog(null, panel, APP_NAME + " - " + title, JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	/**

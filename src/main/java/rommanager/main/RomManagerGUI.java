@@ -308,7 +308,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Recalbox"));
 
-        jButtonSyncGameList.setText("Get game data");
+        jButtonSyncGameList.setText("Sync Game Data");
         jButtonSyncGameList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSyncGameListActionPerformed(evt);

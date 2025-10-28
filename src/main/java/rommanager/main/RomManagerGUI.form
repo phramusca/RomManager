@@ -213,7 +213,7 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="jButtonSyncGameList">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Get game data"/>
+                <Property name="text" type="java.lang.String" value="Sync Game Data"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSyncGameListActionPerformed"/>

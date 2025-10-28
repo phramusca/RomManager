@@ -284,8 +284,9 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         }
                     }
                 }
-                summary.append("\nLog file: cache/gamelists/sync-").append(timestamp).append(".log\n");
-                Popup.showText("Sync game data complete", summary.toString());
+                String logFilePath = "cache/gamelists/sync-" + timestamp + ".log";
+                summary.append("\nLog file: ").append(logFilePath).append("\n");
+                Popup.showTextWithLogLink("Sync game data complete", summary.toString(), logFilePath);
             } else {
                 EmulStation.start();
                 Popup.info("Sync game data complete.");
