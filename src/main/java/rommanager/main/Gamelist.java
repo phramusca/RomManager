@@ -187,7 +187,7 @@ public class Gamelist {
             resultLastModifiedDate // Will be updated after XML save
         );
         
-        return new GameComparisonResult(resultGame, hasChanged);
+        return new GameComparisonResult(resultGame, hasChanged, isLocalNewer);
     }
     
     public void setGame(Game newGame) {

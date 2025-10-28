@@ -57,6 +57,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private int gamesMissingMedia = 0;
     private int gamesMissingLocal = 0;
     private int gamesUpdated = 0;
+    private int gamesUpdatedFromRecalbox = 0;  // Recalbox → RomManager
+    private int gamesUpdatedFromRomManager = 0; // RomManager → Recalbox
     private int gamesUnchanged = 0;
     private int gamesSkipped = 0;
     private int gamelistsSaved = 0;
@@ -157,10 +159,20 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             
                             if (emulationStationStopped) {
                                 if (comparisonResult.hasChanged()) {
-                                    // Game has local changes that need to be saved
+                                    // Game has changes that need to be saved
                                     gamelist.setGame(synchronizedGame);
+                                    
+                                    if (comparisonResult.isLocalNewer()) {
+                                        // RomManager data is newer: RomManager → Recalbox
+                                        gamesUpdatedFromRomManager++;
+                                        addLogEntry(console.getName(), "updatedFromRomManager", remoteGame.getName() + " - RomManager changes applied to Recalbox");
+                                    } else {
+                                        // Recalbox data is newer: Recalbox → RomManager
+                                        gamesUpdatedFromRecalbox++;
+                                        addLogEntry(console.getName(), "updatedFromRecalbox", remoteGame.getName() + " - Recalbox changes applied to RomManager");
+                                    }
+                                    
                                     gamesUpdated++;
-                                    addLogEntry(console.getName(), "updated", remoteGame.getName() + " - local changes applied");
                                     
                                     if (synchronizedGame.getImage() != null && !synchronizedGame.getImage().trim().equals("")) {
                                         BufferIcon.checkOrGetCoverIcon(synchronizedGame.getName(), FilenameUtils.concat(consolePath, synchronizedGame.getImage()));
@@ -176,6 +188,9 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                                 addLogEntry(console.getName(), "skipped", remoteGame.getName() + " - EmulationStation running");
                             }
                             
+                            // Always log the read operation (retrieving info from Recalbox)
+                            addLogEntry(console.getName(), "read", remoteGame.getName() + " - data retrieved from Recalbox");
+                            
                             // Update local version with synchronized game for display
                             // The lastModifiedDate will be updated after XML save if needed
                             localVersion.setGame(synchronizedGame);
@@ -185,7 +200,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                             addLogEntry(console.getName(), "missing", keyVersion);
                         }
                     }
-                    if (gamelist.hasChanged() && gamesUpdated > 0) {
+                    if (gamelist.hasChanged()) {
                         gamelist.save();
                         gamelistsSaved++;
                         addLogEntry(console.getName(), "saved", "gamelist updated with " + gamesUpdated + " changes");
@@ -241,26 +256,32 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 StringBuilder summary = new StringBuilder();
                 summary.append("Sync complete\n\n");
                 summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
-                summary.append("Games checked: ").append(totalGamesProcessed).append("\n");
+                summary.append("Games processed: ").append(totalGamesProcessed).append("\n");
                 summary.append("Games updated: ").append(gamesUpdated).append("\n");
+                summary.append("  - Recalbox → RomManager: ").append(gamesUpdatedFromRecalbox).append("\n");
+                summary.append("  - RomManager → Recalbox: ").append(gamesUpdatedFromRomManager).append("\n");
                 summary.append("Games unchanged: ").append(gamesUnchanged).append("\n");
-                summary.append("Games skipped: ").append(gamesSkipped).append("\n");
-                summary.append("Missing locally: ").append(gamesMissingLocal).append("\n");
-                summary.append("Missing media: ").append(gamesMissingMedia).append("\n");
-                summary.append("Games deleted: ").append(gamesDeleted).append("\n");
+                summary.append("Games skipped (EmulationStation running): ").append(gamesSkipped).append("\n");
+                summary.append("Games missing locally: ").append(gamesMissingLocal).append("\n");
+                summary.append("Games missing media: ").append(gamesMissingMedia).append("\n");
+                summary.append("Games deleted (orphaned entries): ").append(gamesDeleted).append("\n");
                 summary.append("Gamelists saved: ").append(gamelistsSaved).append("\n");
-                summary.append("Gamelists deleted: ").append(gamelistsDeleted).append("\n");
+                summary.append("Gamelists deleted (empty): ").append(gamelistsDeleted).append("\n");
                 summary.append("Gamelists created: ").append(gamelistsCreated).append("\n\n");
 
-                // Add grouped summary
+                // Add grouped summary (exclude system logs)
                 summary.append("Summary by console and type:\n");
                 for (Map.Entry<String, Map<String, List<String>>> consoleEntry : groupedLogs.entrySet()) {
                     String console = consoleEntry.getKey();
-                    summary.append("- ").append(console).append(":\n");
-                    for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
-                        String type = typeEntry.getKey();
-                        int count = typeEntry.getValue().size();
-                        summary.append("  * ").append(type).append(": ").append(count).append("\n");
+                    if (!console.equals("system")) {  // Skip system logs
+                        summary.append("- ").append(console).append(":\n");
+                        for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
+                            String type = typeEntry.getKey();
+                            int count = typeEntry.getValue().size();
+                            // Format type names nicely
+                            String formattedType = formatTypeName(type);
+                            summary.append("  * ").append(formattedType).append(": ").append(count).append("\n");
+                        }
                     }
                 }
                 summary.append("\nLog file: cache/gamelists/sync-").append(timestamp).append(".log\n");
@@ -293,6 +314,21 @@ public class ProcessSyncGamelist extends ProcessAbstract {
         groupedLogs.computeIfAbsent(console, k -> new HashMap<>())
                    .computeIfAbsent(type, k -> new ArrayList<>())
                    .add(message);
+    }
+
+    private String formatTypeName(String type) {
+        switch (type) {
+            case "updatedFromRecalbox": return "Updated from Recalbox";
+            case "updatedFromRomManager": return "Updated from RomManager";
+            case "unchanged": return "Unchanged";
+            case "skipped": return "Skipped (EmulationStation running)";
+            case "missing": return "Missing locally";
+            case "missingMedia": return "Missing media";
+            case "deleted": return "Deleted (orphaned)";
+            case "saved": return "Gamelist saved";
+            case "read": return "Read from Recalbox";
+            default: return type;
+        }
     }
 
     private void writeLogFile() {

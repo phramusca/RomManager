@@ -24,10 +24,12 @@ package rommanager.main;
 public class GameComparisonResult {
     private final Game game;
     private final boolean hasChanged;
+    private final boolean isLocalNewer;
     
-    public GameComparisonResult(Game game, boolean hasChanged) {
+    public GameComparisonResult(Game game, boolean hasChanged, boolean isLocalNewer) {
         this.game = game;
         this.hasChanged = hasChanged;
+        this.isLocalNewer = isLocalNewer;
     }
     
     public Game getGame() { 
@@ -36,5 +38,9 @@ public class GameComparisonResult {
     
     public boolean hasChanged() { 
         return hasChanged; 
+    }
+    
+    public boolean isLocalNewer() {
+        return isLocalNewer;
     }
 }
