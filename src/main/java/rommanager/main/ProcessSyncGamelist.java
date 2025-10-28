@@ -94,7 +94,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             Map<Console, Gamelist> gamelists = new HashMap<>();
             progressBarConsole.setup(Console.values().length);
             for (Console console : Console.values()) {
-                // FIXME (temporary): limit sync to atari2600 for quick testing. Remove this after verification.
+                // FIXME !!! temporary !!! (limit sync to atari2600 for quick testing. Remove this after verification.)
                 if (console != Console.atari2600) {
                     continue;
                 }
@@ -218,7 +218,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         gamelistsDeleted++;
                         addLogEntry(console.getName(), "deleted", "empty gamelist removed");
                     } else {
-                        //FIXME 1d Gamelist - Delete all media files not in gamelist
+                        //FIXME 1 Gamelist - Delete all media files not in gamelist
                         gamelists.put(console, gamelist);
                     }
                 } else {
@@ -240,19 +240,20 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             progressBarConsole.reset();
             tableModel.fireTableDataChanged();
 
+            if (emulationStationStopped) {
+                Pair<Boolean, String> startResult = EmulStation.start();
+                addLogEntry("system", "info", startResult.getRight().trim());
+            }
+
             progressBarGame.setIndeterminate("Saving ods file");
             if (RomManagerOds.createFile(tableModel, progressBarGame, sourcePath)) {
                 callBack.actionPerformed();
             }
             progressBarGame.reset();
 
-            // Write grouped logs to file
             writeLogFile();
 
-            //FIXME 1b Gamelist - display modification counters
             if (!groupedLogs.isEmpty()) {
-                Pair<Boolean, String> startResult = EmulStation.start();
-                addLogEntry("system", "info", startResult.getRight().trim());
                 StringBuilder summary = new StringBuilder();
                 summary.append("Sync complete\n\n");
                 summary.append("Consoles processed: ").append(consolesProcessed).append("\n");
@@ -288,8 +289,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 summary.append("\nLog file: ").append(logFilePath).append("\n");
                 Popup.showTextWithLogLink("Sync game data complete", summary.toString(), logFilePath);
             } else {
-                EmulStation.start();
-                Popup.info("Sync game data complete.");
+                Popup.warning("Process ended without any logs. This is unexpected.");
             }
         } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
