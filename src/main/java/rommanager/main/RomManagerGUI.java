@@ -273,6 +273,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jButtonAuto = new javax.swing.JButton();
         jButtonVideo = new javax.swing.JButton();
+        jCheckBoxAutoPlay = new javax.swing.JCheckBox();
         jSplitPaneDesc = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaDescription = new javax.swing.JTextArea();
@@ -857,6 +858,13 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
+        jCheckBoxAutoPlay.setText("Auto Play");
+        jCheckBoxAutoPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxAutoPlayActionPerformed(evt);
+            }
+        });
+
         jSplitPaneDesc.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPaneDesc.setResizeWeight(0.5);
 
@@ -903,6 +911,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonVideo)
                         .addGap(18, 18, Short.MAX_VALUE)
+                        .addComponent(jCheckBoxAutoPlay)
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jButtonEdit)
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jButtonAuto))))
@@ -913,6 +923,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonAuto)
                     .addComponent(jButtonVideo)
+                    .addComponent(jCheckBoxAutoPlay)
                     .addComponent(jButtonEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldFilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1511,6 +1522,12 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		}
     }//GEN-LAST:event_jButtonVideoActionPerformed
 
+    private void jCheckBoxAutoPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxAutoPlayActionPerformed
+        if (videoPlayer != null) {
+            videoPlayer.setAutoPlay(jCheckBoxAutoPlay.isSelected());
+        }
+    }//GEN-LAST:event_jCheckBoxAutoPlayActionPerformed
+
     private void jListFilterPlayersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterPlayersValueChanged
         if(jListFilterPlayers.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
             tableModel.tableFilter.displayByPlayers((String) jListFilterPlayers.getSelectedValue());
@@ -1782,6 +1799,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSyncRomsRecalbox;
     private javax.swing.JButton jButtonSyncRomsRomM;
     private javax.swing.JButton jButtonVideo;
+    private javax.swing.JCheckBox jCheckBoxAutoPlay;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

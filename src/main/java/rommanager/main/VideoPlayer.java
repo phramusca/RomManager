@@ -20,7 +20,9 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
@@ -42,9 +44,18 @@ public class VideoPlayer extends JFXPanel {
     private Button playButton;
     private Button pauseButton;
     private Button stopButton;
+    private CheckBox autoPlayCheckBox;
+    private CheckBox muteCheckBox;
+    private Slider volumeSlider;
     private String currentVideoPath;
+    private boolean autoPlayEnabled = false;
+    private boolean muteEnabled = false;
+    private double volumeLevel = 0.5;
+    private VideoPlayerPreferences preferences;
     
     public VideoPlayer() {
+        this.preferences = new VideoPlayerPreferences();
+        loadPreferences();
         Platform.runLater(() -> {
             initFX();
         });
@@ -79,7 +90,43 @@ public class VideoPlayer extends JFXPanel {
         stopButton.setOnAction(e -> stopVideo());
         stopButton.setDisable(true);
         
-        HBox controls = new HBox(8, playButton, pauseButton, stopButton);
+        // Create auto-play checkbox
+        autoPlayCheckBox = new CheckBox("Auto Play");
+        autoPlayCheckBox.setFont(Font.font("Arial", 10));
+        autoPlayCheckBox.setSelected(autoPlayEnabled);
+        autoPlayCheckBox.setOnAction(e -> {
+            autoPlayEnabled = autoPlayCheckBox.isSelected();
+            savePreferences();
+        });
+        
+        // Create mute checkbox
+        muteCheckBox = new CheckBox("Mute");
+        muteCheckBox.setFont(Font.font("Arial", 10));
+        muteCheckBox.setSelected(muteEnabled);
+        muteCheckBox.setOnAction(e -> {
+            muteEnabled = muteCheckBox.isSelected();
+            if (mediaPlayer != null) {
+                mediaPlayer.setMute(muteEnabled);
+            }
+            savePreferences();
+        });
+        
+        // Create volume slider
+        volumeSlider = new Slider(0, 1, volumeLevel);
+        volumeSlider.setPrefWidth(100);
+        volumeSlider.setShowTickLabels(true);
+        volumeSlider.setShowTickMarks(true);
+        volumeSlider.setMajorTickUnit(0.25);
+        volumeSlider.setMinorTickCount(0);
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            volumeLevel = newVal.doubleValue();
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(volumeLevel);
+            }
+            savePreferences();
+        });
+        
+        HBox controls = new HBox(8, playButton, pauseButton, stopButton, autoPlayCheckBox, muteCheckBox, volumeSlider);
         controls.setStyle("-fx-padding: 8; -fx-alignment: center; -fx-background-color: #f0f0f0;");
         
         // Create status label
@@ -134,9 +181,13 @@ public class VideoPlayer extends JFXPanel {
                 }
                 
                 // Create new media player
-                Media media = new Media(videoFile.toURI().toString());
-                mediaPlayer = new MediaPlayer(media);
-                mediaView.setMediaPlayer(mediaPlayer);
+                        Media media = new Media(videoFile.toURI().toString());
+                        mediaPlayer = new MediaPlayer(media);
+                        mediaView.setMediaPlayer(mediaPlayer);
+                        
+                        // Apply audio settings
+                        mediaPlayer.setVolume(volumeLevel);
+                        mediaPlayer.setMute(muteEnabled);
                 
                 // Set up event handlers
                         mediaPlayer.setOnReady(() -> {
@@ -147,6 +198,11 @@ public class VideoPlayer extends JFXPanel {
                             
                             // Adjust video size based on actual video dimensions
                             adjustVideoSize();
+                            
+                            // Auto-play if enabled
+                            if (autoPlayEnabled) {
+                                playVideo();
+                            }
                         });
                 
                 mediaPlayer.setOnPlaying(() -> {
@@ -170,12 +226,15 @@ public class VideoPlayer extends JFXPanel {
                     stopButton.setDisable(true);
                 });
                 
-                mediaPlayer.setOnError(() -> {
-                    statusLabel.setText("Error playing video: " + videoFile.getName());
-                    playButton.setDisable(true);
-                    pauseButton.setDisable(true);
-                    stopButton.setDisable(true);
-                });
+                        mediaPlayer.setOnError(() -> {
+                            statusLabel.setText("Error playing video: " + videoFile.getName() + " - Attempting conversion...");
+                            playButton.setDisable(true);
+                            pauseButton.setDisable(true);
+                            stopButton.setDisable(true);
+                            
+                            // Try to convert the video
+                            convertVideo(videoFile);
+                        });
                 
             } catch (Exception e) {
                 statusLabel.setText("Error loading video: " + e.getMessage());
@@ -222,6 +281,58 @@ public class VideoPlayer extends JFXPanel {
         return currentVideoPath != null && !currentVideoPath.trim().isEmpty();
     }
     
+    public void setAutoPlay(boolean enabled) {
+        this.autoPlayEnabled = enabled;
+        if (autoPlayCheckBox != null) {
+            Platform.runLater(() -> autoPlayCheckBox.setSelected(enabled));
+        }
+    }
+    
+    public boolean isAutoPlayEnabled() {
+        return autoPlayEnabled;
+    }
+    
+    public void setMute(boolean enabled) {
+        this.muteEnabled = enabled;
+        if (muteCheckBox != null) {
+            Platform.runLater(() -> muteCheckBox.setSelected(enabled));
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.setMute(enabled);
+        }
+    }
+    
+    public boolean isMuteEnabled() {
+        return muteEnabled;
+    }
+    
+    public void setVolume(double volume) {
+        this.volumeLevel = Math.max(0.0, Math.min(1.0, volume));
+        if (volumeSlider != null) {
+            Platform.runLater(() -> volumeSlider.setValue(volumeLevel));
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(volumeLevel);
+        }
+    }
+    
+    public double getVolume() {
+        return volumeLevel;
+    }
+    
+    private void loadPreferences() {
+        autoPlayEnabled = preferences.isAutoPlayEnabled();
+        muteEnabled = preferences.isMuteEnabled();
+        volumeLevel = preferences.getVolume();
+    }
+    
+    private void savePreferences() {
+        preferences.setAutoPlayEnabled(autoPlayEnabled);
+        preferences.setMuteEnabled(muteEnabled);
+        preferences.setVolume(volumeLevel);
+        preferences.savePreferences();
+    }
+    
     private void adjustVideoSize() {
         if (mediaPlayer != null && mediaPlayer.getMedia() != null) {
             double videoWidth = mediaPlayer.getMedia().getWidth();
@@ -251,6 +362,89 @@ public class VideoPlayer extends JFXPanel {
                 String currentStatus = statusLabel.getText();
                 statusLabel.setText(currentStatus + String.format(" (%dx%d)", (int)videoWidth, (int)videoHeight));
             }
+        }
+    }
+    
+    private void convertVideo(File originalFile) {
+        // Check if ffmpeg is available
+        if (!isFFmpegAvailable()) {
+            Platform.runLater(() -> {
+                statusLabel.setText("FFmpeg not available - cannot convert video");
+                playButton.setDisable(false);
+                pauseButton.setDisable(true);
+                stopButton.setDisable(true);
+            });
+            return;
+        }
+        
+        // Create converted file path in cache directory (same as images)
+        String originalPath = originalFile.getAbsolutePath();
+        String cacheDir = "cache/videos";
+        new File(cacheDir).mkdirs();
+        
+        String fileName = originalFile.getName();
+        String baseName = fileName.replaceFirst("\\.[^.]+$", "");
+        String convertedPath = cacheDir + "/" + baseName + "_converted.mp4";
+        File convertedFile = new File(convertedPath);
+        
+        // Check if converted file already exists and is newer than original
+        if (convertedFile.exists() && convertedFile.lastModified() > originalFile.lastModified()) {
+            Platform.runLater(() -> {
+                statusLabel.setText("Using cached converted video: " + convertedFile.getName());
+                loadVideo(convertedPath);
+            });
+            return;
+        }
+        
+        statusLabel.setText("Converting video: " + originalFile.getName() + "...");
+        
+        // Run conversion in background thread
+        new Thread(() -> {
+            try {
+                // Use ffmpeg to convert video to a compatible format
+                ProcessBuilder pb = new ProcessBuilder(
+                    "ffmpeg", "-i", originalPath,
+                    "-c:v", "libx264", "-c:a", "aac", "-b:a", "128k",
+                    "-movflags", "+faststart",
+                    "-y", // Overwrite output file
+                    convertedPath
+                );
+                
+                Process process = pb.start();
+                int exitCode = process.waitFor();
+                
+                Platform.runLater(() -> {
+                    if (exitCode == 0 && convertedFile.exists()) {
+                        statusLabel.setText("Conversion successful! Loading converted video...");
+                        // Load the converted video
+                        loadVideo(convertedPath);
+                    } else {
+                        statusLabel.setText("Conversion failed: " + originalFile.getName());
+                        playButton.setDisable(false);
+                        pauseButton.setDisable(true);
+                        stopButton.setDisable(true);
+                    }
+                });
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    statusLabel.setText("Conversion error: " + e.getMessage());
+                    playButton.setDisable(false);
+                    pauseButton.setDisable(true);
+                    stopButton.setDisable(true);
+                });
+            }
+        }).start();
+    }
+    
+    private boolean isFFmpegAvailable() {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-version");
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            return exitCode == 0;
+        } catch (Exception e) {
+            return false;
         }
     }
 }
