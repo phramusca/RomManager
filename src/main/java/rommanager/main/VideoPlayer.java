@@ -95,8 +95,7 @@ public class VideoPlayer extends JFXPanel {
         autoPlayCheckBox.setFont(Font.font("Arial", 10));
         autoPlayCheckBox.setSelected(autoPlayEnabled);
         autoPlayCheckBox.setOnAction(e -> {
-            autoPlayEnabled = autoPlayCheckBox.isSelected();
-            savePreferences();
+            setAutoPlay(autoPlayCheckBox.isSelected());
         });
         
         // Create mute checkbox
@@ -160,6 +159,12 @@ public class VideoPlayer extends JFXPanel {
             return;
         }
         
+        // If no video path provided, clear the player
+        if (videoPath == null || videoPath.trim().isEmpty()) {
+            loadVideo(null);
+            return;
+        }
+        
         // Check if video is cached, if not copy it from Recalbox
         if (BufferVideo.checkOrGetVideo(gameName, videoPath)) {
             String cachedPath = BufferVideo.getCachedVideoPath(gameName);
@@ -176,6 +181,14 @@ public class VideoPlayer extends JFXPanel {
     public void loadVideo(String videoPath) {
         if (videoPath == null || videoPath.trim().isEmpty()) {
             Platform.runLater(() -> {
+                // Stop current video if playing
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                    mediaPlayer.dispose();
+                    mediaPlayer = null;
+                }
+                mediaView.setMediaPlayer(null);
+                
                 statusLabel.setText("No video available");
                 playButton.setDisable(true);
                 pauseButton.setDisable(true);
@@ -310,6 +323,18 @@ public class VideoPlayer extends JFXPanel {
         if (autoPlayCheckBox != null) {
             Platform.runLater(() -> autoPlayCheckBox.setSelected(enabled));
         }
+        
+        // If auto-play is enabled and we have a loaded video, start playing
+        if (enabled && mediaPlayer != null) {
+            MediaPlayer.Status status = mediaPlayer.getStatus();
+            if (status == MediaPlayer.Status.READY || status == MediaPlayer.Status.PAUSED) {
+                Platform.runLater(() -> playVideo());
+            }
+        }
+        // If auto-play is disabled and we're playing, stop
+        else if (!enabled && mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            Platform.runLater(() -> pauseVideo());
+        }
     }
     
     public boolean isAutoPlayEnabled() {
@@ -440,6 +465,17 @@ public class VideoPlayer extends JFXPanel {
                 Platform.runLater(() -> {
                     if (exitCode == 0 && convertedFile.exists()) {
                         statusLabel.setText("Conversion successful! Loading converted video...");
+                        // Delete original file since we have the converted version
+                        try {
+                            originalFile.delete();
+                        } catch (Exception e) {
+                            // Ignore deletion errors
+                        }
+                        // Update cache to point to converted file
+                        String gameName = getGameNameFromPath(originalPath);
+                        if (gameName != null) {
+                            BufferVideo.VIDEO_CACHE.put(gameName, convertedFile.getAbsolutePath());
+                        }
                         // Load the converted video
                         loadVideo(convertedPath);
                     } else {
@@ -470,5 +506,13 @@ public class VideoPlayer extends JFXPanel {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    private String getGameNameFromPath(String videoPath) {
+        if (videoPath == null) return null;
+        File file = new File(videoPath);
+        String fileName = file.getName();
+        // Remove extension to get game name
+        return fileName.replaceFirst("\\.[^.]+$", "");
     }
 }

@@ -18,7 +18,7 @@ import rommanager.utils.StringManager;
  */
 public class BufferVideo {
     
-    private static final Map<String, String> VIDEO_CACHE = new HashMap<>();
+    public static final Map<String, String> VIDEO_CACHE = new HashMap<>();
     
     /**
      * Check if video is cached, if not copy it from Recalbox to cache
@@ -34,6 +34,13 @@ public class BufferVideo {
         File cacheFile = getCacheFile(key);
         if (cacheFile.exists()) {
             VIDEO_CACHE.put(key, cacheFile.getAbsolutePath());
+            return true;
+        }
+        
+        // Check for converted file
+        File convertedFile = getConvertedFile(key);
+        if (convertedFile.exists()) {
+            VIDEO_CACHE.put(key, convertedFile.getAbsolutePath());
             return true;
         }
         
@@ -72,6 +79,16 @@ public class BufferVideo {
     public static File getCacheFile(String key) {
         String safeKey = StringManager.removeIllegal(key);
         return new File(FilenameUtils.concat(FilenameUtils.concat("cache", "videos"), safeKey + ".mp4"));
+    }
+    
+    /**
+     * Get converted file path for a given key
+     * @param key Game name
+     * @return Converted file path
+     */
+    public static File getConvertedFile(String key) {
+        String safeKey = StringManager.removeIllegal(key);
+        return new File(FilenameUtils.concat(FilenameUtils.concat("cache", "videos"), safeKey + "_converted.mp4"));
     }
     
     /**
