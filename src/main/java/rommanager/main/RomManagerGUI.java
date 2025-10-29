@@ -272,8 +272,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTableRom = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jButtonAuto = new javax.swing.JButton();
-        jButtonVideo = new javax.swing.JButton();
-        jCheckBoxAutoPlay = new javax.swing.JCheckBox();
         jSplitPaneDesc = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaDescription = new javax.swing.JTextArea();
@@ -851,19 +849,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButtonVideo.setText("Video");
-        jButtonVideo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonVideoActionPerformed(evt);
-            }
-        });
 
-        jCheckBoxAutoPlay.setText("Auto Play");
-        jCheckBoxAutoPlay.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxAutoPlayActionPerformed(evt);
-            }
-        });
 
         jSplitPaneDesc.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPaneDesc.setResizeWeight(0.5);
@@ -909,9 +895,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(videoPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButtonVideo)
                         .addGap(18, 18, Short.MAX_VALUE)
-                        .addComponent(jCheckBoxAutoPlay)
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jButtonEdit)
                         .addGap(18, 18, Short.MAX_VALUE)
@@ -922,8 +906,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonAuto)
-                    .addComponent(jButtonVideo)
-                    .addComponent(jCheckBoxAutoPlay)
                     .addComponent(jButtonEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldFilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1264,8 +1246,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
 				// Ignore errors, just don't load video
 			}
 			
-			videoPlayer.loadVideo(videoPath);
+			// Use cache for video loading
+			videoPlayer.loadVideoWithCache(game.getName(), videoPath);
 		} else {
+			// Clear video player when no video available
 			videoPlayer.loadVideo(null);
 		}
 	}
@@ -1498,35 +1482,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		jeuxVideos.start();
     }//GEN-LAST:event_jButtonReadJeuxVideoActionPerformed
 
-    private void jButtonVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVideoActionPerformed
-        RomContainer romContainer=getRomContainer();
-		if(romContainer!=null) {
-            String exportPath = jTextFieldPathRecalbox.getText();
-            File file = new File(exportPath);
-            if(!file.exists()) {
-                enableGUI();
-                Popup.warning("Export path does not exist.");
-                return;
-            }
-            String consolePath = FilenameUtils.concat(exportPath, romContainer.getConsole().getSourceFolderName());           
-            File cacheFile = BufferVideo.getCacheFile(romContainer.getGame().getName(), new File(FilenameUtils.concat(consolePath, romContainer.getGame().getVideo())));
-            if(cacheFile==null) {
-                Popup.warning("No video found.");
-            } else {
-                Desktop.openFile(cacheFile.getAbsolutePath());
-            }
-            
-//			romContainer.setExportableVersions();
-//			displayVersions(romContainer.getVersions());
-//			tableModel.fireTableDataChanged(); //TODO: Uncomment when fire does not deselect line in jtable
-		}
-    }//GEN-LAST:event_jButtonVideoActionPerformed
 
-    private void jCheckBoxAutoPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxAutoPlayActionPerformed
-        if (videoPlayer != null) {
-            videoPlayer.setAutoPlay(jCheckBoxAutoPlay.isSelected());
-        }
-    }//GEN-LAST:event_jCheckBoxAutoPlayActionPerformed
 
     private void jListFilterPlayersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFilterPlayersValueChanged
         if(jListFilterPlayers.getSelectedValue()!=null && !evt.getValueIsAdjusting()) {
@@ -1798,8 +1754,6 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSyncGameList;
     private javax.swing.JButton jButtonSyncRomsRecalbox;
     private javax.swing.JButton jButtonSyncRomsRomM;
-    private javax.swing.JButton jButtonVideo;
-    private javax.swing.JCheckBox jCheckBoxAutoPlay;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

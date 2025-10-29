@@ -148,6 +148,30 @@ public class VideoPlayer extends JFXPanel {
         scene.setFill(Color.BLACK);
         setScene(scene);
     }
+     
+    /**
+     * Load video with caching support
+     * @param gameName Game name (used as cache key)
+     * @param videoPath Original video path on Recalbox
+     */
+    public void loadVideoWithCache(String gameName, String videoPath) {
+        if (gameName == null || gameName.trim().isEmpty()) {
+            loadVideo(videoPath);
+            return;
+        }
+        
+        // Check if video is cached, if not copy it from Recalbox
+        if (BufferVideo.checkOrGetVideo(gameName, videoPath)) {
+            String cachedPath = BufferVideo.getCachedVideoPath(gameName);
+            if (cachedPath != null) {
+                loadVideo(cachedPath);
+                return;
+            }
+        }
+        
+        // Fallback to original path
+        loadVideo(videoPath);
+    }
     
     public void loadVideo(String videoPath) {
         if (videoPath == null || videoPath.trim().isEmpty()) {
