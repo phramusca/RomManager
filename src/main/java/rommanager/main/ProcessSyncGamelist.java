@@ -25,8 +25,10 @@ import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Element;
@@ -64,6 +66,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
     private int gamelistsSaved = 0;
     private int gamelistsDeleted = 0;
     private int gamelistsCreated = 0;
+    private int mediaFilesDeleted = 0;
 
     public ProcessSyncGamelist(
             String sourcePath,
@@ -218,7 +221,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                         gamelistsDeleted++;
                         addLogEntry(console.getName(), "deleted", "empty gamelist removed");
                     } else {
-                        //FIXME 1 Gamelist - Delete all media files not in gamelist
+                        // Clean up orphaned media files not referenced in gamelist.xml
+                        cleanupOrphanedMedia(console, gamelist);
                         gamelists.put(console, gamelist);
                     }
                 } else {
@@ -266,6 +270,7 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 summary.append("Games missing locally: ").append(gamesMissingLocal).append("\n");
                 summary.append("Games missing media: ").append(gamesMissingMedia).append("\n");
                 summary.append("Games deleted (orphaned entries): ").append(gamesDeleted).append("\n");
+                summary.append("Media files deleted (orphaned): ").append(mediaFilesDeleted).append("\n");
                 summary.append("Gamelists saved: ").append(gamelistsSaved).append("\n");
                 summary.append("Gamelists deleted (empty): ").append(gamelistsDeleted).append("\n");
                 summary.append("Gamelists created: ").append(gamelistsCreated).append("\n\n");
@@ -310,6 +315,70 @@ public class ProcessSyncGamelist extends ProcessAbstract {
         }
         return true;
     }
+    
+    /**
+     * Clean up orphaned media files (images, videos, thumbnails) that are not referenced in gamelist.xml
+     * @param console The console to clean up media for
+     * @param gamelist The gamelist containing referenced media files
+     */
+    private void cleanupOrphanedMedia(Console console, Gamelist gamelist) {
+        String consolePath = FilenameUtils.concat(exportPath, console.getSourceFolderName());
+        
+        // Collect all media files referenced in gamelist.xml
+        Set<String> referencedMediaFiles = new HashSet<>();
+        for (Game game : gamelist.getGames().values().stream()
+                .map(Pair::getRight)
+                .collect(Collectors.toList())) {
+            
+            // Add image file if not empty (including ZZZ files)
+            if (game.getImage() != null && !game.getImage().trim().isEmpty()) {
+                referencedMediaFiles.add(game.getImage());
+            }
+            
+            // Add video file if not empty (including ZZZ files)
+            if (game.getVideo() != null && !game.getVideo().trim().isEmpty()) {
+                referencedMediaFiles.add(game.getVideo());
+            }
+            
+            // Add thumbnail file if not empty (including ZZZ files)
+            if (game.getThumbnail() != null && !game.getThumbnail().trim().isEmpty()) {
+                referencedMediaFiles.add(game.getThumbnail());
+            }
+        }
+        
+        // Skip cleanup if no media files are referenced (optimization)
+        if (referencedMediaFiles.isEmpty()) {
+            return;
+        }
+        
+        // Check each media directory for orphaned files
+        String[] mediaDirectories = {"media/images", "media/videos", "media/thumbnails"};
+        for (String mediaDir : mediaDirectories) {
+            File mediaDirectory = new File(FilenameUtils.concat(consolePath, mediaDir));
+            if (mediaDirectory.exists() && mediaDirectory.isDirectory()) {
+                File[] mediaFiles = mediaDirectory.listFiles();
+                if (mediaFiles != null) {
+                    for (File mediaFile : mediaFiles) {
+                        if (mediaFile.isFile()) {
+                            // Get relative path from console directory (same format as in gamelist.xml)
+                            String relativePath = FilenameUtils.concat(mediaDir, mediaFile.getName());
+                            
+                            // Check if this file is referenced in gamelist.xml
+                            if (!referencedMediaFiles.contains(relativePath)) {
+                                // This is an orphaned file, delete it
+                                if (mediaFile.delete()) {
+                                    mediaFilesDeleted++;
+                                    addLogEntry(console.getName(), "mediaDeleted", "Orphaned " + mediaDir + ": " + mediaFile.getName());
+                                } else {
+                                    addLogEntry(console.getName(), "mediaDeleteFailed", "Failed to delete orphaned " + mediaDir + ": " + mediaFile.getName());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private void addLogEntry(String console, String type, String message) {
         groupedLogs.computeIfAbsent(console, k -> new HashMap<>())
@@ -326,6 +395,8 @@ public class ProcessSyncGamelist extends ProcessAbstract {
             case "missing": return "Missing locally";
             case "missingMedia": return "Missing media";
             case "deleted": return "Deleted (orphaned)";
+            case "mediaDeleted": return "Media files deleted (orphaned)";
+            case "mediaDeleteFailed": return "Failed to delete media files";
             case "saved": return "Gamelist saved";
             case "read": return "Read from Recalbox";
             default: return type;
