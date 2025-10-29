@@ -20,9 +20,9 @@ import java.awt.Font;
 import rommanager.utils.ProgressBar;
 import rommanager.utils.Popup;
 import java.awt.Point;
+import java.io.File;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -61,6 +61,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private final ProgressBar progressBarGame;
     private final ProgressBar progressBarConsole;
     private static TableModelRom tableModel;
+    private VideoPlayer videoPlayer;
     
 	private ProcessList processList;
 	private ProcessSyncGamelist processSyncGamelist;
@@ -279,6 +280,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jListVersions = new javax.swing.JList<>();
         jTextFieldFilename = new javax.swing.JTextField();
         jButtonEdit = new javax.swing.JButton();
+        videoPlayer = new VideoPlayer();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Rom Manager");
@@ -896,6 +898,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextFieldFilename)
+                    .addComponent(videoPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtonVideo)
@@ -913,6 +916,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addComponent(jButtonEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldFilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(videoPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSplitPaneDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE))
         );
@@ -1209,9 +1214,51 @@ public class RomManagerGUI extends javax.swing.JFrame {
             jTextFieldFilename.setText(romContainer.getFilename());
             jTextAreaDescription.setText(romContainer.getGame().getDesc());
 			displayVersions(romContainer.getVersions());
+			
+			// Load video if available
+			loadVideoForGame(romContainer.getGame());
 		}
     }//GEN-LAST:event_jTableRomMouseClicked
 
+	private void loadVideoForGame(Game game) {
+		if (videoPlayer == null) {
+			// Initialize video player if not already done
+			videoPlayer = new VideoPlayer();
+			// Add video player to the right panel (you may need to adjust the layout)
+			// For now, we'll just initialize it
+		}
+		
+		if (game != null && game.getVideo() != null && !game.getVideo().trim().isEmpty()) {
+			// Construct full path to video file
+			String videoPath = null;
+			try {
+				// Try to find the video file in the export path
+				String exportPath = RomManager.options.get("romset.recalboxPath");
+				if (exportPath != null && !exportPath.trim().isEmpty()) {
+					// Find the console for this game
+					Console gameConsole = null;
+					for (RomContainer container : tableModel.getRoms().values()) {
+						if (container.getGame() == game) {
+							gameConsole = container.getConsole();
+							break;
+						}
+					}
+					
+					if (gameConsole != null) {
+						videoPath = FilenameUtils.concat(exportPath, 
+							FilenameUtils.concat(gameConsole.getSourceFolderName(), game.getVideo()));
+					}
+				}
+			} catch (Exception e) {
+				// Ignore errors, just don't load video
+			}
+			
+			videoPlayer.loadVideo(videoPath);
+		} else {
+			videoPlayer.loadVideo(null);
+		}
+	}
+	
 	private void displayVersions(List<RomVersion> versions) {
 		DefaultListModel<RomVersion> versionsModel = new DefaultListModel<>();
 			int i=0;
