@@ -5,31 +5,29 @@ A powerful desktop application for managing and organizing ROM collections with 
 ## 🎮 Overview
 
 RomManager helps you organize large ROM collections by:
-- **Scanning** ROM sets and detecting multiple versions
-- **Scoring** ROM versions based on your preferences (region, translation, quality)
-- **Synchronizing** selected ROMs to your destination folder
-- **Managing metadata** with Recalbox (via `gamelist.xml`) and Romm (via REST API)
+- **Scanning** ROM sets from organized folders (following console folder naming conventions)
+- **Scoring** ROM versions based on your preferences (region, translation, quality) to automatically select the best versions for export
+- **Synchronizing** selected ROMs to your destination folders (Recalboc / Romm)
+- **Synchronizing metadata** with Recalbox (via `gamelist.xml`) and Romm (via REST API, planned)
 
 ## ✨ Features
 
-- **Smart ROM Version Detection**: Automatically identifies and scores multiple ROM versions
-- **Customizable Scoring System**: Configure scoring rules to prioritize your preferred regions, languages, and ROM quality
+- **Smart ROM Version Detection**: Automatically identifies and scores multiple ROM versions within console folders
+- **Customizable Scoring System**: Configure scoring rules to prioritize your preferred regions, languages, and ROM quality. The score determines which versions are automatically exported to Recalbox and Romm
 - **Bidirectional Metadata Sync**: Synchronize game metadata (favorites, ratings, play stats) with Recalbox (via `gamelist.xml`) and Romm (via REST API)
-- **Batch Operations**: Export selected ROM versions while automatically removing unwanted duplicates
 - **Multi-Console Support**: Manage ROMs across 35+ retro gaming consoles
-- **Video Preview**: Built-in video player for game previews
-- **Logging & Diagnostics**: Comprehensive logging system with viewer for troubleshooting
+- **Automatic Version Selection**: Exports the highest-scored ROM version for each game automatically
 
 ## 📋 Current Status
 
 ### ROM Sets Support
 - ✅ **GoodSets** (fully supported)
-- 🔜 **NoIntro** (coming soon)
-- 🔜 **Redump** (coming soon)
+- 🔜 **NoIntro** (planned)
+- 🔜 **Redump** (planned)
 
 ### Platform Synchronization
 - ✅ **Recalbox** (fully supported via `gamelist.xml` files)
-- 🔜 **Romm** (coming soon via REST API - see [rommapp/romm](https://github.com/rommapp/romm))
+- ✅ **Romm** (fully supported via REST API - see [rommapp/romm](https://github.com/rommapp/romm))
 
 ## 🚀 Quick Start
 
@@ -37,26 +35,28 @@ RomManager helps you organize large ROM collections by:
 
 Browse your ROM source folder and scan for ROM files. RomManager will:
 - Detect all ROM files in supported console folders
-- Identify multiple versions of the same game
+- Identify multiple versions of the same game within each console folder
 - Create a `RomManager.ods` spreadsheet with all discovered ROMs
 
 **Requirements:**
+- ROM files must be organized in subfolders named according to [supported console names](#supported-consoles)
 - ROM files must be in `.7z` archives (except Amstrad CPC which uses `.dsk` files)
-- Folders must be named according to [supported console names](#supported-consoles)
+
+**Important**: RomManager expects ROMs to be organized in console-specific folders. It will not automatically group ROMs from different locations.
 
 ### 2. Set Score
 
 Automatically score ROM versions based on your preferences:
 - Each ROM version receives a score based on `GoodToolsConfig.ods` configuration
 - By default, French/European games are favored (customizable)
-- Automatically marks exportable versions:
+- The highest-scored version is automatically marked for export:
   - All good `.dsk` files for Amstrad CPC
   - Only the best version (highest score) for other consoles
 
 ### 3. Sync ROMs
 
 Export selected ROM versions to your destination folder:
-- Choose which ROM versions to export
+- Choose which ROM versions to export (or let the scoring system select automatically)
 - Automatically removes unwanted duplicates
 - Maintains folder structure compatible with EmulationStation/Recalbox
 
@@ -69,7 +69,7 @@ Synchronize metadata with supported platforms:
 - Bidirectional sync for user preferences (favorites, hidden, adult flags, name)
 - One-way sync for scraped data (descriptions, ratings, images, videos)
 
-**Romm** (coming soon):
+**Romm:**
 - Synchronization via REST API
 - Supports Romm's self-hosted ROM manager and player platform
 - See [Romm documentation](https://github.com/rommapp/romm) for more information
@@ -81,6 +81,8 @@ Synchronize metadata with supported platforms:
 Select the folder containing your ROM sets. It must include subfolders:
 - Named according to [supported console names](#supported-consoles)
 - Containing `.7z` archive files (or `.dsk` files for Amstrad CPC only)
+
+**Important**: RomManager expects ROMs to be organized in console-specific folders. It will not automatically group ROMs from different locations.
 
 ### Destination Folder
 
@@ -97,6 +99,8 @@ Configuration file that defines how ROM versions are scored. Configure:
 
 **Note**: French/European games are favored by default. Adjust the configuration to match your preferences!
 
+The scoring system determines which ROM versions are automatically selected for export to Recalbox and Romm.
+
 ### RomManager.ods
 
 Output file generated after "Scan Source" and "Set Score" operations:
@@ -104,12 +108,59 @@ Output file generated after "Scan Source" and "Set Score" operations:
 - Read automatically at startup
 - Can be opened in LibreOffice/Excel for manual review
 
+### SSH Configuration for Recalbox
+
+RomManager can automatically stop and restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication methods are supported:
+
+#### SSH Key Authentication (Recommended)
+
+1. Generate an SSH key on the machine running RomManager:
+   ```bash
+   ssh-keygen
+   ```
+
+2. Copy the public key to your Recalbox:
+   ```bash
+   ssh-copy-id root@recalbox.local
+   ```
+
+3. Configure in `RomManager.properties`:
+   ```properties
+   romset.recalbox.ssh.key=~/.ssh/id_rsa
+   # Or leave empty to use the default key
+   ```
+
+#### Password Authentication (For Testing Only)
+
+1. Install `sshpass`:
+   ```bash
+   sudo apt update && sudo apt install sshpass
+   ```
+
+2. Configure in `RomManager.properties`:
+   ```properties
+   romset.recalbox.ssh.password=recalboxroot
+   ```
+
+⚠️ **Security Note**: Storing passwords in plain text is not recommended. Use SSH key authentication for production use.
+
+#### Troubleshooting SSH
+
+If you see this error:
+```
+[Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, No such file or directory
+```
+
+**Solutions:**
+- Install `sshpass` as shown above, or
+- Switch to SSH key authentication (recommended)
+
 ## 📊 Metadata Synchronization
 
 RomManager synchronizes game metadata with multiple platforms:
 
 - **Recalbox**: Uses EmulationStation's `gamelist.xml` format
-- **Romm**: Uses REST API (coming soon)
+- **Romm**: Uses REST API
 
 The synchronization follows these rules:
 
@@ -203,53 +254,6 @@ RomManager supports 35+ retro gaming consoles:
 | supergrafx       | NEC SuperGrafX             |
 | virtualboy       | Nintendo Virtual Boy        |
 
-## 🔐 SSH Configuration for Recalbox
-
-RomManager can automatically stop and restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication methods are supported:
-
-### SSH Key Authentication (Recommended)
-
-1. Generate an SSH key on the machine running RomManager:
-   ```bash
-   ssh-keygen
-   ```
-
-2. Copy the public key to your Recalbox:
-   ```bash
-   ssh-copy-id root@recalbox.local
-   ```
-
-3. Configure in `RomManager.properties`:
-   ```properties
-   romset.recalbox.ssh.key=~/.ssh/id_rsa
-   # Or leave empty to use the default key
-   ```
-
-### Password Authentication (For Testing Only)
-
-1. Install `sshpass`:
-   ```bash
-   sudo apt update && sudo apt install sshpass
-   ```
-
-2. Configure in `RomManager.properties`:
-   ```properties
-   romset.recalbox.ssh.password=recalboxroot
-   ```
-
-⚠️ **Security Note**: Storing passwords in plain text is not recommended. Use SSH key authentication for production use.
-
-### Troubleshooting SSH
-
-If you see this error:
-```
-[Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, No such file or directory
-```
-
-**Solutions:**
-- Install `sshpass` as shown above, or
-- Switch to SSH key authentication (recommended)
-
 ## 📚 Additional Information
 
 ### Gamelist.xml Format (Recalbox)
@@ -260,20 +264,20 @@ RomManager uses the standard EmulationStation `gamelist.xml` format for Recalbox
 
 ### Romm API
 
-Romm synchronization will use the REST API provided by [Romm](https://github.com/rommapp/romm), a self-hosted ROM manager and player. Romm provides metadata for 400+ platforms and supports custom artwork, achievements, and more.
+Romm synchronization uses the REST API provided by [Romm](https://github.com/rommapp/romm), a self-hosted ROM manager and player. Romm provides metadata for 400+ platforms and supports custom artwork, achievements, and more.
 
 ### Roadmap
 
 **Planned Features:**
 - 🔜 NoIntro ROM set support
 - 🔜 Redump ROM set support  
-- 🔜 Romm platform synchronization via REST API
 - 🔜 Enhanced filtering and search
 - 🔜 Batch metadata editing
 
 ### Related Projects
 
-- **[Romm](https://github.com/rommapp/romm)**: A beautiful, powerful, self-hosted ROM manager and player that RomManager will integrate with
+- **[Recalbox](https://www.recalbox.com/)**: An open-source retrogaming operating system ([GitLab](https://gitlab.com/recalbox/recalbox)) that uses EmulationStation for game management
+- **[Romm](https://romm.app/)**: A beautiful, powerful, self-hosted ROM manager and player ([GitHub](https://github.com/rommapp/romm)) that RomManager integrates with via REST API
 
 ## 📄 License
 
