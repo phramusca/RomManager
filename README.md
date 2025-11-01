@@ -1,209 +1,280 @@
 # RomManager
 
-## Features
+A powerful desktop application for managing and organizing ROM collections with intelligent scoring, synchronization, and metadata management.
 
-- Scan full rom sets
-- Set score, based on your preferences
-- Sync selected rom version(s) to given destination
-- Read gamelist.xml to get game info (cover, name, description, ...)
+## 🎮 Overview
 
-## Process
+RomManager helps you organize large ROM collections by:
+- **Scanning** ROM sets and detecting multiple versions
+- **Scoring** ROM versions based on your preferences (region, translation, quality)
+- **Synchronizing** selected ROMs to your destination folder
+- **Managing metadata** with Recalbox (via `gamelist.xml`) and Romm (via REST API)
 
-At startup [RomManager.ods](#RomManager-ods) is read and displayed.
+## ✨ Features
 
-### Scan Source
+- **Smart ROM Version Detection**: Automatically identifies and scores multiple ROM versions
+- **Customizable Scoring System**: Configure scoring rules to prioritize your preferred regions, languages, and ROM quality
+- **Bidirectional Metadata Sync**: Synchronize game metadata (favorites, ratings, play stats) with Recalbox (via `gamelist.xml`) and Romm (via REST API)
+- **Batch Operations**: Export selected ROM versions while automatically removing unwanted duplicates
+- **Multi-Console Support**: Manage ROMs across 35+ retro gaming consoles
+- **Video Preview**: Built-in video player for game previews
+- **Logging & Diagnostics**: Comprehensive logging system with viewer for troubleshooting
 
-1) Browse [Roms Source folder](#roms-source-folder) for roms.
-1) Create a new revision of [RomManager.ods](#RomManager-ods) output file.
+## 📋 Current Status
 
-### Set Score
+### ROM Sets Support
+- ✅ **GoodSets** (fully supported)
+- 🔜 **NoIntro** (coming soon)
+- 🔜 **Redump** (coming soon)
 
-1. Set score of each rom version, based on [GoodToolsConfig.ods](#GoodToolsConfig) configuration.
-1. Set exportable:
-    - all good dsk (amstrad) files.
-    - only best rom version (highest score) for other consoles.
-1. Create a new revision of [RomManager.ods](#RomManager-ods) output file.
+### Platform Synchronization
+- ✅ **Recalbox** (fully supported via `gamelist.xml` files)
+- 🔜 **Romm** (coming soon via REST API - see [rommapp/romm](https://github.com/rommapp/romm))
 
-### Sync
+## 🚀 Quick Start
 
-Export selected rom versions to [Destination folder](#destination-folder), removing unwanted versions.
+### 1. Scan Source
 
-### Sync Recalbox
+Browse your ROM source folder and scan for ROM files. RomManager will:
+- Detect all ROM files in supported console folders
+- Identify multiple versions of the same game
+- Create a `RomManager.ods` spreadsheet with all discovered ROMs
 
-Recalbox stores game data into `gamelist.xml` files.
+**Requirements:**
+- ROM files must be in `.7z` archives (except Amstrad CPC which uses `.dsk` files)
+- Folders must be named according to [supported console names](#supported-consoles)
 
-During "Sync Game Data", we read `gamelist.xml` from each destination subfolder (each console) and sync data from/to recalbox.
+### 2. Set Score
 
-The `gamelist.xml` file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating. References:
-- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp
-- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.h
+Automatically score ROM versions based on your preferences:
+- Each ROM version receives a score based on `GoodToolsConfig.ods` configuration
+- By default, French/European games are favored (customizable)
+- Automatically marks exportable versions:
+  - All good `.dsk` files for Amstrad CPC
+  - Only the best version (highest score) for other consoles
 
-Règle fusion:
-- "Recalbox": lecture seule recalbox vers RomManager
-- "Plus récent": prend celui modifié le plus récemment. Fallback: "Recalbox"
-- "-": N/A, non lu
+### 3. Sync ROMs
 
-| Champ XML          | Type Java | Type champ     | Lecture XML | Écriture XML | Mod. RomManager | Modif Recalbox  | Règle fusion | Utilisation                      |
-| ------------------ | --------- | -------------- | ----------- | ------------ | --------------- | --------------- | ------------ | -------------------------------- |
-| path               | String    | File info      | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin du fichier ROM            |
-| hash               | String    | File info      | ✅          | ❌           | ❌              | ❌              | Recalbox     | Hash CRC32 du ROM                |
-| playcount          | int       | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Nombre de parties jouées         |
-| lastplayed         | String    | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Dernière fois joué               |
-| timeplayed         | int       | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Temps total de jeu (en secondes) |
-| favorite           | boolean   | User           | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu favori                       |
-| hidden             | boolean   | User           | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu caché                        |
-| adult              | boolean   | Scrappé / User | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu adulte                       |
-| name               | String    | Scrappé / User | ✅          | ✅           | ✅              | ✅              | Plus récent  | Nom du jeu                       |
-| desc               | String    | Scrappé        | ✅          | ❌           | ❌              | ✅              | Recalbox     | Description                      |
-| rating             | float     | Scrappé        | ✅          | ❌           | ❌              | ✅              | Recalbox     | Note/évaluation                  |
-| image              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin de l'image                |
-| thumbnail          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin du thumbnail              |
-| video              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin de la vidéo               |
-| releasedate        | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Date de sortie                   |
-| developer          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Développeur                      |
-| publisher          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Éditeur                          |
-| genre              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Genre                            |
-| genreid            | String    | Scrappé        | ✅          | ❌           | ❌              | ✅ (ou genre ?) | Recalbox     | ID du genre                      |
-| players            | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Nombre de joueurs                |
-| region             | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Région                           |
-| ratio              | String    | Scrappé        | ✅          | ❌           | ❌              | ✅ (marche ?)   | Recalbox     | Ratio d'écran                    |
-| emulator           | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Émulateur                        |
-| core               | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Core de l'émulateur              |
-| rotation           | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Rotation de l'écran              |
-| lastPatch          | -         |                | ❌          | ❌           | ❌              | ???             | -            | Dernier patch appliqué           |
-| lightgunluminosity | -         |                | ❌          | ❌           | ❌              | ???             | -            | Luminosité du lightgun           |
-| aliases            | -         |                | ❌          | ❌           | ❌              | ???             | -            | Alias du jeu                     |
-| licences           | -         |                | ❌          | ❌           | ❌              | ???             | -            | Licences                         |
-| timestamp          | long      | Scrap info     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Timestamp du scrap (attribut).   |
-| source             | -         | Scrap info     | ❌          | ❌           | ❌              | ❌              | -            | Toujours "Recalbox" (attribut).  |
+Export selected ROM versions to your destination folder:
+- Choose which ROM versions to export
+- Automatically removes unwanted duplicates
+- Maintains folder structure compatible with EmulationStation/Recalbox
 
-## Configuration
+### 4. Sync Game Data
 
-### <a name="roms-source-folder"></a>  Roms Source folder
+Synchronize metadata with supported platforms:
 
-Select folder containing roms.
+**Recalbox:**
+- Reads `gamelist.xml` files from destination folders
+- Bidirectional sync for user preferences (favorites, hidden, adult flags, name)
+- One-way sync for scraped data (descriptions, ratings, images, videos)
 
-It must include subfolders:
+**Romm** (coming soon):
+- Synchronization via REST API
+- Supports Romm's self-hosted ROM manager and player platform
+- See [Romm documentation](https://github.com/rommapp/romm) for more information
 
-- named as in [Supported consoles](#supported-consoles) list.
-- containing 7z files (or .dsk files for Amstrad CPC (amstradcpc) only)
+## ⚙️ Configuration
 
-### <a name="destination-folder"></a> Destination folder
+### ROM Source Folder
 
-Select folder where to:
+Select the folder containing your ROM sets. It must include subfolders:
+- Named according to [supported console names](#supported-consoles)
+- Containing `.7z` archive files (or `.dsk` files for Amstrad CPC only)
 
-- export selected roms
-- read `gamelist.xml` files
+### Destination Folder
 
-### <a name="GoodToolsConfig"></a> GoodToolsConfig.ods
+Select where to:
+- Export selected ROM files
+- Read/write `gamelist.xml` files for metadata synchronization
 
-This configures how scores are computed.
+### GoodToolsConfig.ods
 
-**French / Europe games favored by default. Change it as desired !**
+Configuration file that defines how ROM versions are scored. Configure:
+- **Translation tab**: Scoring by language/translation
+- **ALL tab**: Scoring by GoodTools codes (includes language codes)
+- **README tab**: Additional documentation
 
-| Tab | Content |
-| :--- |:---|
-| Translation | Score by translation. |
-| ALL | Score by code. Note: also include some language codes! |
-| README | More information |
+**Note**: French/European games are favored by default. Adjust the configuration to match your preferences!
 
-### <a name="RomManager-ods"></a> RomManager.ods
+### RomManager.ods
 
-Output file, after "Scan Source" and "Set Score".
+Output file generated after "Scan Source" and "Set Score" operations:
+- Acts as a database of your ROM collection
+- Read automatically at startup
+- Can be opened in LibreOffice/Excel for manual review
 
-Read at startup (cheap but convenient sort of database).
+## 📊 Metadata Synchronization
 
-### <a name="supported-consoles"></a> Supported consoles
+RomManager synchronizes game metadata with multiple platforms:
 
-| Folder name | Console |
-| :--- |:---|
-| amiga1200 | Amiga 1200 |
-| amiga600 | Amiga 600 |
-| amstradcpc | Amstrad CPC |
-| apple2 | Apple 2 |
-| atari2600 | Atari 2600 |
-| atari5200 | Atari 5200 |
-| atari7800 | Atari 7800 |
-| atarist | Atari ST |
-| c64 | Commodore 64 |
-| cavestory | Cave Story |
-| dos | DOS |
-| dreamcast | Sega DreamCast |
-| gamegear | Sega Game Gear |
-| gb | Nintendo Game Boy |
-| gba | Nintendo Game Boy Advance |
-| gbc | Nintendo Game Boy Color |
-| gw | Nintendo Game & Watch |
-| jaguar | Atari Jaguar |
-| lynx | Atari Lynx |
-| mame | MAME (Arcade) |
-| mastersystem | Sega Master System |
-| megadrive | Sega Megadrive |
-| n64 | Nintendo 64 |
-| neogeo | SNK Neo Geo |
-| nes | Nintendo Entertainment System |
-| ngp | SNK Neo Geo Pocket |
-| ngpc | SNK Neo Geo Pocket Color |
-| pcengine | NEC PC engine |
-| pcenginecd | NEC PC engine CD |
-| psp | Sony PSP |
-| psx | Sony PSX (PS1) |
-| sega32x | Sega Mega Drive 32X |
-| segacd | Sega Mega CD |
-| snes | Super Nintendo |
-| supergrafx | NEC SuperGrafX |
-| virtualboy | Nintendo Virtual Boy |
+- **Recalbox**: Uses EmulationStation's `gamelist.xml` format
+- **Romm**: Uses REST API (coming soon)
 
-## SSH Configuration for Recalbox
+The synchronization follows these rules:
 
-RomManager can stop/restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication modes are supported:
+### Merge Rules
 
-### SSH Key Authentication (recommended)
+- **"Recalbox"**: Read-only from Recalbox → RomManager (scraped data, file info, user stats)
+- **"Most Recent"**: Takes the version modified most recently (user preferences like favorites, hidden, adult, name). Fallback: Recalbox takes precedence if timestamps are equal
+- **"-"**: Not applicable, not read
+
+### Field Details
+
+| XML Field        | Type    | Category    | Read XML | Write XML | Mod. RomManager | Mod. Recalbox | Merge Rule    | Description                           |
+|-----------------|---------|-------------|----------|-----------|----------------|---------------|---------------|---------------------------------------|
+| **File Info**    |         |             |          |           |                |               |               |                                       |
+| path             | String  | File info   | ✅       | ❌        | ❌             | ❌            | Recalbox      | ROM file path                         |
+| hash             | String  | File info   | ✅       | ❌        | ❌             | ❌            | Recalbox      | CRC32 hash                             |
+| **User Stats**   |         |             |          |           |                |               |               |                                       |
+| playcount        | int     | User Stats  | ✅       | ❌        | ❌             | ❌            | Recalbox      | Number of times played                 |
+| lastplayed       | String  | User Stats  | ✅       | ❌        | ❌             | ❌            | Recalbox      | Last played date                       |
+| timeplayed       | int     | User Stats  | ✅       | ❌        | ❌             | ❌            | Recalbox      | Total play time (seconds)              |
+| **User Preferences** |      |             |          |           |                |               |               |                                       |
+| favorite         | boolean | User        | ✅       | ✅        | ✅             | ✅            | Most Recent   | Favorite game flag                     |
+| hidden           | boolean | User        | ✅       | ✅        | ✅             | ✅            | Most Recent   | Hidden game flag                      |
+| adult            | boolean | User/Scrap  | ✅       | ✅        | ✅             | ✅            | Most Recent   | Adult content flag                    |
+| name             | String  | User/Scrap  | ✅       | ✅        | ✅             | ✅            | Most Recent   | Game name                             |
+| **Scraped Data** |         |             |          |           |                |               |               |                                       |
+| desc             | String  | Scraped     | ✅       | ❌        | ❌             | ✅            | Recalbox      | Game description                      |
+| rating           | float   | Scraped     | ✅       | ❌        | ❌             | ✅            | Recalbox      | Game rating                            |
+| image            | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Cover image path                      |
+| thumbnail        | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Thumbnail image path                  |
+| video            | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Preview video path                    |
+| releasedate      | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Release date                          |
+| developer        | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Developer                              |
+| publisher        | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Publisher                              |
+| genre            | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Genre                                  |
+| genreid          | String  | Scraped     | ✅       | ❌        | ❌             | ✅            | Recalbox      | Genre ID                               |
+| players          | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Number of players                     |
+| region           | String  | Scraped     | ✅       | ❌        | ❌             | ❌            | Recalbox      | Region                                 |
+| ratio            | String  | Scraped     | ✅       | ❌        | ❌             | ✅            | Recalbox      | Screen ratio                           |
+| timestamp        | long    | Scrap info  | ✅       | ❌        | ❌             | ❌            | Recalbox      | Scrap timestamp (attribute)            |
+| source           | -       | Scrap info  | ❌       | ❌        | ❌             | ❌            | -            | Always "Recalbox" (attribute)          |
+| **Not Supported** |         |             |          |           |                |               |               |                                       |
+| emulator         | -       |             | ❌       | ❌        | ❌             | ✅            | -            | Emulator                               |
+| core             | -       |             | ❌       | ❌        | ❌             | ✅            | -            | Emulator core                         |
+| rotation         | -       |             | ❌       | ❌        | ❌             | ✅            | -            | Screen rotation                        |
+| lastPatch        | -       |             | ❌       | ❌        | ❌             | ❓            | -            | Last applied patch                     |
+| lightgunluminosity | -     |             | ❌       | ❌        | ❌             | ❓            | -            | Lightgun luminosity                    |
+| aliases          | -       |             | ❌       | ❌        | ❌             | ❓            | -            | Game aliases                           |
+| licences         | -       |             | ❌       | ❌        | ❌             | ❓            | -            | Licenses                               |
+
+## 🎮 Supported Consoles
+
+RomManager supports 35+ retro gaming consoles:
+
+| Folder Name      | Console                    |
+|------------------|----------------------------|
+| amiga1200        | Amiga 1200                 |
+| amiga600         | Amiga 600                  |
+| amstradcpc       | Amstrad CPC                |
+| apple2           | Apple II                   |
+| atari2600        | Atari 2600                 |
+| atari5200        | Atari 5200                 |
+| atari7800        | Atari 7800                 |
+| atarist          | Atari ST                   |
+| c64              | Commodore 64               |
+| cavestory        | Cave Story                 |
+| dos              | DOS                        |
+| dreamcast        | Sega Dreamcast             |
+| gamegear         | Sega Game Gear             |
+| gb               | Nintendo Game Boy          |
+| gba              | Nintendo Game Boy Advance  |
+| gbc              | Nintendo Game Boy Color    |
+| gw               | Nintendo Game & Watch      |
+| jaguar           | Atari Jaguar               |
+| lynx             | Atari Lynx                 |
+| mame             | MAME (Arcade)              |
+| mastersystem     | Sega Master System         |
+| megadrive        | Sega Mega Drive            |
+| n64              | Nintendo 64                |
+| neogeo           | SNK Neo Geo                |
+| nes              | Nintendo Entertainment System |
+| ngp              | SNK Neo Geo Pocket         |
+| ngpc             | SNK Neo Geo Pocket Color   |
+| pcengine         | NEC PC Engine              |
+| pcenginecd       | NEC PC Engine CD           |
+| psp              | Sony PlayStation Portable  |
+| psx              | Sony PlayStation (PS1)      |
+| sega32x          | Sega Mega Drive 32X        |
+| segacd           | Sega Mega CD               |
+| snes             | Super Nintendo             |
+| supergrafx       | NEC SuperGrafX             |
+| virtualboy       | Nintendo Virtual Boy        |
+
+## 🔐 SSH Configuration for Recalbox
+
+RomManager can automatically stop and restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication methods are supported:
+
+### SSH Key Authentication (Recommended)
 
 1. Generate an SSH key on the machine running RomManager:
-
    ```bash
    ssh-keygen
    ```
 
-2. Copy the public key to the Recalbox:
-
+2. Copy the public key to your Recalbox:
    ```bash
    ssh-copy-id root@recalbox.local
    ```
 
-3. In `RomManager.properties`, configure:
-
+3. Configure in `RomManager.properties`:
    ```properties
    romset.recalbox.ssh.key=~/.ssh/id_rsa
    # Or leave empty to use the default key
    ```
 
-### Password Authentication (for testing)
+### Password Authentication (For Testing Only)
 
-1. Install `sshpass` on the machine running RomManager:
-
+1. Install `sshpass`:
    ```bash
    sudo apt update && sudo apt install sshpass
    ```
 
-2. In `RomManager.properties`, add:
-
+2. Configure in `RomManager.properties`:
    ```properties
    romset.recalbox.ssh.password=recalboxroot
    ```
 
-Security note: Storing a password in plain text is not recommended for long-term use. Prefer SSH key authentication.
+⚠️ **Security Note**: Storing passwords in plain text is not recommended. Use SSH key authentication for production use.
 
-### SSH Diagnostics
+### Troubleshooting SSH
 
-If `sshpass` is not installed and a password is configured, you will see:
-
-```text
+If you see this error:
+```
 [Error] Exception while stopping EmulationStation: Cannot run program "sshpass": error=2, No such file or directory
 ```
 
-Solutions:
-
-- Install `sshpass` as indicated above, or
+**Solutions:**
+- Install `sshpass` as shown above, or
 - Switch to SSH key authentication (recommended)
+
+## 📚 Additional Information
+
+### Gamelist.xml Format (Recalbox)
+
+RomManager uses the standard EmulationStation `gamelist.xml` format for Recalbox synchronization. For reference:
+- [Recalbox MetadataDescriptor.cpp](https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp)
+- [Recalbox MetadataDescriptor.h](https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.h)
+
+### Romm API
+
+Romm synchronization will use the REST API provided by [Romm](https://github.com/rommapp/romm), a self-hosted ROM manager and player. Romm provides metadata for 400+ platforms and supports custom artwork, achievements, and more.
+
+### Roadmap
+
+**Planned Features:**
+- 🔜 NoIntro ROM set support
+- 🔜 Redump ROM set support  
+- 🔜 Romm platform synchronization via REST API
+- 🔜 Enhanced filtering and search
+- 🔜 Batch metadata editing
+
+### Related Projects
+
+- **[Romm](https://github.com/rommapp/romm)**: A beautiful, powerful, self-hosted ROM manager and player that RomManager will integrate with
+
+## 📄 License
+
+This project is licensed under the GNU General Public License v3.0.
