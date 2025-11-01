@@ -22,8 +22,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import static rommanager.main.RomManager.TAG_JDG;
@@ -91,11 +90,11 @@ public class JdG extends ProcessAbstract {
         }
 	}
     
-    private static Map<String, JdgEntry> readTags() {
+	private static Map<String, JdgEntry> readTags() {
         Map<String, JdgEntry> tags = new HashMap<>();
 		if(!DOC_FILE.exists()) {
-			Logger.getLogger(JdG.class.getName())
-					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
+			LogManager.getInstance().warning(JdG.class, 
+					DOC_FILE + " does not exist");
 			return tags;
 		}
         try {
@@ -119,8 +118,8 @@ public class JdG extends ProcessAbstract {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(JdG.class.getName())
-					.log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(JdG.class, 
+					"Error reading JdG tags file", ex);
 		}
         return tags;
     }

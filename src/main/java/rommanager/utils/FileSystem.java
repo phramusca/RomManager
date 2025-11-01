@@ -34,8 +34,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileExistsException;
@@ -178,7 +176,7 @@ public class FileSystem {
             System.out.println("Regular file :" + inputFile.getCanonicalPath()+" is zipped to archive :"+zipFilePath.getAbsolutePath());
 			return true;
         } catch (IOException ex) {
-            Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(FileSystem.class, "Error creating zip file", ex);
 			return false;
         }
     }
@@ -203,7 +201,7 @@ public class FileSystem {
                 process = pb.start();
                 exitCode = process.waitFor();
                 if (exitCode != 0) {
-                    Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, "7z or 7za not found. Cannot create 7z archive.");
+                    LogManager.getInstance().error(FileSystem.class, "7z or 7za not found. Cannot create 7z archive.");
                     return false;
                 }
                 cmd7z = "7za";
@@ -248,12 +246,12 @@ public class FileSystem {
             if (archiveExitCode == 0 && outputFile.exists()) {
                 return true;
             } else {
-                Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, 
+                LogManager.getInstance().error(FileSystem.class, 
                     "Failed to create 7z archive: " + outputFile.getAbsolutePath());
                 return false;
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(FileSystem.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(FileSystem.class, "Error creating 7z archive", ex);
             return false;
         }
     }

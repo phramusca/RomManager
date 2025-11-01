@@ -20,8 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.LinkedHashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
@@ -132,7 +131,7 @@ public class RomContainer7z extends RomContainer {
             progressBar.setString("Extracting files for split...");
             String cmd7z = find7zCommand();
             if (cmd7z == null) {
-                Logger.getLogger(RomContainer7z.class.getName()).log(Level.WARNING, 
+                LogManager.getInstance().warning(RomContainer7z.class, 
                     "7z command not found. Cannot split archive.");
                 return false;
             }
@@ -143,7 +142,7 @@ public class RomContainer7z extends RomContainer {
             int extractExitCode = extractProcess.waitFor();
             
             if (extractExitCode != 0) {
-                Logger.getLogger(RomContainer7z.class.getName()).log(Level.SEVERE, 
+                LogManager.getInstance().error(RomContainer7z.class, 
                     "Failed to extract 7z archive for splitting.");
                 return false;
             }
@@ -171,7 +170,7 @@ public class RomContainer7z extends RomContainer {
                 boolean created = FileSystem.create7zArchive(tempDir, target7zFile, extension);
                 if (!created) {
                     allSuccess = false;
-                    Logger.getLogger(RomContainer7z.class.getName()).log(Level.SEVERE, 
+                    LogManager.getInstance().error(RomContainer7z.class, 
                         "Failed to create 7z archive for console: " + targetConsole.getSourceFolderName());
                 }
             }
@@ -185,7 +184,7 @@ public class RomContainer7z extends RomContainer {
             }
             
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RomContainer7z.class.getName()).log(Level.SEVERE, 
+            LogManager.getInstance().error(RomContainer7z.class, 
                 "Error splitting 7z archive", ex);
             return false;
         } finally {
@@ -194,7 +193,7 @@ public class RomContainer7z extends RomContainer {
                 try {
                     org.apache.commons.io.FileUtils.deleteDirectory(tempDir);
                 } catch (IOException ex) {
-                    Logger.getLogger(RomContainer7z.class.getName()).log(Level.WARNING, 
+                    LogManager.getInstance().warning(RomContainer7z.class, 
                         "Failed to delete temp directory", ex);
                 }
             }
@@ -221,7 +220,7 @@ public class RomContainer7z extends RomContainer {
                 return "7za";
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RomContainer7z.class.getName()).log(Level.SEVERE, 
+            LogManager.getInstance().error(RomContainer7z.class, 
                 "Error finding 7z command", ex);
         }
         return null;

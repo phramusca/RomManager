@@ -17,8 +17,6 @@
 
 package rommanager.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -37,15 +35,7 @@ public class Popup {
 	
 	//TODO: Make appName configurable
 	private static final String APP_NAME = "Rom Manager";  //NOI18N
-	private static Logger LOGGER=null; //Can't be static. Why should it be (as netbeans says) ?
-	
-	/**
-	 * Set the LOGGER
-	 * @param logger
-	 */
-	public static void setLogger(Logger logger) {
-		Popup.LOGGER = logger;
-	}
+	private static final LogManager logManager = LogManager.getInstance();
 	
 	/**
 	 * Popup an info to the user (ex: "Process complete.")
@@ -106,57 +96,35 @@ public class Popup {
 	 * @param str
 	 */
 	public static void warning(String str) {
-        if(LOGGER!=null) {
-			Popup.LOGGER.log(Level.WARNING, str);
-		}
+		logManager.warning(Popup.class, str);
 		javax.swing.JOptionPane.showMessageDialog(null, str, APP_NAME + " - Warning", JOptionPane.WARNING_MESSAGE);  //NOI18N
 	}
-
-	//TODO: do not call OptionsEnv.LOGGER from this class
-	//as we loose the impacted class and method
-	//=> Need to go through the code and for each method, make sure:
-	//- we return a boolean (pass/fail)
-	//- we popup an error to the user (at some level)
-	//- we log the error
 	
 	/**
-	 * TODO: Parcourir utilisations et MAJ selon le cas
-	 * @param str
+	 * Log and display an error message
+	 * @param str Error message
 	 */
 	public static void error(String str) {
-		if(LOGGER!=null) {
-			Popup.LOGGER.severe(str);
-		}
+		logManager.error(Popup.class, str);
 		popupError(str);
     }
 	
 	/**
 	 * Popup an error with additional text
-	 * @param str
-	 * @param ex
+	 * @param str Error message
+	 * @param ex Exception that occurred
 	 */
 	public static void error(String str, Exception ex) {
-		if(LOGGER!=null) {
-			Popup.LOGGER.log(Level.SEVERE, str, ex);
-		}
+		logManager.error(Popup.class, str, ex);
 		popupError(str+":\n\n"+ex.toString());  //NOI18N
 	}
 	
 	/**
 	 * Popup an error (Exception only)
-	 * @param ex
+	 * @param ex Exception that occurred
 	 */
 	public static void error(Exception ex) {
-		if(LOGGER!=null) {
-			Popup.LOGGER.log(Level.SEVERE, APP_NAME, ex);
-		}
-		else {
-			System.out.println(ex.toString());
-			StackTraceElement[] stackTrace = ex.getStackTrace();
-			for (StackTraceElement stackTraceElement : stackTrace) {
-				System.out.println(stackTraceElement.toString());
-			}
-		}
+		logManager.error(Popup.class, "An unexpected error occurred", ex);
 		popupError("An unexpected error occured:\n\n"+ex.toString());  //NOI18N
 	}
 

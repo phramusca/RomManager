@@ -6,8 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.StringManager;
 
@@ -53,7 +52,8 @@ public class BufferVideo {
                     VIDEO_CACHE.put(key, cacheFile.getAbsolutePath());
                     return true;
                 } catch (IOException ex) {
-                    Logger.getLogger(BufferVideo.class.getName()).log(Level.SEVERE, "Failed to copy video to cache: " + originalPath, ex);
+                    LogManager.getInstance().error(BufferVideo.class, 
+                        "Failed to copy video to cache: " + originalPath, ex);
                     return false;
                 }
             }

@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.Popup;
 import rommanager.utils.ProcessAbstract;
@@ -113,8 +112,7 @@ public class ProcessList extends ProcessAbstract {
 	private void list(Console console, String path) throws InterruptedException {
 		File file = new File(path);
         if(!file.exists()) {
-            Logger.getLogger(ProcessList.class.getName())
-					.log(Level.SEVERE, "No such path: {0}", path);
+            LogManager.getInstance().error(ProcessList.class, "No such path: " + path);
             return;
         }
         
@@ -203,8 +201,8 @@ public class ProcessList extends ProcessAbstract {
                             }
                         }
                     } catch (IOException ex) {
-                        //FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
-                        Logger.getLogger(ProcessList.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getInstance().error(ProcessList.class, 
+                            "Error processing 7z file: " + file.getName(), ex);
                     }
                 } else if(allowedExtensions.contains(ext)) {
                     String romName = RomContainerFlat.getRomName(FilenameUtils.getBaseName(file.getAbsolutePath()), ext);

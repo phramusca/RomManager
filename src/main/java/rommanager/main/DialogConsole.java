@@ -211,8 +211,8 @@ public class DialogConsole extends javax.swing.JDialog {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(DialogConsole.class.getName())
-					.log(java.util.logging.Level.SEVERE, null, ex);
+			rommanager.utils.LogManager.getInstance().error(DialogConsole.class, 
+					"Error setting look and feel", ex);
 		}
 		//</editor-fold>
 

@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -184,7 +183,7 @@ public class RomManagerOds {
 				OOUtils.open(odsFile);
 			}
         } catch (IOException ex) {
-            Logger.getLogger(RomManagerOds.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(RomManagerOds.class, "Error saving ODS file", ex);
             return false;
         }
         return true;
@@ -200,16 +199,16 @@ public class RomManagerOds {
 			return name.matches(DOC_FILE+".+\\.ods");
 		});
 		if(arrayList==null || arrayList.length<=0) {
-			Logger.getLogger(RomManagerOds.class.getName())
-					.log(Level.WARNING, "No "+DOC_FILE+"*.ods in {0}", sourceFolder);
+			LogManager.getInstance().warning(RomManagerOds.class, 
+					"No " + DOC_FILE + "*.ods in " + sourceFolder);
 			return;
 		}
 		List<String> list = Arrays.asList(arrayList);
 		Collections.sort(list);
 		File odsFile = new File(FilenameUtils.concat(sourceFolder, list.get(list.size()-1)));
 		if(!odsFile.exists()) {
-			Logger.getLogger(RomManagerOds.class.getName())
-					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
+			LogManager.getInstance().warning(RomManagerOds.class, 
+					DOC_FILE + " does not exist");
 			return;
 		}
         try {
@@ -309,8 +308,7 @@ public class RomManagerOds {
 			}
 			progressBarGame.reset();
 		} catch (IOException ex) {
-			Logger.getLogger(RomManagerOds.class.getName())
-					.log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(RomManagerOds.class, "Error reading ODS file", ex);
 		} 
     }
 }

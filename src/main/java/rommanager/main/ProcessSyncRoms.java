@@ -25,8 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -183,7 +182,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                             unzippedFile.delete();
                                         }
                                     } catch (IOException ex) {
-                                        Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
+                                        LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                            "Error extracting file from 7z archive", ex);
                                     }
                                     break;
                                 }
@@ -218,7 +218,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
         } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
         } catch (IOException ex) {
-            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(ProcessSyncRoms.class, "Error during ROM export", ex);
         } finally {
             callBack.completed();
         }
@@ -266,7 +266,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
             }
             zipFile.close();
         } catch (IOException ex) {
-            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(ProcessSyncRoms.class, 
+                "Error checking exported zip file", ex);
             return false;
         }
         return true;
@@ -292,7 +293,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
                 return false;
             }
         } catch (IOException ex) {
-            Logger.getLogger(ProcessSyncRoms.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(ProcessSyncRoms.class, 
+                "Error checking exported zip file with CRC", ex);
             return false;
         }
         return true;

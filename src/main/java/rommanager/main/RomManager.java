@@ -17,6 +17,7 @@
 package rommanager.main;
 
 import java.io.File;
+import rommanager.utils.LogManager;
 import rommanager.utils.Options;
 import rommanager.utils.Popup;
 
@@ -31,6 +32,9 @@ public class RomManager {
     protected static final String TAG_JDG = "2_JDG";
     
     public static void main(String[] args) {
+        // Initialize logging system first (creates cache/logs directory if needed)
+        LogManager.getInstance();
+        
         options = new Options("RomManager.properties");
         options.read();
         File cachePath = new File("cache");
@@ -38,6 +42,12 @@ public class RomManager {
             Popup.error("Error creating cache folder.");
             System.exit(1);
         }
+        
         RomManagerGUI.main(args);
+        
+        // Close log manager on shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LogManager.getInstance().close();
+        }));
     }
 }

@@ -20,8 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import rommanager.utils.Row;
@@ -55,8 +54,8 @@ public class GoodToolsConfigOds {
 
 	private static void readFileTranslations() {
 		if(!DOC_FILE.exists()) {
-			Logger.getLogger(GoodToolsConfigOds.class.getName())
-					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
+			LogManager.getInstance().warning(GoodToolsConfigOds.class, 
+					DOC_FILE + " does not exist");
 			return;
 		}
         try {
@@ -80,8 +79,8 @@ public class GoodToolsConfigOds {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(GoodToolsConfigOds.class.getName())
-					.log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(GoodToolsConfigOds.class, 
+					"Error reading translations file", ex);
 		} 
     }
 	
@@ -89,8 +88,8 @@ public class GoodToolsConfigOds {
 	// http://emulation.gametechwiki.com/index.php/GoodTools
 	private static void readFileCodes() {
 		if(!DOC_FILE.exists()) {
-			Logger.getLogger(GoodToolsConfigOds.class.getName())
-					.log(Level.WARNING, "{0} does not exists", DOC_FILE);
+			LogManager.getInstance().warning(GoodToolsConfigOds.class, 
+					DOC_FILE + " does not exist");
 			return;
 		}
         try {
@@ -115,8 +114,8 @@ public class GoodToolsConfigOds {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(GoodToolsConfigOds.class.getName())
-					.log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(GoodToolsConfigOds.class, 
+					"Error reading codes file", ex);
 		} 
     }
 }

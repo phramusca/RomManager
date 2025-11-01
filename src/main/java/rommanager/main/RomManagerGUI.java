@@ -131,6 +131,26 @@ public class RomManagerGUI extends javax.swing.JFrame {
         
 		disableGUI("Reading ods file: ");
 		new ReadOds(new CallBackProcessWithOutSaving(), jTextFieldPathSource.getText()).start();
+		
+		// Add "View Logs" button to control panel
+		addLogViewerButton();
+    }
+    
+    /**
+     * Add a "View Logs" button/menu to the GUI
+     */
+    private void addLogViewerButton() {
+        // Create a menu bar with Help menu
+        javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
+        javax.swing.JMenu helpMenu = new javax.swing.JMenu("Help");
+        javax.swing.JMenuItem viewLogsItem = new javax.swing.JMenuItem("View Logs");
+        viewLogsItem.setToolTipText("Open log viewer to see application logs and errors");
+        viewLogsItem.addActionListener(e -> {
+            rommanager.utils.DialogLogViewer.show(this);
+        });
+        helpMenu.add(viewLogsItem);
+        menuBar.add(helpMenu);
+        this.setJMenuBar(menuBar);
     }
 
     class TableHeaderMouseListener extends MouseAdapter {
@@ -1725,8 +1745,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         } catch (ClassNotFoundException | InstantiationException | 
 				IllegalAccessException | 
 				javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RomManagerGUI.class.getName())
-					.log(java.util.logging.Level.SEVERE, null, ex);
+            rommanager.utils.LogManager.getInstance().error(RomManagerGUI.class, 
+					"Error setting look and feel", ex);
         }
         //</editor-fold>
 

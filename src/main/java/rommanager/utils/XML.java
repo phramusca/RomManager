@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,7 +54,7 @@ public class XML {
 			doc.getDocumentElement().normalize();
 			return doc;
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(XML.class, "Error opening XML file: " + filename, ex);
 			return null;
         }
 	}
@@ -68,7 +66,7 @@ public class XML {
             Document document = documentBuilder.newDocument();
             return document;
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(XML.class, "Error creating new XML document", ex);
             return null;
         }
     }
@@ -93,7 +91,7 @@ public class XML {
 			transformer.transform(domSource, streamResult);
 			System.out.println("Done creating XML File");
 		} catch (TransformerException ex) {
-			Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(XML.class, "Error saving XML file: " + filename, ex);
 		}
     }
     
@@ -116,7 +114,7 @@ public class XML {
                 values.add((Element)nodes.item(i));
             }
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(XML.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(XML.class, "Error evaluating XPath: " + xpathExpression, ex);
         }
         return values;
     }

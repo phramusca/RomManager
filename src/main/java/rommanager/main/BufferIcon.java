@@ -22,8 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -122,10 +121,10 @@ public class BufferIcon {
             g2.dispose();
             ImageIO.write(bi, "png", getCacheFile(key)); //NOI18N
 		} catch (IIOException ex) {
-            Logger.getLogger(BufferIcon.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getInstance().error(BufferIcon.class, "Error reading icon", ex);
         }
         catch (IOException | NullPointerException ex) {
-			Logger.getLogger(BufferIcon.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(BufferIcon.class, "Error processing icon", ex);
 		}
         return icon;
     }

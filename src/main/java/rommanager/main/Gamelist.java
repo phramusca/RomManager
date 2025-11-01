@@ -21,8 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,15 +54,15 @@ public class Gamelist {
     private void read() {
         games = new HashMap<>();
         if(!file.exists()) {
-            Logger.getLogger(Gamelist.class.getName())
-                    .log(Level.WARNING, "File not found: {0}", file.getAbsolutePath());
+            LogManager.getInstance().warning(Gamelist.class, 
+                    "File not found: " + file.getAbsolutePath());
             return;
         }
         
         doc = XML.open(file.getAbsolutePath());
         if(doc==null) {
-            Logger.getLogger(Gamelist.class.getName())
-                    .log(Level.SEVERE, "Error with: Document doc = XML.open(\"{0}\")", file.getAbsolutePath());
+            LogManager.getInstance().error(Gamelist.class, 
+                    "Error with: Document doc = XML.open(\"" + file.getAbsolutePath() + "\")");
             return;
         }
         ArrayList<Element> elements = XML.getElements(doc, "game");

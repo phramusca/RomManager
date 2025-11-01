@@ -22,8 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import rommanager.utils.LogManager;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
@@ -109,7 +108,7 @@ public class RomVersion {
 				this.attributes.add(new Attribute(raw, key, value));
 			}
 		} catch (ParseException ex) {
-			Logger.getLogger(RomVersion.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getInstance().error(RomVersion.class, "Error parsing attributes JSON", ex);
 		}
 
 		this.score = score;
@@ -205,8 +204,8 @@ public class RomVersion {
                         try {
                             this.score+=Integer.parseInt(value);
                         } catch(java.lang.NumberFormatException ex) {
-                            Logger.getLogger(RomVersion.class.getName())
-									.log(Level.WARNING, attribute.toString(), ex);
+                            LogManager.getInstance().warning(RomVersion.class, 
+									"Error parsing revision number from attribute: " + attribute.toString(), ex);
                         }
 						attribute.setValue("{+"+value+"}");
 					} else if(attribute.getRaw().startsWith("(V")
@@ -222,8 +221,8 @@ public class RomVersion {
 							this.score+=scoreToAdd;
 							attribute.setValue("{+"+scoreToAdd+"}");
 						} catch(PatternSyntaxException | NumberFormatException ex) {
-							Logger.getLogger(RomVersion.class.getName())
-									.log(Level.WARNING, attribute.toString(), ex);
+							LogManager.getInstance().warning(RomVersion.class, 
+									"Error parsing version number from attribute: " + attribute.toString(), ex);
 						}
 						
 					} 
