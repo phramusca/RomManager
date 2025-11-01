@@ -28,13 +28,54 @@ At startup [RomManager.ods](#RomManager-ods) is read and displayed.
 
 Export selected rom versions to [Destination folder](#destination-folder), removing unwanted versions.
 
-### Read gamelist.xml
+### Sync Recalbox
 
-Read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) from each destination subfolder (each console) and updates table.
+Recalbox stores game data into `gamelist.xml` files.
 
-The [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating.
+During "Sync Game Data", we read `gamelist.xml` from each destination subfolder (each console) and sync data from/to recalbox.
 
-Note that [RomManager.ods](#RomManager-ods) is NOT (yet) updated.
+The `gamelist.xml` file defines metadata for a system's games, such as a name, image (like a screenshot or box art), description, release date, and rating. References:
+- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.cpp
+- https://gitlab.com/recalbox/recalbox/-/blob/master/projects/frontend/es-app/src/games/MetadataDescriptor.h
+
+Règle fusion:
+- "Recalbox": lecture seule recalbox vers RomManager
+- "Plus récent": prend celui modifié le plus récemment. Fallback: "Recalbox"
+- "-": N/A, non lu
+
+| Champ XML          | Type Java | Type champ     | Lecture XML | Écriture XML | Mod. RomManager | Modif Recalbox  | Règle fusion | Utilisation                      |
+| ------------------ | --------- | -------------- | ----------- | ------------ | --------------- | --------------- | ------------ | -------------------------------- |
+| path               | String    | File info      | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin du fichier ROM            |
+| hash               | String    | File info      | ✅          | ❌           | ❌              | ❌              | Recalbox     | Hash CRC32 du ROM                |
+| playcount          | int       | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Nombre de parties jouées         |
+| lastplayed         | String    | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Dernière fois joué               |
+| timeplayed         | int       | User Stats     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Temps total de jeu (en secondes) |
+| favorite           | boolean   | User           | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu favori                       |
+| hidden             | boolean   | User           | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu caché                        |
+| adult              | boolean   | Scrappé / User | ✅          | ✅           | ✅              | ✅              | Plus récent  | Jeu adulte                       |
+| name               | String    | Scrappé / User | ✅          | ✅           | ✅              | ✅              | Plus récent  | Nom du jeu                       |
+| desc               | String    | Scrappé        | ✅          | ❌           | ❌              | ✅              | Recalbox     | Description                      |
+| rating             | float     | Scrappé        | ✅          | ❌           | ❌              | ✅              | Recalbox     | Note/évaluation                  |
+| image              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin de l'image                |
+| thumbnail          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin du thumbnail              |
+| video              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Chemin de la vidéo               |
+| releasedate        | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Date de sortie                   |
+| developer          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Développeur                      |
+| publisher          | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Éditeur                          |
+| genre              | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Genre                            |
+| genreid            | String    | Scrappé        | ✅          | ❌           | ❌              | ✅ (ou genre ?) | Recalbox     | ID du genre                      |
+| players            | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Nombre de joueurs                |
+| region             | String    | Scrappé        | ✅          | ❌           | ❌              | ❌              | Recalbox     | Région                           |
+| ratio              | String    | Scrappé        | ✅          | ❌           | ❌              | ✅ (marche ?)   | Recalbox     | Ratio d'écran                    |
+| emulator           | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Émulateur                        |
+| core               | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Core de l'émulateur              |
+| rotation           | -         |                | ❌          | ❌           | ❌              | ✅              | -            | Rotation de l'écran              |
+| lastPatch          | -         |                | ❌          | ❌           | ❌              | ???             | -            | Dernier patch appliqué           |
+| lightgunluminosity | -         |                | ❌          | ❌           | ❌              | ???             | -            | Luminosité du lightgun           |
+| aliases            | -         |                | ❌          | ❌           | ❌              | ???             | -            | Alias du jeu                     |
+| licences           | -         |                | ❌          | ❌           | ❌              | ???             | -            | Licences                         |
+| timestamp          | long      | Scrap info     | ✅          | ❌           | ❌              | ❌              | Recalbox     | Timestamp du scrap (attribut).   |
+| source             | -         | Scrap info     | ❌          | ❌           | ❌              | ❌              | -            | Toujours "Recalbox" (attribut).  |
 
 ## Configuration
 
@@ -52,7 +93,7 @@ It must include subfolders:
 Select folder where to:
 
 - export selected roms
-- read [gamelist.xml](https://github.com/recalbox/recalbox-emulationstation/blob/master/GAMELISTS.md) files
+- read `gamelist.xml` files
 
 ### <a name="GoodToolsConfig"></a> GoodToolsConfig.ods
 
