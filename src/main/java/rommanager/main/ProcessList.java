@@ -195,7 +195,12 @@ public class ProcessList extends ProcessAbstract {
                                     new RomContainer7z(
                                             console, FilenameUtils.getName(file.getAbsolutePath()));
                             romSevenZipFile.setVersions(progressBarGame, FilenameUtils.getFullPath(file.getAbsolutePath()));
-                            tableModel.addRow(romSevenZipFile);
+                            
+                            // If file was split, it no longer exists - don't add this RomContainer
+                            // The split files will be detected in their respective console folders
+                            if (file.exists()) {
+                                tableModel.addRow(romSevenZipFile);
+                            }
                         }
                     } catch (IOException ex) {
                         //FIXME 4 Manage errors (here and elsewhere): log in a file & display in gui somehow (with a filter ideally)
