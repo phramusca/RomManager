@@ -1,20 +1,13 @@
 # RomManager
 
-A powerful desktop application for managing and organizing ROM collections with intelligent scoring, synchronization, and metadata management.
-
-## 🎮 Overview
-
-RomManager helps you organize large ROM collections by:
-- **Scanning** ROM sets from organized folders (following console folder naming conventions)
-- **Scoring** ROM versions based on your preferences (region, translation, quality) to automatically select the best versions for export
-- **Synchronizing** selected ROMs to your destination folders (Recalboc / Romm)
-- **Synchronizing metadata** with Recalbox (via `gamelist.xml`) and Romm (via REST API, planned)
+A powerful desktop application for managing and organizing ROM collections. Scan ROM sets, automatically score versions to select the best ones, and synchronize files and metadata with Recalbox and Romm platforms.
 
 ## ✨ Features
 
 - **Smart ROM Version Detection**: Automatically identifies and scores multiple ROM versions within console folders
 - **Customizable Scoring System**: Configure scoring rules to prioritize your preferred regions, languages, and ROM quality. The score determines which versions are automatically exported to Recalbox and Romm
-- **Bidirectional Metadata Sync**: Synchronize game metadata (favorites, ratings, play stats) with Recalbox (via `gamelist.xml`) and Romm (via REST API)
+- **ROM File Synchronization**: Export selected ROM files to Recalbox and Romm destination folders
+- **Metadata Synchronization**: Bidirectional sync of game metadata (favorites, ratings, play stats) with Recalbox (via `gamelist.xml`). Romm metadata sync is planned
 - **Multi-Console Support**: Manage ROMs across 35+ retro gaming consoles
 - **Automatic Version Selection**: Exports the highest-scored ROM version for each game automatically
 
@@ -26,8 +19,14 @@ RomManager helps you organize large ROM collections by:
 - 🔜 **Redump** (planned)
 
 ### Platform Synchronization
+
+**ROM File Sync:**
+- ✅ **Recalbox** (fully supported)
+- ✅ **Romm** (fully supported)
+
+**Metadata Sync:**
 - ✅ **Recalbox** (fully supported via `gamelist.xml` files)
-- ✅ **Romm** (fully supported via REST API - see [rommapp/romm](https://github.com/rommapp/romm))
+- 🔜 **Romm** (planned via REST API - see [rommapp/romm](https://github.com/rommapp/romm))
 
 ## 🚀 Quick Start
 
@@ -53,25 +52,26 @@ Automatically score ROM versions based on your preferences:
   - All good `.dsk` files for Amstrad CPC
   - Only the best version (highest score) for other consoles
 
-### 3. Sync ROMs
+### 3. Sync ROM Files
 
-Export selected ROM versions to your destination folder:
-- Choose which ROM versions to export (or let the scoring system select automatically)
-- Automatically removes unwanted duplicates
-- Maintains folder structure compatible with EmulationStation/Recalbox
+Export selected ROM files to your destination folders (Recalbox or Romm):
+- Export ROM files to destination console folders
+- Maintains folder structure compatible with the selected destination platform
+- Checks existing files on destination and skips those already exported
+- Automatically removes unwanted files that are no longer in the selection
 
-### 4. Sync Game Data
+### 4. Sync Game Metadata
 
-Synchronize metadata with supported platforms:
+Synchronize game metadata (favorites, ratings, play stats) with supported platforms:
 
 **Recalbox:**
 - Reads `gamelist.xml` files from destination folders
 - Bidirectional sync for user preferences (favorites, hidden, adult flags, name)
 - One-way sync for scraped data (descriptions, ratings, images, videos)
 
-**Romm:**
-- Synchronization via REST API
-- Supports Romm's self-hosted ROM manager and player platform
+**Romm** (planned):
+- Metadata synchronization via REST API
+- Will support bidirectional sync for user preferences
 - See [Romm documentation](https://github.com/rommapp/romm) for more information
 
 ## ⚙️ Configuration
@@ -87,8 +87,8 @@ Select the folder containing your ROM sets. It must include subfolders:
 ### Destination Folder
 
 Select where to:
-- Export selected ROM files
-- Read/write `gamelist.xml` files for metadata synchronization
+- Export selected ROM files (for both Recalbox and Romm)
+- Read/write `gamelist.xml` files for Recalbox metadata synchronization
 
 ### GoodToolsConfig.ods
 
@@ -160,7 +160,7 @@ If you see this error:
 RomManager synchronizes game metadata with multiple platforms:
 
 - **Recalbox**: Uses EmulationStation's `gamelist.xml` format
-- **Romm**: Uses REST API
+- **Romm**: Uses REST API (planned)
 
 The synchronization follows these rules:
 
@@ -264,15 +264,14 @@ RomManager uses the standard EmulationStation `gamelist.xml` format for Recalbox
 
 ### Romm API
 
-Romm synchronization uses the REST API provided by [Romm](https://github.com/rommapp/romm), a self-hosted ROM manager and player. Romm provides metadata for 400+ platforms and supports custom artwork, achievements, and more.
+Romm file synchronization uses the REST API provided by [Romm](https://github.com/rommapp/romm), a self-hosted ROM manager and player. Metadata synchronization with Romm is planned and will use the same REST API. Romm provides metadata for 400+ platforms and supports custom artwork, achievements, and more.
 
 ### Roadmap
 
 **Planned Features:**
 - 🔜 NoIntro ROM set support
 - 🔜 Redump ROM set support  
-- 🔜 Enhanced filtering and search
-- 🔜 Batch metadata editing
+- 🔜 Romm metadata synchronization via REST API
 
 ### Related Projects
 
