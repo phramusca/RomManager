@@ -37,16 +37,12 @@ public class SSHFSMount {
      */
     public static Pair<Boolean, String> mount(Destination destination) {
         String prefix = destination == Destination.recalbox ? "recalbox" : "romm";
+        SSHHelper.SSHConfig sshConfig = SSHHelper.loadConfig(prefix);
         
-        String sshHost = RomManager.options.get(prefix + ".ssh.host");
-        String sshUser = RomManager.options.get(prefix + ".ssh.user");
-        String sshPort = RomManager.options.get(prefix + ".ssh.port");
-        String sshKey = RomManager.options.get(prefix + ".ssh.key");
-        String sshPassword = RomManager.options.get(prefix + ".ssh.password");
         String remotePath = RomManager.options.get(prefix + ".ssh.remotePath");
         String mountPoint = RomManager.options.get(prefix + ".ssh.mountPoint");
         
-        if (!isConfigured(sshHost, remotePath, mountPoint)) {
+        if (!isConfigured(sshConfig.host, remotePath, mountPoint)) {
             return Pair.of(false, "[Info] SSHFS not configured for " + destination.getName() + ".");
         }
         
@@ -66,7 +62,7 @@ public class SSHFSMount {
         }
         
         try {
-            boolean success = mountSSHFS(sshHost, sshUser, sshPort, sshKey, sshPassword, remotePath, mountPoint);
+            boolean success = mountSSHFS(sshConfig, remotePath, mountPoint);
             if (success) {
                 return Pair.of(true, "[Info] Successfully mounted " + destination.getName() + " at " + mountPoint);
             } else {
@@ -116,10 +112,10 @@ public class SSHFSMount {
      */
     public static boolean isConfigured(Destination destination) {
         String prefix = destination == Destination.recalbox ? "recalbox" : "romm";
-        String sshHost = RomManager.options.get(prefix + ".ssh.host");
+        SSHHelper.SSHConfig sshConfig = SSHHelper.loadConfig(prefix);
         String remotePath = RomManager.options.get(prefix + ".ssh.remotePath");
         String mountPoint = RomManager.options.get(prefix + ".ssh.mountPoint");
-        return isConfigured(sshHost, remotePath, mountPoint);
+        return isConfigured(sshConfig.host, remotePath, mountPoint);
     }
     
     private static boolean isConfigured(String sshHost, String remotePath, String mountPoint) {
@@ -128,62 +124,44 @@ public class SSHFSMount {
                 && (mountPoint != null && !mountPoint.equals("{Missing}") && !mountPoint.trim().isEmpty());
     }
     
-    private static boolean mountSSHFS(String host, String user, String port, String key, String password, 
-                                      String remotePath, String mountPoint) throws IOException, InterruptedException {
-        List<String> cmd = new ArrayList<>();
-        
+    private static boolean mountSSHFS(SSHHelper.SSHConfig config, String remotePath, String mountPoint) 
+            throws IOException, InterruptedException {
         // Build SSH connection string
         StringBuilder sshConnection = new StringBuilder();
-        if (user != null && !user.equals("{Missing}") && !user.trim().isEmpty()) {
-            sshConnection.append(user).append("@");
-        }
-        sshConnection.append(host);
+        sshConnection.append(SSHHelper.buildSSHTarget(config));
         if (remotePath != null && !remotePath.equals("{Missing}") && !remotePath.trim().isEmpty()) {
             sshConnection.append(":").append(remotePath);
         }
         
-        // Add SSH options
+        // Add SSH options for sshfs
         List<String> sshOptions = new ArrayList<>();
         sshOptions.add("reconnect");
         
-        if (port != null && !port.equals("{Missing}") && !port.trim().isEmpty()) {
-            sshOptions.add("Port=" + port);
+        if (config.port != null && !config.port.equals("{Missing}") && !config.port.trim().isEmpty()) {
+            sshOptions.add("Port=" + config.port);
         }
         
-        if (key != null && !key.equals("{Missing}") && !key.trim().isEmpty()) {
-            sshOptions.add("IdentityFile=" + key);
+        if (config.hasKey()) {
+            sshOptions.add("IdentityFile=" + config.key);
         }
+        
+        // Build sshfs command
+        List<String> cmd = new ArrayList<>();
         
         // If password is used, we need to use sshpass (sshfs doesn't support password directly)
-        if (password != null && !password.equals("{Missing}") && !password.trim().isEmpty()) {
-            // Use sshpass with sshfs
-            List<String> sshpassCmd = new ArrayList<>();
-            sshpassCmd.add("sshpass");
-            sshpassCmd.add("-p");
-            sshpassCmd.add(password);
-            sshpassCmd.add("sshfs");
-            sshpassCmd.add("-o");
-            sshpassCmd.add(String.join(",", sshOptions));
-            sshpassCmd.add(sshConnection.toString());
-            sshpassCmd.add(mountPoint);
-            
-            ProcessBuilder pb = new ProcessBuilder(sshpassCmd);
-            Process p = pb.start();
-            int rc = p.waitFor();
-            return rc == 0;
-        } else {
-            // Use sshfs with key authentication
-            cmd.add("sshfs");
-            cmd.add("-o");
-            cmd.add(String.join(",", sshOptions));
-            cmd.add(sshConnection.toString());
-            cmd.add(mountPoint);
-            
-            ProcessBuilder pb = new ProcessBuilder(cmd);
-            Process p = pb.start();
-            int rc = p.waitFor();
-            return rc == 0;
+        if (config.hasPassword()) {
+            cmd.add("sshpass");
+            cmd.add("-p");
+            cmd.add(config.password);
         }
+        
+        cmd.add("sshfs");
+        cmd.add("-o");
+        cmd.add(String.join(",", sshOptions));
+        cmd.add(sshConnection.toString());
+        cmd.add(mountPoint);
+        
+        return SSHHelper.executeCommand(cmd);
     }
     
     private static boolean unmountSSHFS(String mountPoint) throws IOException, InterruptedException {
@@ -192,10 +170,7 @@ public class SSHFSMount {
         cmd.add("-u");
         cmd.add(mountPoint);
         
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        Process p = pb.start();
-        int rc = p.waitFor();
-        return rc == 0;
+        return SSHHelper.executeCommand(cmd);
     }
 }
 

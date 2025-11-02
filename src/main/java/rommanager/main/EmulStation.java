@@ -16,9 +16,6 @@
  */
 package rommanager.main;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang3.tuple.Pair;
 import rommanager.utils.Popup;
@@ -29,22 +26,18 @@ import rommanager.utils.Popup;
  */
 public class EmulStation {
 
-    static String sshHost = RomManager.options.get("recalbox.ssh.host");
-    static String sshUser = RomManager.options.get("recalbox.ssh.user");
-    static String sshPort = RomManager.options.get("recalbox.ssh.port");
-    static String sshKey = RomManager.options.get("recalbox.ssh.key");
-    static String sshPassword = RomManager.options.get("recalbox.ssh.password");
+    private static SSHHelper.SSHConfig sshConfig = SSHHelper.loadConfig("recalbox");
     
     public static Pair<Boolean, String> stop() {
-        if (isConfigured()) {
-            int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshHost + " during sync?\n\nWARNING: Any changes made in Recalbox UI will be lost if you haven't saved them first.\nMake sure to select 'Update game list' in Recalbox or restart Recalbox before syncing.\n\nEmulationStation will be restarted after sync.", "Confirm sync", JOptionPane.YES_NO_OPTION);
+        if (sshConfig.isConfigured()) {
+            int ans = JOptionPane.showConfirmDialog(null, "Stop EmulationStation on " + sshConfig.host + " during sync?\n\nWARNING: Any changes made in Recalbox UI will be lost if you haven't saved them first.\nMake sure to select 'Update game list' in Recalbox or restart Recalbox before syncing.\n\nEmulationStation will be restarted after sync.", "Confirm sync", JOptionPane.YES_NO_OPTION);
             if (ans == JOptionPane.YES_OPTION) {
                 try {
-                    boolean success = stopEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword);
+                    boolean success = SSHHelper.executeRemoteCommand(sshConfig, "/etc/init.d/S31emulationstation stop");
                     if (success) {
-                        return Pair.of(true, "[Info] EmulationStation stopped on ".concat(sshHost).concat("\n"));
+                        return Pair.of(true, "[Info] EmulationStation stopped on ".concat(sshConfig.host).concat("\n"));
                     } else {
-                        return Pair.of(false, "[Warn] Could not stop EmulationStation on ".concat(sshHost).concat(" - continuing without stop\n"));
+                        return Pair.of(false, "[Warn] Could not stop EmulationStation on ".concat(sshConfig.host).concat(" - continuing without stop\n"));
                     }
                 } catch (Exception ex) {
                     Popup.error(ex);
@@ -56,75 +49,19 @@ public class EmulStation {
     }
 
     public static Pair<Boolean, String> start() {
-        if (isConfigured()) {
+        if (sshConfig.isConfigured()) {
             try {
-                boolean success = startEmulationStation(sshHost, sshUser, sshPort, sshKey, sshPassword);
+                // start in background so ssh returns
+                boolean success = SSHHelper.executeRemoteCommand(sshConfig, "/etc/init.d/S31emulationstation start &>/dev/null &");
                 if (success) {
-                    return Pair.of(true, "[Info] EmulationStation started on ".concat(sshHost).concat(".\n"));
+                    return Pair.of(true, "[Info] EmulationStation started on ".concat(sshConfig.host).concat(".\n"));
                 } else {
-                    return Pair.of(false, "[Warn] EmulationStation could not be started on ".concat(sshHost).concat(".\n"));
+                    return Pair.of(false, "[Warn] EmulationStation could not be started on ".concat(sshConfig.host).concat(".\n"));
                 }
             } catch (Exception ex) {
                 return Pair.of(false, "[Warn] Exception while starting EmulationStation before popup: ".concat(ex.getMessage()).concat("\n"));
             }
         }
         return Pair.of(false, "[Info] SSH not configured, so EmulationStation NOT started.");
-    }
-
-    private static boolean isConfigured() {
-        return (sshHost != null && !sshHost.equals("{Missing}") && !sshHost.trim().isEmpty());
-    }
-
-    private static boolean stopEmulationStation(String host, String user, String port, String key, String password) throws IOException, InterruptedException {
-        List<String> cmd = new ArrayList<>();
-        boolean useSshPass = password != null && !password.equals("{Missing}") && !password.trim().isEmpty();
-        if (useSshPass) {
-            cmd.add("sshpass");
-            cmd.add("-p");
-            cmd.add(password);
-        }
-        cmd.add("ssh");
-        if (port != null && !port.equals("{Missing}") && !port.trim().isEmpty()) {
-            cmd.add("-p");
-            cmd.add(port);
-        }
-        if (key != null && !key.equals("{Missing}") && !key.trim().isEmpty()) {
-            cmd.add("-i");
-            cmd.add(key);
-        }
-        String target = (user != null && !user.equals("{Missing}") ? user + "@" + host : host);
-        cmd.add(target);
-        cmd.add("/etc/init.d/S31emulationstation stop");
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        Process p = pb.start();
-        int rc = p.waitFor();
-        return rc == 0;
-    }
-
-    private static boolean startEmulationStation(String host, String user, String port, String key, String password) throws IOException, InterruptedException {
-        List<String> cmd = new ArrayList<>();
-        boolean useSshPass = password != null && !password.equals("{Missing}") && !password.trim().isEmpty();
-        if (useSshPass) {
-            cmd.add("sshpass");
-            cmd.add("-p");
-            cmd.add(password);
-        }
-        cmd.add("ssh");
-        if (port != null && !port.equals("{Missing}") && !port.trim().isEmpty()) {
-            cmd.add("-p");
-            cmd.add(port);
-        }
-        if (key != null && !key.equals("{Missing}") && !key.trim().isEmpty()) {
-            cmd.add("-i");
-            cmd.add(key);
-        }
-        String target = (user != null && !user.equals("{Missing}") ? user + "@" + host : host);
-        cmd.add(target);
-        // start in background so ssh returns
-        cmd.add("/etc/init.d/S31emulationstation start &>/dev/null &");
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        Process p = pb.start();
-        int rc = p.waitFor();
-        return rc == 0;
     }
 }
