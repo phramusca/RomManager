@@ -18,6 +18,8 @@ A powerful desktop application for managing and organizing ROM collections. Scan
 - 🔜 **NoIntro** (planned)
 - 🔜 **Redump** (planned)
 
+For more information about different ROM set groups (GoodSets, NoIntro, Redump, TOSEC, etc.) and their characteristics, see the [Recalbox documentation on ROM groups](https://wiki.recalbox.com/fr/tutorials/games/generalities/isos-and-roms/differents-groups).
+
 ### Platform Synchronization
 
 **ROM File Sync:**
@@ -84,6 +86,8 @@ Select the folder containing your ROM sets. It must include subfolders:
 
 **Important**: RomManager expects ROMs to be organized in console-specific folders. It will not automatically group ROMs from different locations.
 
+**Note**: Currently, RomManager supports **GoodSets** ROM collections. Support for **NoIntro** (cartridge-based games) and **Redump** (optical disc-based games) is planned. For more information about different ROM set groups and their characteristics, see the [Recalbox documentation on ROM groups](https://wiki.recalbox.com/fr/tutorials/games/generalities/isos-and-roms/differents-groups).
+
 ### Destination Folder
 
 Select where to:
@@ -108,9 +112,13 @@ Output file generated after "Scan Source" and "Set Score" operations:
 - Read automatically at startup
 - Can be opened in LibreOffice/Excel for manual review
 
-### SSH Configuration for Recalbox
+### SSH Configuration
 
-RomManager can automatically stop and restart EmulationStation on a remote Recalbox during gamelist synchronization. Two SSH authentication methods are supported:
+RomManager uses SSH for two purposes:
+1. **SSHFS Mounting**: Automatically mounts remote filesystems for Recalbox and Romm destinations during ROM file synchronization
+2. **EmulationStation Control**: Automatically stops and restarts EmulationStation on Recalbox during gamelist synchronization
+
+Both Recalbox and Romm use the same SSH configuration structure with different prefixes (`recalbox.ssh.*` and `romm.ssh.*`).
 
 #### SSH Key Authentication (Recommended)
 
@@ -119,15 +127,29 @@ RomManager can automatically stop and restart EmulationStation on a remote Recal
    ssh-keygen
    ```
 
-2. Copy the public key to your Recalbox:
+2. Copy the public key to your remote machines:
    ```bash
    ssh-copy-id root@recalbox.local
+   ssh-copy-id raph@rpi5.local
    ```
 
 3. Configure in `RomManager.properties`:
    ```properties
-   romset.recalbox.ssh.key=~/.ssh/id_rsa
-   # Or leave empty to use the default key
+   # Recalbox SSH configuration
+   recalbox.ssh.host=recalbox.local
+   recalbox.ssh.user=root
+   recalbox.ssh.port=22
+   recalbox.ssh.key=~/.ssh/id_rsa
+   recalbox.ssh.remotePath=/recalbox/share/
+   recalbox.ssh.mountPoint=/media/raph/recalbox/
+   
+   # Romm SSH configuration
+   romm.ssh.host=rpi5.local
+   romm.ssh.user=raph
+   romm.ssh.port=22
+   romm.ssh.key=~/.ssh/id_rsa
+   romm.ssh.remotePath=/
+   romm.ssh.mountPoint=/media/raph/rpi5/
    ```
 
 #### Password Authentication (For Testing Only)
@@ -140,9 +162,25 @@ RomManager can automatically stop and restart EmulationStation on a remote Recal
 2. Configure in `RomManager.properties`:
    ```properties
    romset.recalbox.ssh.password=recalboxroot
+   romset.romm.ssh.password=your_password
    ```
 
 ⚠️ **Security Note**: Storing passwords in plain text is not recommended. Use SSH key authentication for production use.
+
+#### SSHFS Mounting
+
+RomManager automatically mounts remote filesystems using SSHFS when configured:
+- Mounts are created before ROM file synchronization
+- Mounts are unmounted after synchronization completes
+- Uses the `-o reconnect` option for automatic reconnection
+
+**Requirements:**
+- `sshfs` must be installed:
+  ```bash
+  sudo apt install sshfs
+  ```
+- Mount point directories must exist or will be created automatically
+- For password authentication, `sshpass` must be installed
 
 #### Troubleshooting SSH
 
@@ -154,6 +192,12 @@ If you see this error:
 **Solutions:**
 - Install `sshpass` as shown above, or
 - Switch to SSH key authentication (recommended)
+
+If SSHFS mounting fails:
+- Verify `sshfs` is installed: `which sshfs`
+- Check SSH connectivity: `ssh user@host`
+- Ensure mount point directory exists or is writable
+- Check that the remote path exists and is accessible
 
 ## 📊 Metadata Synchronization
 

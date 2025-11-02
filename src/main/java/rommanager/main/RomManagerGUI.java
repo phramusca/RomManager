@@ -47,8 +47,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import rommanager.main.TableFilter.ExportFilesNumber;
-import rommanager.utils.Desktop;
 import rommanager.utils.ProcessAbstract;
 import rommanager.utils.TriStateCheckBox;
 
@@ -74,9 +74,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
     public RomManagerGUI() {
         initComponents();
         
-		jTextFieldPathRecalbox.setText(RomManager.options.get("romset.recalboxPath"));
-        jTextFieldPathRomM.setText(RomManager.options.get("romset.rommPath"));
-		jTextFieldPathSource.setText(RomManager.options.get("romset.sourcePath"));
+		jTextFieldPathRecalbox.setText(RomManager.options.get("romset.recalbox.romPath"));
+        jTextFieldPathRomM.setText(RomManager.options.get("romset.romm.romPath"));
+		jTextFieldPathSource.setText(RomManager.options.get("romset.goodsets.path"));
         
         progressBarGame = (ProgressBar)jProgressBarGame;
         progressBarConsole = (ProgressBar)jProgressBarConsole;
@@ -1134,10 +1134,26 @@ public class RomManagerGUI extends javax.swing.JFrame {
 
     private void startSyncRom(Destination destination, String exportPath, JButton button) {
         disableGUI("Exporting to " + destination.getName() + ": ");
+        
+        // Try to mount SSHFS if configured
+        if (SSHFSMount.isConfigured(destination)) {
+            Pair<Boolean, String> mountResult = SSHFSMount.mount(destination);
+            if (!mountResult.getLeft()) {
+                // Mount failed, but continue if export path exists locally
+                Popup.warning("SSHFS mount failed: " + mountResult.getRight() + "\nContinuing with local path if available...");
+            }
+            // Wait a bit for mount to be ready
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                // Ignore
+            }
+        }
+        
 		File folder = new File(exportPath);
 		if(!folder.exists()) {
 			enableGUI();
-			Popup.warning("Export path does not exist.");
+			Popup.warning("Export path does not exist: " + exportPath + "\n\nIf using SSHFS, ensure the mount succeeded and the path is correct.");
 			return;
 		}
 		String sourcePath = jTextFieldPathSource.getText();
@@ -1150,6 +1166,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processSyncRoms = new ProcessSyncRoms(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new ICallBackProcess() {
             @Override
             public void completed() {
+                // Unmount SSHFS after sync is complete
+                Pair<Boolean, String> unmountResult = SSHFSMount.unmount(destination);
                 enableGuiAndFilter();
             }
 
@@ -1246,7 +1264,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
 			String videoPath = null;
 			try {
 				// Try to find the video file in the export path
-				String exportPath = RomManager.options.get("romset.recalboxPath");
+				String exportPath = RomManager.options.get("romset.recalbox.romPath");
 				if (exportPath != null && !exportPath.trim().isEmpty()) {
 					// Find the console for this game
 					Console gameConsole = null;
@@ -1356,7 +1374,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonOptionSelectFolderRecalboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderRecalboxActionPerformed
         String selectedFolder=selectFolder(jTextFieldPathRecalbox.getText());
         if(!selectedFolder.equals("")) {  //NOI18N
-			RomManager.options.set("romset.recalboxPath", selectedFolder);
+			RomManager.options.set("romset.recalbox.romPath", selectedFolder);
 			RomManager.options.save();
             jTextFieldPathRecalbox.setText(selectedFolder);
         }
@@ -1365,7 +1383,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonOptionSelectFolderSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderSourceActionPerformed
 		String selectedFolder=selectFolder(jTextFieldPathSource.getText());
         if(!selectedFolder.equals("")) {  //NOI18N
-			RomManager.options.set("romset.sourcePath", selectedFolder);
+			RomManager.options.set("romset.goodsets.path", selectedFolder);
 			RomManager.options.save();
             jTextFieldPathSource.setText(selectedFolder);
         }
@@ -1639,7 +1657,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonOptionSelectFolderRomMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOptionSelectFolderRomMActionPerformed
         String selectedFolder=selectFolder(jTextFieldPathRomM.getText());
         if(!selectedFolder.equals("")) {  //NOI18N
-			RomManager.options.set("romset.rommPath", selectedFolder);
+			RomManager.options.set("romset.romm.romPath", selectedFolder);
 			RomManager.options.save();
             jTextFieldPathRomM.setText(selectedFolder);
         }

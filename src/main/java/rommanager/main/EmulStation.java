@@ -29,11 +29,11 @@ import rommanager.utils.Popup;
  */
 public class EmulStation {
 
-    static String sshHost = RomManager.options.get("romset.recalbox.ssh.host");
-    static String sshUser = RomManager.options.get("romset.recalbox.ssh.user");
-    static String sshPort = RomManager.options.get("romset.recalbox.ssh.port");
-    static String sshKey = RomManager.options.get("romset.recalbox.ssh.key");
-    static String sshPassword = RomManager.options.get("romset.recalbox.ssh.password");
+    static String sshHost = RomManager.options.get("recalbox.ssh.host");
+    static String sshUser = RomManager.options.get("recalbox.ssh.user");
+    static String sshPort = RomManager.options.get("recalbox.ssh.port");
+    static String sshKey = RomManager.options.get("recalbox.ssh.key");
+    static String sshPassword = RomManager.options.get("recalbox.ssh.password");
     
     public static Pair<Boolean, String> stop() {
         if (isConfigured()) {
