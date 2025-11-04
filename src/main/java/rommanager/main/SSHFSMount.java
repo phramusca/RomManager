@@ -75,12 +75,20 @@ public class SSHFSMount {
     
     /**
      * Unmount a remote filesystem mounted via SSHFS for the given destination
+     * Checks the keepMounted option to determine if unmount should be performed
      *
      * @param destination The destination (recalbox or romM)
      * @return Pair of (success, message)
      */
     public static Pair<Boolean, String> unmount(Destination destination) {
         String prefix = destination == Destination.recalbox ? "recalbox" : "romm";
+        String keepMounted = RomManager.options.get(prefix + ".ssh.keepMounted");
+        boolean shouldUnmount = !"true".equalsIgnoreCase(keepMounted);
+        
+        if (!shouldUnmount) {
+            return Pair.of(true, "[Info] Keeping SSHFS mount active for " + destination.getName() + " (keepMounted=true).");
+        }
+        
         String mountPoint = RomManager.options.get(prefix + ".ssh.mountPoint");
         
         if (mountPoint == null || mountPoint.equals("{Missing}") || mountPoint.trim().isEmpty()) {

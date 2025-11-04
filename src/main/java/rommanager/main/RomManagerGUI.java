@@ -1166,8 +1166,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processSyncRoms = new ProcessSyncRoms(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new ICallBackProcess() {
             @Override
             public void completed() {
-                // Unmount SSHFS after sync is complete
-                Pair<Boolean, String> unmountResult = SSHFSMount.unmount(destination);
+                // Unmount SSHFS after sync is complete (unless keepMounted option is set)
+                SSHFSMount.unmount(destination);
                 enableGuiAndFilter();
             }
 
@@ -1343,10 +1343,27 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonSyncGameListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncGameListActionPerformed
 		disableGUI("Reading gamelist.xml : ");
 		String exportPath = jTextFieldPathRecalbox.getText();
+		
+		// Try to mount SSHFS if configured (for Recalbox only)
+		Destination destination = Destination.recalbox;
+		if (SSHFSMount.isConfigured(destination)) {
+            Pair<Boolean, String> mountResult = SSHFSMount.mount(destination);
+            if (!mountResult.getLeft()) {
+                // Mount failed, but continue if export path exists locally
+                Popup.warning("SSHFS mount failed: " + mountResult.getRight() + "\nContinuing with local path if available...");
+            }
+            // Wait a bit for mount to be ready
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                // Ignore
+            }
+        }
+		
 		File file = new File(exportPath);
 		if(!file.exists()) {
 			enableGUI();
-			Popup.warning("Export path does not exist.");
+			Popup.warning("Export path does not exist: " + exportPath + "\n\nIf using SSHFS, ensure the mount succeeded and the path is correct.");
 			return;
 		}
         String sourcePath = jTextFieldPathSource.getText();
@@ -1359,6 +1376,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
 		processSyncGamelist = new ProcessSyncGamelist(sourcePath, exportPath, progressBarConsole, progressBarGame, tableModel, new ICallBackProcess() {
             @Override
             public void completed() {
+                // Unmount SSHFS after sync is complete (unless keepMounted option is set)
+                SSHFSMount.unmount(destination);
                 enableGuiAndFilter();
             }
 
