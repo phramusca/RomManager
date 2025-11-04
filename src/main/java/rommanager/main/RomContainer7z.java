@@ -53,37 +53,57 @@ public class RomContainer7z extends RomContainer {
             while(entry!=null){
                 name=entry.getName();
                 progressBar.setString(msg+" : "+name);
-                RomVersion romVersion = new RomVersion(
-                        FilenameUtils.getBaseName(filename), 
-                        name,
-                        console,
-                        entry.getCrcValue(),
-                        entry.getSize());
                 String ext = FilenameUtils.getExtension(name);
                 
+                // Determine the correct console based on file extension
+                Console versionConsole = console;
                 switch (ext) {
                     case "gb":
                         moveTo.add(Console.gb);
+                        versionConsole = Console.gb;
                         break;
                     case "gbc":
                         moveTo.add(Console.gbc);
+                        versionConsole = Console.gbc;
                         break;
                     case "ws":
                         moveTo.add(Console.wswan);
+                        versionConsole = Console.wswan;
                         break;
                     case "wsc":
                         moveTo.add(Console.wswanc);
+                        versionConsole = Console.wswanc;
                         break;
                 }
+                
+                RomVersion romVersion = new RomVersion(
+                        FilenameUtils.getBaseName(filename), 
+                        name,
+                        versionConsole,
+                        entry.getCrcValue(),
+                        entry.getSize());
                 versions.add(romVersion);
                 entry = sevenZFile.getNextEntry();
             }
+            
             if(!moveTo.isEmpty()) {
                 if(moveTo.size()>1) {
                     // Split the 7z file into separate files by console
                     // Split 7z files containing both GB and GBC (or WS and WSC) versions
                     boolean splitSuccess = split7zByConsole(sourceFile, path, moveTo, progressBar);
-                    if (!splitSuccess) {
+                    if (splitSuccess) {
+                        // After successful split, filter versions to keep only those matching current console
+                        // The split files will be detected in their respective console folders
+                        String currentConsoleExt = getExtensionForConsole(console);
+                        if (currentConsoleExt != null) {
+                            versions.removeIf(v -> {
+                                String versionExt = FilenameUtils.getExtension(v.getFilename());
+                                return !versionExt.equals(currentConsoleExt.substring(1)); // Remove leading dot
+                            });
+                        }
+                        // If no versions remain for this console, mark container as empty
+                        // (it will be skipped when adding to table)
+                    } else {
                         // Fallback to old behavior if split fails
                         Console moveToConsole = moveTo.stream().findFirst().get();
                         if(moveTo.contains(Console.gb) && moveTo.contains(Console.gbc)) {
