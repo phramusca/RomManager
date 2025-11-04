@@ -48,10 +48,10 @@ public class SSHFSMount {
         
         // Check if already mounted
         File mountPointFile = new File(mountPoint);
-        if (mountPointFile.exists() && mountPointFile.listFiles() != null) {
-            // Try to check if it's already a mount point by checking if . is a mount point
-            // This is a simple check - if the directory exists and is accessible, assume it might be mounted
-            return Pair.of(true, "[Info] Mount point " + mountPoint + " already exists and may be mounted.");
+        File[] files = mountPointFile.listFiles();
+        if (mountPointFile.exists() && files != null && files.length > 0) {
+            // Directory exists and contains files, likely already mounted
+            return Pair.of(true, "[Info] Mount point " + mountPoint + " already exists and appears to be mounted.");
         }
         
         // Create mount point directory if it doesn't exist
@@ -137,24 +137,34 @@ public class SSHFSMount {
         List<String> sshOptions = new ArrayList<>();
         sshOptions.add("reconnect");
         
-        if (config.port != null && !config.port.equals("{Missing}") && !config.port.trim().isEmpty()) {
-            sshOptions.add("Port=" + config.port);
-        }
-        
-        if (config.hasKey()) {
-            sshOptions.add("IdentityFile=" + config.key);
+        // If password is used, we need to use sshpass via ssh_command option
+        // In this case, we need to build the complete ssh command with all options
+        if (config.hasPassword()) {
+            StringBuilder sshCmd = new StringBuilder("sshpass -p ");
+            sshCmd.append(config.password).append(" ssh");
+            
+            if (config.port != null && !config.port.equals("{Missing}") && !config.port.trim().isEmpty()) {
+                sshCmd.append(" -p ").append(config.port);
+            }
+            
+            if (config.hasKey()) {
+                sshCmd.append(" -i ").append(config.key);
+            }
+            
+            sshOptions.add("ssh_command=" + sshCmd.toString());
+        } else {
+            // Without password, use standard SSH options
+            if (config.port != null && !config.port.equals("{Missing}") && !config.port.trim().isEmpty()) {
+                sshOptions.add("Port=" + config.port);
+            }
+            
+            if (config.hasKey()) {
+                sshOptions.add("IdentityFile=" + config.key);
+            }
         }
         
         // Build sshfs command
         List<String> cmd = new ArrayList<>();
-        
-        // If password is used, we need to use sshpass (sshfs doesn't support password directly)
-        if (config.hasPassword()) {
-            cmd.add("sshpass");
-            cmd.add("-p");
-            cmd.add(config.password);
-        }
-        
         cmd.add("sshfs");
         cmd.add("-o");
         cmd.add(String.join(",", sshOptions));
