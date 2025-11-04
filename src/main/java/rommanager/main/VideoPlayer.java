@@ -220,14 +220,20 @@ public class VideoPlayer extends JFXPanel {
                 // Create new media player
                         Media media = new Media(videoFile.toURI().toString());
                         mediaPlayer = new MediaPlayer(media);
-                        mediaView.setMediaPlayer(mediaPlayer);
                         
-                        // Apply audio settings
-                        mediaPlayer.setVolume(volumeLevel);
+                        // Apply mute IMMEDIATELY before any playback can start
+                        // This prevents any audio from playing when switching games
                         mediaPlayer.setMute(muteEnabled);
+                        mediaPlayer.setVolume(volumeLevel);
+                        
+                        mediaView.setMediaPlayer(mediaPlayer);
                 
                 // Set up event handlers
                         mediaPlayer.setOnReady(() -> {
+                            // Ensure mute is still applied when ready (in case it was reset)
+                            mediaPlayer.setMute(muteEnabled);
+                            mediaPlayer.setVolume(volumeLevel);
+                            
                             statusLabel.setText("Ready: " + videoFile.getName());
                             playButton.setDisable(false);
                             pauseButton.setDisable(true);

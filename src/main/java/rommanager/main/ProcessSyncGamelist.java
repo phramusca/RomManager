@@ -238,7 +238,11 @@ public class ProcessSyncGamelist extends ProcessAbstract {
                 }
             }
             progressBarConsole.reset();
-            tableModel.fireTableDataChanged();
+            
+            // Refresh table on EDT to ensure UI updates properly (including images)
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                tableModel.fireTableDataChanged();
+            });
 
             if (emulationStationStopped) {
                 Pair<Boolean, String> startResult = EmulStation.start();
