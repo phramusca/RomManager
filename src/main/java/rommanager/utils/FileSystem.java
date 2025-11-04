@@ -31,8 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -181,78 +179,4 @@ public class FileSystem {
         }
     }
     
-    /**
-     * Create a 7z archive from files in a directory, filtering by extension
-     * @param sourceDir Directory containing files to archive
-     * @param outputFile Output 7z file
-     * @param extensionFilter File extension to include (e.g., ".gb" or ".gbc"), null for all files
-     * @return true if successful
-     */
-    public static boolean create7zArchive(File sourceDir, File outputFile, String extensionFilter) {
-        try {
-            // Check if 7z or 7za is available
-            String cmd7z = "7z";
-            ProcessBuilder pb = new ProcessBuilder("which", "7z");
-            Process process = pb.start();
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                // Try 7za
-                pb = new ProcessBuilder("which", "7za");
-                process = pb.start();
-                exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    LogManager.getInstance().error(FileSystem.class, "7z or 7za not found. Cannot create 7z archive.");
-                    return false;
-                }
-                cmd7z = "7za";
-            }
-            
-            // Ensure output directory exists
-            File outputDir = outputFile.getParentFile();
-            if (outputDir != null && !outputDir.exists()) {
-                outputDir.mkdirs();
-            }
-            
-            // Build 7z command
-            // Note: 7z wildcard patterns might not work as expected, so we'll list files manually if needed
-            ProcessBuilder archivePb;
-            if (extensionFilter != null && !extensionFilter.isEmpty()) {
-                // Create archive with specific extension filter
-                // Find all files with the extension and add them individually
-                File[] files = sourceDir.listFiles((dir, name) -> name.toLowerCase().endsWith(extensionFilter.toLowerCase()));
-                if (files == null || files.length == 0) {
-                    // No files match - return false but don't log as error (might be expected)
-                    return false;
-                }
-                List<String> cmd = new ArrayList<>();
-                cmd.add(cmd7z);
-                cmd.add("a");
-                cmd.add("-t7z");
-                cmd.add(outputFile.getAbsolutePath());
-                cmd.add("-y");
-                for (File file : files) {
-                    cmd.add(file.getAbsolutePath());
-                }
-                archivePb = new ProcessBuilder(cmd);
-            } else {
-                // Create archive with all files
-                archivePb = new ProcessBuilder(cmd7z, "a", "-t7z", outputFile.getAbsolutePath(), 
-                    sourceDir.getAbsolutePath() + "/*", "-y");
-            }
-            
-            Process archiveProcess = archivePb.start();
-            int archiveExitCode = archiveProcess.waitFor();
-            
-            if (archiveExitCode == 0 && outputFile.exists()) {
-                return true;
-            } else {
-                LogManager.getInstance().error(FileSystem.class, 
-                    "Failed to create 7z archive: " + outputFile.getAbsolutePath());
-                return false;
-            }
-        } catch (IOException | InterruptedException ex) {
-            LogManager.getInstance().error(FileSystem.class, "Error creating 7z archive", ex);
-            return false;
-        }
-    }
 }

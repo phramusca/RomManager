@@ -25,6 +25,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
 import rommanager.utils.FileSystem;
+import rommanager.utils.FileSystem7z;
 import rommanager.utils.ProgressBar;
 
 /**
@@ -123,25 +124,14 @@ public class RomContainer7z extends RomContainer {
      */
     private boolean split7zByConsole(File sourceFile, String path, LinkedHashSet<Console> consoles, ProgressBar progressBar) {
         File tempDir = null;
+        File tempFileForSourceConsole = null;
         try {
             // Create temporary directory to extract files
             tempDir = Files.createTempDirectory("rommanager_split_").toFile();
             
             // Extract all files to temp directory
             progressBar.setString("Extracting files for split...");
-            String cmd7z = find7zCommand();
-            if (cmd7z == null) {
-                LogManager.getInstance().warning(RomContainer7z.class, 
-                    "7z command not found. Cannot split archive.");
-                return false;
-            }
-            
-            ProcessBuilder extractPb = new ProcessBuilder(cmd7z, "x", "-o" + tempDir.getAbsolutePath(), 
-                sourceFile.getAbsolutePath(), "-y");
-            Process extractProcess = extractPb.start();
-            int extractExitCode = extractProcess.waitFor();
-            
-            if (extractExitCode != 0) {
+            if (!FileSystem7z.extract7z(sourceFile, tempDir)) {
                 LogManager.getInstance().error(RomContainer7z.class, 
                     "Failed to extract 7z archive for splitting.");
                 return false;
@@ -155,19 +145,30 @@ public class RomContainer7z extends RomContainer {
                 
                 progressBar.setString("Creating " + targetConsole.getSourceFolderName() + " archive...");
                 
-                // Create target directory if needed
-                // path is the full path to the source file's directory
-                String targetPath = path.replace("/" + console.getSourceFolderName() + "/", 
-                    "/" + targetConsole.getSourceFolderName() + "/");
-                File targetDir = new File(targetPath);
-                if (!targetDir.exists()) {
-                    targetDir.mkdirs();
+                File target7zFile;
+                
+                if (targetConsole.equals(console)) {
+                    // For the source console, create in temp directory first to avoid conflict
+                    // We'll move it to replace the original later
+                    tempFileForSourceConsole = Files.createTempFile("rommanager_split_", ".7z").toFile();
+                    // Delete the empty file created by createTempFile - 7z will create it
+                    if (tempFileForSourceConsole.exists()) {
+                        tempFileForSourceConsole.delete();
+                    }
+                    target7zFile = tempFileForSourceConsole;
+                } else {
+                    // For other consoles, create in their respective folders
+                    String targetPath = path.replace("/" + console.getSourceFolderName() + "/", 
+                        "/" + targetConsole.getSourceFolderName() + "/");
+                    File targetDir = new File(targetPath);
+                    if (!targetDir.exists()) {
+                        targetDir.mkdirs();
+                    }
+                    target7zFile = new File(targetPath, filename);
                 }
                 
-                File target7zFile = new File(targetPath, filename);
-                
                 // Create 7z with filtered extension
-                boolean created = FileSystem.create7zArchive(tempDir, target7zFile, extension);
+                boolean created = FileSystem7z.create7zArchive(tempDir, target7zFile, extension);
                 if (!created) {
                     allSuccess = false;
                     LogManager.getInstance().error(RomContainer7z.class, 
@@ -175,17 +176,39 @@ public class RomContainer7z extends RomContainer {
                 }
             }
             
-            // Delete original file only if all splits succeeded
+            // If all splits succeeded, replace original with the split version for source console
             if (allSuccess) {
-                sourceFile.delete();
-                return true;
+                if (tempFileForSourceConsole != null && tempFileForSourceConsole.exists()) {
+                    // Replace original file with the split version for source console
+                    if (sourceFile.delete()) {
+                        FileSystem.moveFile(tempFileForSourceConsole, sourceFile);
+                    } else {
+                        LogManager.getInstance().error(RomContainer7z.class, 
+                            "Failed to delete original file for replacement.");
+                        allSuccess = false;
+                    }
+                } else if (consoles.contains(console)) {
+                    // Source console was in the list but no temp file was created
+                    // This shouldn't happen, but if it does, we still need to delete the original
+                    // since we created files for other consoles
+                    sourceFile.delete();
+                }
+                return allSuccess;
             } else {
+                // Clean up temp file if it was created
+                if (tempFileForSourceConsole != null && tempFileForSourceConsole.exists()) {
+                    tempFileForSourceConsole.delete();
+                }
                 return false;
             }
             
         } catch (IOException | InterruptedException ex) {
             LogManager.getInstance().error(RomContainer7z.class, 
                 "Error splitting 7z archive", ex);
+            // Clean up temp file if it was created
+            if (tempFileForSourceConsole != null && tempFileForSourceConsole.exists()) {
+                tempFileForSourceConsole.delete();
+            }
             return false;
         } finally {
             // Clean up temp directory
@@ -198,32 +221,6 @@ public class RomContainer7z extends RomContainer {
                 }
             }
         }
-    }
-    
-    /**
-     * Find available 7z command (7z or 7za)
-     * @return Command name or null if not found
-     */
-    private String find7zCommand() {
-        try {
-            ProcessBuilder pb = new ProcessBuilder("which", "7z");
-            Process process = pb.start();
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                return "7z";
-            }
-            
-            pb = new ProcessBuilder("which", "7za");
-            process = pb.start();
-            exitCode = process.waitFor();
-            if (exitCode == 0) {
-                return "7za";
-            }
-        } catch (IOException | InterruptedException ex) {
-            LogManager.getInstance().error(RomContainer7z.class, 
-                "Error finding 7z command", ex);
-        }
-        return null;
     }
     
     /**
