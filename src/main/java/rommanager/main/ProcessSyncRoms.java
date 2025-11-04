@@ -160,12 +160,25 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
                     File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, destination));
                     String ext = FilenameUtils.getExtension(filename);
+                    
+                    // Check if source file exists
+                    File sourceContainerFile = new File(FilenameUtils.concat(sourceFolder, filename));
+                    if (!sourceContainerFile.exists()) {
+                        nbFailed++;
+                        LogManager.getInstance().error(ProcessSyncRoms.class, 
+                            "Source file does not exist: " + sourceContainerFile.getAbsolutePath());
+                        progressBarGame.progress(romContainer.getConsoleStr() + " \\ " + romContainer.getFilename());
+                        continue;
+                    }
+                    
                     if (ext.equals("7z")) {
                         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(new File(
                                 FilenameUtils.concat(sourceFolder, filename))).get()) {
                             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+                            boolean found = false;
                             while (entry != null) {
                                 if (entry.getName().equals(romVersion.getFilename())) {
+                                    found = true;
                                     String exportFolder = romVersion.getExportFolder(romContainer.getConsole(), exportPath, destination);
                                     File file = new File(exportFolder);
                                     if (!file.exists()) {
@@ -174,34 +187,59 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                     File unzippedFile = new File(FilenameUtils.concat(exportFolder, romVersion.getFilename()));
                                     try (FileOutputStream out = new FileOutputStream(unzippedFile)) {
                                         byte[] content = new byte[(int) entry.getSize()];
-                                        sevenZFile.read(content, 0, content.length);
-                                        out.write(content);
+                                        int bytesRead = sevenZFile.read(content, 0, content.length);
+                                        if (bytesRead != entry.getSize()) {
+                                            LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                                "Incomplete read from 7z archive: expected " + entry.getSize() + " bytes, got " + bytesRead);
+                                        }
+                                        out.write(content, 0, bytesRead);
                                         out.close();
                                         if (romContainer.getConsole().isZip(destination)) {
-                                            FileSystem.zipFile(unzippedFile, exportFile);
+                                            if (!FileSystem.zipFile(unzippedFile, exportFile)) {
+                                                LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                                    "Failed to create zip file from extracted 7z entry: " + exportFile.getAbsolutePath());
+                                            }
                                             unzippedFile.delete();
                                         }
                                     } catch (IOException ex) {
                                         LogManager.getInstance().error(ProcessSyncRoms.class, 
-                                            "Error extracting file from 7z archive", ex);
+                                            "Error extracting file from 7z archive: " + romVersion.getFilename() + " from " + filename, ex);
                                     }
                                     break;
                                 }
                                 entry = sevenZFile.getNextEntry();
                             }
-                            sevenZFile.close();
+                            if (!found) {
+                                LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                    "File not found in 7z archive: " + romVersion.getFilename() + " not found in " + filename);
+                            }
+                        } catch (IOException ex) {
+                            LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                "Error opening 7z archive: " + filename, ex);
                         }
                     } else if (ProcessList.allowedExtensions.contains(ext)) {
-                        if (romContainer.getConsole().isZip(destination)) {
-                            FileSystem.zipFile(sourceFile, exportFile);
-                        } else {
-                            FileSystem.copyFile(sourceFile, exportFile);
+                        try {
+                            if (romContainer.getConsole().isZip(destination)) {
+                                if (!FileSystem.zipFile(sourceFile, exportFile)) {
+                                    LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                        "Failed to create zip file: " + exportFile.getAbsolutePath());
+                                }
+                            } else {
+                                FileSystem.copyFile(sourceFile, exportFile);
+                            }
+                        } catch (IOException ex) {
+                            LogManager.getInstance().error(ProcessSyncRoms.class, 
+                                "Error copying file: " + sourceFile.getAbsolutePath() + " -> " + exportFile.getAbsolutePath(), ex);
                         }
                     }
                     if (checkFile(romContainer, romVersion)) {
                         nbExported++;
                     } else {
                         nbFailed++;
+                        String errorMsg = getCheckFileError(romContainer, romVersion);
+                        LogManager.getInstance().error(ProcessSyncRoms.class, 
+                            "Export validation failed for: " + romContainer.getConsoleStr() + " / " + romVersion.getFilename() + 
+                            " -> " + exportFile.getAbsolutePath() + ". " + errorMsg);
                         if (exportFile.exists()) {
                             exportFile.delete();
                         }
@@ -243,6 +281,97 @@ public class ProcessSyncRoms extends ProcessAbstract {
             }
         }
         return false;
+    }
+    
+    private String getCheckFileError(RomContainer romContainer, RomVersion romVersion) {
+        try {
+            String sourceFolder = FilenameUtils.concat(sourcePath, romContainer.getConsole().getSourceFolderName());
+            File sourceFile = new File(FilenameUtils.concat(sourceFolder, romVersion.getFilename()));
+            File exportFile = new File(romVersion.getExportPath(romContainer.getConsole(), exportPath, destination));
+            String containerFileExtension = FilenameUtils.getExtension(romContainer.getFilename());
+            
+            if (!exportFile.exists()) {
+                return "Export file does not exist";
+            }
+            
+            if (containerFileExtension.equals("7z")) {
+                if (romContainer.getConsole().isZip(destination)) {
+                    return getCheckFileErrorDetails(exportFile, romVersion.getFilename(), romVersion.getCrcValue(), romVersion.getSize());
+                } else {
+                    long exportSize = exportFile.length();
+                    long expectedSize = romVersion.getSize();
+                    if (exportSize != expectedSize) {
+                        return "Size mismatch: expected " + expectedSize + ", got " + exportSize;
+                    }
+                }
+            } else if (ProcessList.allowedExtensions.contains(containerFileExtension)) {
+                if (romContainer.getConsole().isZip(destination)) {
+                    return getCheckFileErrorDetails(exportFile, sourceFile);
+                } else {
+                    long exportSize = exportFile.length();
+                    long sourceSize = sourceFile.length();
+                    if (exportSize != sourceSize) {
+                        return "Size mismatch: expected " + sourceSize + ", got " + exportSize;
+                    }
+                }
+            }
+            return "Unknown validation error";
+        } catch (Exception ex) {
+            return "Error getting validation details: " + ex.getMessage();
+        }
+    }
+    
+    private String getCheckFileErrorDetails(File exportFile, File sourceFile) {
+        try {
+            ZipFile zipFile = new ZipFile(exportFile);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            if (!entries.hasMoreElements()) {
+                zipFile.close();
+                return "Zip file is empty";
+            }
+            ZipEntry exportEntry = entries.nextElement();
+            if (!exportEntry.getName().equals(sourceFile.getName())) {
+                zipFile.close();
+                return "Name mismatch: expected " + sourceFile.getName() + ", got " + exportEntry.getName();
+            }
+            if (exportEntry.getSize() != sourceFile.length()) {
+                zipFile.close();
+                return "Size mismatch: expected " + sourceFile.length() + ", got " + exportEntry.getSize();
+            }
+            if (entries.hasMoreElements()) {
+                zipFile.close();
+                return "Zip file contains multiple entries (expected 1)";
+            }
+            zipFile.close();
+        } catch (IOException ex) {
+            return "Error reading zip file: " + ex.getMessage();
+        }
+        return "Unknown zip validation error";
+    }
+    
+    private String getCheckFileErrorDetails(File exportFile, String name, long crcValue, long size) {
+        try (ZipFile zipFile = new ZipFile(exportFile)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            if (!entries.hasMoreElements()) {
+                return "Zip file is empty";
+            }
+            ZipEntry exportEntry = entries.nextElement();
+            if (!exportEntry.getName().equals(name)) {
+                return "Name mismatch: expected " + name + ", got " + exportEntry.getName();
+            }
+            if (exportEntry.getSize() != size) {
+                return "Size mismatch: expected " + size + ", got " + exportEntry.getSize();
+            }
+            if (exportEntry.getCrc() != crcValue) {
+                return "CRC mismatch: expected " + crcValue + ", got " + exportEntry.getCrc();
+            }
+            if (entries.hasMoreElements()) {
+                return "Zip file contains multiple entries (expected 1)";
+            }
+        } catch (IOException ex) {
+            return "Error reading zip file: " + ex.getMessage();
+        }
+        return "Unknown zip validation error";
     }
 
     private boolean checkFile(File exportFile, File sourceFile) {
