@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rommanager.main.DialogConsoleController">
+   <top>
+      <Label text="Consoles" style="-fx-font-size: 14px; -fx-font-weight: bold;" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Label>
+   </top>
+   <center>
+      <ScrollPane fitToWidth="true" fitToHeight="true">
+         <content>
+            <ListView fx:id="listViewConsoles" />
+         </content>
+      </ScrollPane>
+   </center>
+   <bottom>
+      <VBox spacing="10.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <RadioButton fx:id="radioButtonOnlyNew" text="Only add new" selected="true">
+               <toggleGroup>
+                  <ToggleGroup fx:id="toggleGroupListType" />
+               </toggleGroup>
+            </RadioButton>
+            <CheckBox fx:id="checkBoxOnlyCultes" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="buttonAction" text="Action" onAction="#handleActionButton" />
+         </HBox>
+         <RadioButton fx:id="radioButtonRefreshSelected" text="Refresh" toggleGroup="$toggleGroupListType" />
+      </VBox>
+   </bottom>
+</BorderPane>
+
