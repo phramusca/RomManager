@@ -78,26 +78,29 @@ public class ProcessSyncRoms extends ProcessAbstract {
     public void run() {
         try {
             progressBarConsole.setup(3);
-            List<Console> consoles = tableModel.getRoms().values().stream()
-                    .map(v -> v.getConsole())
-                    .distinct()
-                    .collect(Collectors.toList());
-
-            //Get files currently on destination
-            progressBarConsole.progress("Listing files on destination");
-            progressBarGame.setup(consoles.size());
-            romDestinationList = new ArrayList<>();
-            for (Console console : consoles) {
-                checkAbort();
+            
+            // Get all selected consoles (from DialogConsole selection)
+            // This includes consoles that might not be in tableModel anymore (e.g., after deletion)
+            List<Console> selectedConsoles = new ArrayList<>();
+            for (Console console : Console.values()) {
                 if (console.isSelected()) {
-                    String consolePath = FilenameUtils.concat(exportPath, console.getDestinationFolderName(destination));
-                    if (new File(consolePath).exists()) {
-                        File consoleFilePath = new File(consolePath);
-                        if(destination.isFlat()) {
-                            browseFiles(consoleFilePath);
-                        } else {
-                            browsePath(consoleFilePath);
-                        }
+                    selectedConsoles.add(console);
+                }
+            }
+
+            //Get files currently on destination (only for selected consoles)
+            progressBarConsole.progress("Listing files on destination");
+            progressBarGame.setup(selectedConsoles.size());
+            romDestinationList = new ArrayList<>();
+            for (Console console : selectedConsoles) {
+                checkAbort();
+                String consolePath = FilenameUtils.concat(exportPath, console.getDestinationFolderName(destination));
+                if (new File(consolePath).exists()) {
+                    File consoleFilePath = new File(consolePath);
+                    if(destination.isFlat()) {
+                        browseFiles(consoleFilePath);
+                    } else {
+                        browsePath(consoleFilePath);
                     }
                 }
                 progressBarGame.progress(console.getName());
