@@ -18,6 +18,7 @@ package rommanager.main;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -47,6 +48,7 @@ public class DialogConsole {
      * @param displayFilter Whether to show filter options
      */
     public static void main(JFrame parent, ICallBackConsole callback, boolean displayRefresh, String buttonString, boolean displayFilter) {
+        final CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             try {
                 // Load FXML
@@ -71,9 +73,15 @@ public class DialogConsole {
                     dialogStage.initOwner(null); // Could be improved to get actual JavaFX parent
                 }
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setTitle("Console Selection");
-                dialogStage.setScene(new Scene(root));
+                dialogStage.setTitle("Console Export");
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(DialogConsole.class.getResource("/rommanager/main/DialogConsole.css").toExternalForm());
+                dialogStage.setScene(scene);
                 dialogStage.setResizable(false);
+                dialogStage.setMinWidth(460);
+                dialogStage.setMinHeight(620);
+                dialogStage.setHeight(640);
+                dialogStage.setWidth(480);
                 
                 // Handle window close
                 dialogStage.setOnCloseRequest((WindowEvent event) -> {
@@ -88,7 +96,14 @@ public class DialogConsole {
                 
             } catch (IOException ex) {
                 LogManager.getInstance().error(DialogConsole.class, "Error loading DialogConsole FXML", ex);
+            } finally {
+                latch.countDown();
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -73,7 +73,16 @@ public class DialogConsoleController implements Initializable {
         }
         listViewConsoles.setItems(consolesList);
         listViewConsoles.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
-        
+
+        buttonAction.setText("Export");
+        buttonAction.setMinWidth(140);
+        buttonAction.setPrefWidth(160);
+        buttonAction.setWrapText(true);
+        buttonAction.setDefaultButton(true);
+
+        checkBoxOnlyCultes.setWrapText(true);
+        checkBoxOnlyCultes.setMaxWidth(Double.MAX_VALUE);
+ 
         // Reset console selections
         Arrays.asList(Console.values()).forEach(console -> console.setSelected(false));
         
