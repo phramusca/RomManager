@@ -20,11 +20,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import rommanager.utils.LogManager;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -55,6 +60,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
     private List<File> romDestinationList;
     private boolean onlyCultes;
     private final Destination destination;
+    private final Map<String, Map<String, List<String>>> groupedLogs = new HashMap<>();
+    private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
 
     public ProcessSyncRoms(
             String sourcePath,
@@ -78,6 +85,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
     public void run() {
         try {
             progressBarConsole.setup(3);
+            addLogEntry("system", "info", "Starting ROM export to " + destination.getName());
             
             // Get all selected consoles (from DialogConsole selection)
             // This includes consoles that might not be in tableModel anymore (e.g., after deletion)
@@ -87,6 +95,9 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     selectedConsoles.add(console);
                 }
             }
+            if (selectedConsoles.isEmpty()) {
+                addLogEntry("system", "warning", "No console selected for export");
+            }
 
             //Get files currently on destination (only for selected consoles)
             progressBarConsole.progress("Listing files on destination");
@@ -95,6 +106,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
             for (Console console : selectedConsoles) {
                 checkAbort();
                 String consolePath = FilenameUtils.concat(exportPath, console.getDestinationFolderName(destination));
+                int beforeCount = romDestinationList.size();
                 if (new File(consolePath).exists()) {
                     File consoleFilePath = new File(consolePath);
                     if(destination.isFlat()) {
@@ -102,7 +114,11 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     } else {
                         browsePath(consoleFilePath);
                     }
+                } else {
+                    addLogEntry(console.getName(), "missingDestinationFolder", consolePath);
                 }
+                int afterCount = romDestinationList.size();
+                addLogEntry(console.getName(), "destinationFilesFound", String.valueOf(afterCount - beforeCount));
                 progressBarGame.progress(console.getName());
             }
 
@@ -122,6 +138,7 @@ public class ProcessSyncRoms extends ProcessAbstract {
                         .peek(r -> r.setToCopyTrue())
                         .collect(Collectors.toList());
             }
+            addLogEntry("system", "sourceEntries", String.valueOf(romSourceList.size()));
 
             //Remove files on destination and exclude already exported
             this.checkAbort();
@@ -136,10 +153,16 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     //Already exported
                     nbAlreadyExported++;
                     pair.getRight().setToCopy(false);
+                    addLogEntry(pair.getLeft().getConsole().getName(), "alreadyExported", file.getAbsolutePath());
                 } else {
                     //Not a file to be copied, or it is a bad file: removing it on destination
-                    file.delete();
-                    nbDeleted++;
+                    String reason = (pair == null) ? "not present in source selection" : "failed destination validation";
+                    if (file.delete()) {
+                        nbDeleted++;
+                        addLogEntry(getConsoleName(pair), "deletedDestinationFile", file.getAbsolutePath() + " - " + reason);
+                    } else {
+                        addLogEntry(getConsoleName(pair), "deleteFailed", file.getAbsolutePath() + " - " + reason);
+                    }
                 }
                 progressBarGame.progress(file.getAbsolutePath());
             }
@@ -168,6 +191,8 @@ public class ProcessSyncRoms extends ProcessAbstract {
                     File sourceContainerFile = new File(FilenameUtils.concat(sourceFolder, filename));
                     if (!sourceContainerFile.exists()) {
                         nbFailed++;
+                        addLogEntry(romContainer.getConsole().getName(), "sourceMissing",
+                                sourceContainerFile.getAbsolutePath() + " for " + romVersion.getFilename());
                         LogManager.getInstance().error(ProcessSyncRoms.class, 
                             "Source file does not exist: " + sourceContainerFile.getAbsolutePath());
                         progressBarGame.progress(romContainer.getConsoleStr() + " \\ " + romContainer.getFilename());
@@ -192,6 +217,10 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                         byte[] content = new byte[(int) entry.getSize()];
                                         int bytesRead = sevenZFile.read(content, 0, content.length);
                                         if (bytesRead != entry.getSize()) {
+                                            addLogEntry(romContainer.getConsole().getName(), "readMismatch",
+                                                    "7z read size mismatch for " + romVersion.getFilename()
+                                                    + " in " + filename + ": expected " + entry.getSize()
+                                                    + ", got " + bytesRead);
                                             LogManager.getInstance().error(ProcessSyncRoms.class, 
                                                 "Incomplete read from 7z archive: expected " + entry.getSize() + " bytes, got " + bytesRead);
                                         }
@@ -199,12 +228,18 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                         out.close();
                                         if (romContainer.getConsole().isZip(destination)) {
                                             if (!FileSystem.zipFile(unzippedFile, exportFile)) {
+                                                addLogEntry(romContainer.getConsole().getName(), "zipCreationFailed",
+                                                        "Failed to create " + exportFile.getAbsolutePath()
+                                                        + " from extracted " + unzippedFile.getAbsolutePath());
                                                 LogManager.getInstance().error(ProcessSyncRoms.class, 
                                                     "Failed to create zip file from extracted 7z entry: " + exportFile.getAbsolutePath());
                                             }
                                             unzippedFile.delete();
                                         }
                                     } catch (IOException ex) {
+                                        addLogEntry(romContainer.getConsole().getName(), "extractFailed",
+                                                "Error extracting " + romVersion.getFilename() + " from " + filename
+                                                + ": " + ex.getMessage());
                                         LogManager.getInstance().error(ProcessSyncRoms.class, 
                                             "Error extracting file from 7z archive: " + romVersion.getFilename() + " from " + filename, ex);
                                     }
@@ -213,10 +248,14 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                 entry = sevenZFile.getNextEntry();
                             }
                             if (!found) {
+                                addLogEntry(romContainer.getConsole().getName(), "entryMissingInArchive",
+                                        romVersion.getFilename() + " not found in " + filename);
                                 LogManager.getInstance().error(ProcessSyncRoms.class, 
                                     "File not found in 7z archive: " + romVersion.getFilename() + " not found in " + filename);
                             }
                         } catch (IOException ex) {
+                            addLogEntry(romContainer.getConsole().getName(), "archiveOpenFailed",
+                                    "Error opening archive " + filename + ": " + ex.getMessage());
                             LogManager.getInstance().error(ProcessSyncRoms.class, 
                                 "Error opening 7z archive: " + filename, ex);
                         }
@@ -224,6 +263,9 @@ public class ProcessSyncRoms extends ProcessAbstract {
                         try {
                             if (romContainer.getConsole().isZip(destination)) {
                                 if (!FileSystem.zipFile(sourceFile, exportFile)) {
+                                    addLogEntry(romContainer.getConsole().getName(), "zipCreationFailed",
+                                            "Failed to create " + exportFile.getAbsolutePath() + " from "
+                                            + sourceFile.getAbsolutePath());
                                     LogManager.getInstance().error(ProcessSyncRoms.class, 
                                         "Failed to create zip file: " + exportFile.getAbsolutePath());
                                 }
@@ -231,35 +273,54 @@ public class ProcessSyncRoms extends ProcessAbstract {
                                 FileSystem.copyFile(sourceFile, exportFile);
                             }
                         } catch (IOException ex) {
+                            addLogEntry(romContainer.getConsole().getName(), "copyFailed",
+                                    "Error copying " + sourceFile.getAbsolutePath() + " -> "
+                                    + exportFile.getAbsolutePath() + ": " + ex.getMessage());
                             LogManager.getInstance().error(ProcessSyncRoms.class, 
                                 "Error copying file: " + sourceFile.getAbsolutePath() + " -> " + exportFile.getAbsolutePath(), ex);
                         }
                     }
                     if (checkFile(romContainer, romVersion)) {
                         nbExported++;
+                        addLogEntry(romContainer.getConsole().getName(), "exported", getRomLabel(romContainer, romVersion)
+                                + " -> " + exportFile.getAbsolutePath());
                     } else {
                         nbFailed++;
                         String errorMsg = getCheckFileError(romContainer, romVersion);
+                        addLogEntry(romContainer.getConsole().getName(), "validationFailed",
+                                getRomLabel(romContainer, romVersion) + " -> " + exportFile.getAbsolutePath()
+                                + " - " + errorMsg);
                         LogManager.getInstance().error(ProcessSyncRoms.class, 
                             "Export validation failed for: " + romContainer.getConsoleStr() + " / " + romVersion.getFilename() + 
                             " -> " + exportFile.getAbsolutePath() + ". " + errorMsg);
                         if (exportFile.exists()) {
-                            exportFile.delete();
+                            if (!exportFile.delete()) {
+                                addLogEntry(romContainer.getConsole().getName(), "deleteFailed",
+                                        "Failed to delete invalid export: " + exportFile.getAbsolutePath());
+                            }
                         }
                     }
                     progressBarGame.progress(romContainer.getConsoleStr() + " \\ " + romContainer.getFilename());
                 }
             }
 
-            Popup.info("Export complete.\n" + nbAlreadyExported + " already exported\n" + nbExported + " exported / " + nbToCopy + "\n" + nbFailed + " error(s)\n" + nbDeleted + " deleted");
-            //FIXME 8 If nbFailed>0, propose to open log (and make one file per process run)
+            addLogEntry("system", "info", "Export complete: " + nbExported + "/" + nbToCopy + " exported, "
+                    + nbFailed + " error(s), " + nbDeleted + " deleted, " + nbAlreadyExported + " already exported");
+            writeLogFile();
+            String logFilePath = "cache/roms/sync-" + timestamp + ".log";
+            Popup.showTextWithLogLink("ROM export complete",
+                    buildSummary(nbAlreadyExported, nbExported, nbToCopy.intValue(), nbFailed, nbDeleted, selectedConsoles.size(), logFilePath),
+                    logFilePath);
             callBack.actionPerformed();
             progressBarConsole.reset();
             progressBarGame.reset();
         } catch (InterruptedException ex) {
 //			Popup.info("Aborted by user");
         } catch (IOException ex) {
+            addLogEntry("system", "error", "Fatal export error: " + ex.getMessage());
             LogManager.getInstance().error(ProcessSyncRoms.class, "Error during ROM export", ex);
+            writeLogFile();
+            Popup.error("ROM export failed. See log file: cache/roms/sync-" + timestamp + ".log");
         } finally {
             callBack.completed();
         }
@@ -430,6 +491,104 @@ public class ProcessSyncRoms extends ProcessAbstract {
             return false;
         }
         return true;
+    }
+
+    private String getConsoleName(Pair<RomContainer, RomVersion> pair) {
+        if (pair == null || pair.getLeft() == null || pair.getLeft().getConsole() == null) {
+            return "unknown";
+        }
+        return pair.getLeft().getConsole().getName();
+    }
+
+    private String getRomLabel(RomContainer romContainer, RomVersion romVersion) {
+        return romContainer.getConsole().getName() + " / " + romVersion.getFilename();
+    }
+
+    private void addLogEntry(String console, String type, String message) {
+        groupedLogs.computeIfAbsent(console, k -> new HashMap<>())
+                .computeIfAbsent(type, k -> new ArrayList<>())
+                .add(message);
+    }
+
+    private String buildSummary(int nbAlreadyExported, int nbExported, int nbToCopy, int nbFailed, int nbDeleted,
+                                int selectedConsoleCount, String logFilePath) {
+        StringBuilder summary = new StringBuilder();
+        summary.append("Export complete\n\n");
+        summary.append("Destination: ").append(destination.getName()).append("\n");
+        summary.append("Selected consoles: ").append(selectedConsoleCount).append("\n");
+        summary.append("Already exported: ").append(nbAlreadyExported).append("\n");
+        summary.append("Exported: ").append(nbExported).append(" / ").append(nbToCopy).append("\n");
+        summary.append("Errors: ").append(nbFailed).append("\n");
+        summary.append("Deleted from destination: ").append(nbDeleted).append("\n\n");
+
+        summary.append("Summary by console and type:\n");
+        for (Map.Entry<String, Map<String, List<String>>> consoleEntry : groupedLogs.entrySet()) {
+            String console = consoleEntry.getKey();
+            summary.append("- ").append(console).append(":\n");
+            for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
+                summary.append("  * ").append(formatTypeName(typeEntry.getKey()))
+                        .append(": ").append(typeEntry.getValue().size()).append("\n");
+            }
+        }
+
+        summary.append("\nLog file: ").append(logFilePath);
+        return summary.toString();
+    }
+
+    private String formatTypeName(String type) {
+        switch (type) {
+            case "destinationFilesFound": return "Destination files found";
+            case "missingDestinationFolder": return "Missing destination folder";
+            case "sourceEntries": return "Source entries";
+            case "alreadyExported": return "Already exported";
+            case "deletedDestinationFile": return "Deleted destination file";
+            case "exported": return "Exported";
+            case "sourceMissing": return "Missing source file";
+            case "entryMissingInArchive": return "Missing file in archive";
+            case "archiveOpenFailed": return "Archive open failed";
+            case "extractFailed": return "Archive extract failed";
+            case "readMismatch": return "Read size mismatch";
+            case "copyFailed": return "Copy failed";
+            case "zipCreationFailed": return "Zip creation failed";
+            case "validationFailed": return "Validation failed";
+            case "deleteFailed": return "Delete failed";
+            case "info": return "Information";
+            case "warning": return "Warning";
+            case "error": return "Error";
+            default: return type;
+        }
+    }
+
+    private void writeLogFile() {
+        try {
+            File cacheDir = new File("cache/roms");
+            if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+                LogManager.getInstance().warning(ProcessSyncRoms.class, "Could not create log directory: " + cacheDir.getAbsolutePath());
+            }
+
+            File logFile = new File(cacheDir, "sync-" + timestamp + ".log");
+            try (PrintWriter writer = new PrintWriter(logFile)) {
+                writer.println("RomManager ROM Export Log - " + timestamp);
+                writer.println("=================================");
+                writer.println();
+
+                for (Map.Entry<String, Map<String, List<String>>> consoleEntry : groupedLogs.entrySet()) {
+                    String console = consoleEntry.getKey();
+                    writer.println("Console: " + console);
+                    writer.println(new String(new char[console.length() + 9]).replace('\0', '-'));
+                    for (Map.Entry<String, List<String>> typeEntry : consoleEntry.getValue().entrySet()) {
+                        writer.println("  " + typeEntry.getKey().toUpperCase() + " (" + typeEntry.getValue().size() + "):");
+                        for (String message : typeEntry.getValue()) {
+                            writer.println("    - " + message);
+                        }
+                        writer.println();
+                    }
+                    writer.println();
+                }
+            }
+        } catch (IOException ex) {
+            LogManager.getInstance().error(ProcessSyncRoms.class, "Failed to write ROM export log file", ex);
+        }
     }
 
     public void setOnlyCultes(boolean onlyCultes) {
