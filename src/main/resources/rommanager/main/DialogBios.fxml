@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rommanager.main.DialogBiosController" stylesheets="@DialogBios.css">
+   <top>
+      <VBox spacing="10.0" styleClass="header-panel">
+         <Label text="BIOS Manager" styleClass="title-label" />
+         <Label text="Match BIOS from a shared source folder and copy to Recalbox or Batocera destinations" styleClass="subtitle-label" />
+         <HBox spacing="8.0" alignment="CENTER_LEFT" styleClass="path-row">
+            <Label text="Source folder:" styleClass="path-label" />
+            <TextField fx:id="textFieldSourcePath" editable="false" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+            <Button fx:id="buttonBrowseSource" mnemonicParsing="false" onAction="#handleBrowseSource" text="Browse" />
+         </HBox>
+         <TabPane fx:id="tabPanePlatform" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+               <Tab text="Recalbox">
+                  <content>
+                     <VBox spacing="8.0">
+                        <padding>
+                           <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                        </padding>
+                        <HBox spacing="8.0" alignment="CENTER_LEFT" styleClass="path-row">
+                           <Label text="Missing report:" styleClass="path-label" />
+                           <TextField fx:id="textFieldRecalboxReport" editable="false" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                           <Button fx:id="buttonBrowseRecalboxReport" mnemonicParsing="false" onAction="#handleBrowseRecalboxReport" text="Browse" />
+                        </HBox>
+                        <HBox spacing="8.0" alignment="CENTER_LEFT" styleClass="path-row">
+                           <Label text="Destination:" styleClass="path-label" />
+                           <TextField fx:id="textFieldRecalboxDestination" editable="false" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                           <Button fx:id="buttonBrowseRecalboxDestination" mnemonicParsing="false" onAction="#handleBrowseRecalboxDestination" text="Browse" />
+                        </HBox>
+                     </VBox>
+                  </content>
+               </Tab>
+               <Tab text="Batocera">
+                  <content>
+                     <VBox spacing="10.0">
+                        <padding>
+                           <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                        </padding>
+                        <HBox spacing="8.0" alignment="CENTER_LEFT" styleClass="path-row">
+                           <Label text="Readme catalog:" styleClass="path-label" />
+                           <TextField fx:id="textFieldBatoceraReadme" editable="false" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                           <Button fx:id="buttonBrowseBatoceraReadme" mnemonicParsing="false" onAction="#handleBrowseBatoceraReadme" text="Browse" />
+                        </HBox>
+                        <HBox spacing="8.0" alignment="CENTER_LEFT" styleClass="path-row">
+                           <Label text="Destination:" styleClass="path-label" />
+                           <TextField fx:id="textFieldBatoceraDestination" editable="false" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                           <Button fx:id="buttonBrowseBatoceraDestination" mnemonicParsing="false" onAction="#handleBrowseBatoceraDestination" text="Browse" />
+                        </HBox>
+                        <HBox spacing="15.0">
+                           <RadioButton fx:id="radioButtonBatoceraMissing" selected="true" text="Missing only">
+                              <toggleGroup>
+                                 <ToggleGroup fx:id="toggleGroupBatoceraMode" />
+                              </toggleGroup>
+                           </RadioButton>
+                           <RadioButton fx:id="radioButtonBatoceraFull" text="Full catalog" toggleGroup="$toggleGroupBatoceraMode" />
+                        </HBox>
+                     </VBox>
+                  </content>
+               </Tab>
+            </tabs>
+         </TabPane>
+      </VBox>
+   </top>
+   <center>
+      <VBox spacing="8.0">
+         <padding>
+            <Insets bottom="8.0" left="18.0" right="18.0" top="8.0" />
+         </padding>
+         <TableView fx:id="tableViewResults" VBox.vgrow="ALWAYS">
+            <columns>
+               <TableColumn fx:id="columnSystem" prefWidth="140.0" text="System" />
+               <TableColumn fx:id="columnFile" prefWidth="160.0" text="File" />
+               <TableColumn fx:id="columnPath" prefWidth="220.0" text="Relative path" />
+               <TableColumn fx:id="columnStatus" prefWidth="120.0" text="Status" />
+               <TableColumn fx:id="columnMessage" prefWidth="260.0" text="Message" />
+            </columns>
+         </TableView>
+         <TextArea fx:id="textAreaLog" editable="false" prefRowCount="6" wrapText="true" />
+      </VBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="10.0" styleClass="bottom-panel">
+         <padding>
+            <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
+         </padding>
+         <Button fx:id="buttonSavePaths" mnemonicParsing="false" onAction="#handleSavePaths" text="Save paths" />
+         <Button fx:id="buttonAnalyze" mnemonicParsing="false" onAction="#handleAnalyze" text="Analyze" />
+         <Button fx:id="buttonCopy" defaultButton="true" mnemonicParsing="false" onAction="#handleCopy" text="Copy" />
+         <Button fx:id="buttonAbort" disable="true" mnemonicParsing="false" onAction="#handleAbort" text="Abort" />
+         <Button fx:id="buttonClose" cancelButton="true" mnemonicParsing="false" onAction="#handleClose" text="Close" />
+      </HBox>
+   </bottom>
+</BorderPane>

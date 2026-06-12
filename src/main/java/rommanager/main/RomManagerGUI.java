@@ -252,6 +252,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
         jTextFieldPathRomM = new javax.swing.JTextField();
         jButtonOptionSelectFolderRomM = new javax.swing.JButton();
         jButtonSyncRomsRomM = new javax.swing.JButton();
+        jPanel10 = new javax.swing.JPanel();
+        jButtonManageBios = new javax.swing.JButton();
         jSplitPaneFilters = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPaneSelectGenre4 = new javax.swing.JScrollPane();
@@ -534,6 +536,32 @@ public class RomManagerGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("BIOS"));
+
+        jButtonManageBios.setText("Manage BIOS");
+        jButtonManageBios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonManageBiosActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButtonManageBios, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButtonManageBios)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -547,7 +575,9 @@ public class RomManagerGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabelAction)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -566,7 +596,8 @@ public class RomManagerGUI extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -1685,6 +1716,10 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private void jButtonSyncRomsRomMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncRomsRomMActionPerformed
         startSyncRom(Destination.romM, jTextFieldPathRomM.getText(), jButtonSyncRomsRomM);
     }//GEN-LAST:event_jButtonSyncRomsRomMActionPerformed
+
+    private void jButtonManageBiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonManageBiosActionPerformed
+        DialogBios.main(this);
+    }//GEN-LAST:event_jButtonManageBiosActionPerformed
     
     class CallBackJeuxVideo implements ICallBack {
 		
@@ -1800,6 +1835,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private static javax.swing.JButton jButtonAbort;
     private javax.swing.JButton jButtonAuto;
     private javax.swing.JButton jButtonEdit;
+    private javax.swing.JButton jButtonManageBios;
     private javax.swing.JButton jButtonOptionSelectFolderRecalbox;
     private javax.swing.JButton jButtonOptionSelectFolderRomM;
     private javax.swing.JButton jButtonOptionSelectFolderSource;
@@ -1831,6 +1867,7 @@ public class RomManagerGUI extends javax.swing.JFrame {
     private javax.swing.JList jListFilterRating;
     private javax.swing.JList<RomVersion> jListVersions;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
